@@ -116,19 +116,20 @@ export async function refreshSchedule(env: Env, now = Date.now()): Promise<Refre
   return { status: 'ok', eventCount: events.length, warnings };
 }
 
-let memo: { id: number; events: IcsEvent[] } | null = null;
+let memo: { key: string; events: IcsEvent[] } | null = null;
 
 export async function loadSchedule(env: Env, { refreshIfMissing = true } = {}): Promise<ScheduleState | null> {
   const row = await env.DB.prepare(
-    `SELECT id, fetched_at, checked_at, events_json, warnings FROM schedule_snapshots
+    `SELECT id, fetched_at, checked_at, source_hash, events_json, warnings FROM schedule_snapshots
      WHERE status = 'ok' ORDER BY id DESC LIMIT 1`,
-  ).first<{ id: number; fetched_at: number; checked_at: number; events_json: string; warnings: string | null }>();
+  ).first<{ id: number; fetched_at: number; checked_at: number; source_hash: string; events_json: string; warnings: string | null }>();
   if (!row) {
     if (!refreshIfMissing) return null;
     await refreshSchedule(env);
     return loadSchedule(env, { refreshIfMissing: false });
   }
-  if (!memo || memo.id !== row.id) memo = { id: row.id, events: JSON.parse(row.events_json) };
+  const key = `${row.id}:${row.source_hash}`;
+  if (!memo || memo.key !== key) memo = { key, events: JSON.parse(row.events_json) };
   return {
     id: row.id,
     fetchedAt: row.fetched_at,

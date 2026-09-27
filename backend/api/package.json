@@ -8,18 +8,16 @@
     "dev": "wrangler dev --env dev --test-scheduled --persist-to ../.dev-state/wrangler",
     "db:migrate": "wrangler d1 migrations apply wjrh --local --env dev --persist-to ../.dev-state/wrangler",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
-    "fixtures": "python3 ../scripts/make_expected_weekly.py"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "aws4fetch": "^1.0.20",
     "hono": "^4.13.9"
   },
   "devDependencies": {
+    "@cfworker/json-schema": "^4.1.1",
     "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@cloudflare/workers-types": "^5.20260927.1",
-    "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1",
     "typescript": "^5.9.3",
     "vitest": "~4.1.0",
     "wrangler": "^4.141.0"

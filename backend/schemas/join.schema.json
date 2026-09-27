@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.wjrh.org/schemas/v1/join.json",
+  "title": "/v1 join",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accepted",
+    "confirmationRequired"
+  ],
+  "properties": {
+    "accepted": {
+      "const": true
+    },
+    "confirmationRequired": {
+      "type": "boolean"
+    }
+  }
+}

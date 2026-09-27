@@ -143,7 +143,7 @@ export async function healthReport(env: Env, now = Date.now()) {
       status: scheduleStatus,
       generatedAt: isoOrNull(schedule?.fetchedAt),
       checkedAt: isoOrNull(schedule?.checkedAt),
-      lastError: lastError && (!schedule || lastError.at > schedule.checkedAt) ? lastError.error : null,
+      lastError: lastError && (!schedule || lastError.at >= schedule.checkedAt) ? lastError.error : null,
       warnings: schedule?.warnings ?? [],
       unmappedShows: unmapped,
     },

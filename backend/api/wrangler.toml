@@ -6,7 +6,7 @@
 
 name = "wjrh-api"
 main = "src/index.ts"
-compatibility_date = "2026-09-01"
+compatibility_date = "2026-08-15"
 
 [triggers]
 # Must match the dispatch table in src/index.ts.

@@ -45,12 +45,13 @@ app.use('*', async (c, next) => {
 });
 
 app.use('/v1/*', async (c, next) => {
-  if (c.req.path.startsWith('/v1/admin/')) return next(); // staff tools are not browser clients
   const allowed = (c.env.CORS_ORIGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  const admin = c.req.path.startsWith('/v1/admin/');
   return cors({
     origin: (origin) => (allowed.includes('*') ? '*' : allowed.includes(origin) ? origin : null),
-    allowMethods: ['GET', 'HEAD', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type'],
+    // Admin calls still need the bearer token; CORS only lets a browser review tool send it.
+    allowMethods: admin ? ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'] : ['GET', 'HEAD', 'POST', 'OPTIONS'],
+    allowHeaders: admin ? ['Content-Type', 'Authorization', 'X-Actor'] : ['Content-Type'],
     maxAge: 86400,
   })(c, next);
 });
@@ -110,7 +111,7 @@ app.get('/v1/now-playing', async (c) => {
   const env = c.env;
   const now = Date.now();
   const ttl = num(env.NOW_PLAYING_CACHE_SECONDS, 10) * 1000;
-  if (nowPlayingMemo && now - nowPlayingMemo.at < ttl) return jsonCached(c, nowPlayingMemo.body, 'no-store');
+  if (nowPlayingMemo && now >= nowPlayingMemo.at && now - nowPlayingMemo.at < ttl) return jsonCached(c, nowPlayingMemo.body, 'no-store');
 
   const [up, schedule] = await Promise.all([fetchUpstream(env), loadSchedule(env)]);
   const { current, next } = schedule ? currentAndNext(schedule, now) : { current: null, next: null };
@@ -290,6 +291,7 @@ app.post('/v1/join', async (c) => {
 // ---------------------------------------------------------------- admin
 
 app.use('/v1/admin/*', async (c, next) => {
+  if (c.req.method === 'OPTIONS') return next();
   const token = c.env.ADMIN_TOKEN;
   const header = c.req.header('authorization') ?? '';
   const supplied = header.startsWith('Bearer ') ? header.slice(7) : '';
