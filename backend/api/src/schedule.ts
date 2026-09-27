@@ -237,8 +237,10 @@ export function weeklySchedule(state: ScheduleState, weekStart: CivilDate, profi
   }
   return {
     tz: 'America/New_York',
-    generatedAt: isoET(state.fetchedAt),
-    checkedAt: isoET(state.checkedAt),
+    // The PWA reads generatedAt as "last confirmed current", so report the last
+    // successful check; contentChangedAt is when the calendar last differed.
+    generatedAt: isoET(state.checkedAt),
+    contentChangedAt: isoET(state.fetchedAt),
     source: 'Google Calendar (public ICS) via WJRH API',
     weekOf: `${weekStart.y}-${String(weekStart.mo).padStart(2, '0')}-${String(weekStart.d).padStart(2, '0')}`,
     days,

@@ -355,13 +355,16 @@ export const JOBS: Record<string, (env: Env) => Promise<unknown>> = {
 
 export default {
   fetch: app.fetch,
-  async scheduled(event: ScheduledController, env: Env, ctx: ExecutionContext) {
+  // Awaited (not waitUntil) so a triggered run has finished when the trigger returns,
+  // which keeps `wrangler dev --test-scheduled` deterministic.
+  async scheduled(event: ScheduledController, env: Env) {
     const job = JOBS[event.cron];
     if (!job) {
       console.warn(`no job for cron "${event.cron}"`);
       return;
     }
-    ctx.waitUntil(job(env).then((r) => console.log(`cron ${event.cron}`, JSON.stringify(r ?? 'done'))));
+    const result = await job(env);
+    console.log(`cron ${event.cron}`, JSON.stringify(result ?? 'done'));
   },
 } satisfies ExportedHandler<Env>;
 

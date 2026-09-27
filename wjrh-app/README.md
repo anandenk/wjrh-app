@@ -145,6 +145,10 @@ All in the `CONFIG` block at the top of `app.js`:
   `{ email }`; its subscription and confirmation behavior must be integrated and
   verified before relying on it.
 - `boothPhone`, `givingUrl`, `instagram` — verify these before launch.
+- `apiBase` — blank by default, which keeps every data source above. When set to the
+  WJRH API (`../backend/`), now-playing, the schedule, station-wide recent tracks and
+  the interest form go through it. For local testing, open
+  `index.html?api=http://127.0.0.1:8787` (remembered per tab; `?api=off` clears).
 
 ---
 

@@ -75,6 +75,8 @@ export async function fetchUpstream(env: Env): Promise<Upstream> {
   }
 }
 
+const REOPEN_WINDOW_MS = 5 * 60_000;
+
 const trackKey = (t: Track | null) => (t ? `${(t.title ?? '').toLowerCase()}|${(t.artist ?? '').toLowerCase()}` : null);
 
 /**
@@ -129,6 +131,24 @@ export async function recordObservation(
     );
   }
   if (up.track && id) {
+    // A metadata blip (e.g. one "Null" poll) between two sightings of the same
+    // track is one play, not two: reopen the previous entry instead.
+    const previous = await env.DB.prepare(
+      `SELECT id, title, artist, ended_at FROM observations ORDER BY started_at DESC LIMIT 1`,
+    ).first<{ id: string; title: string | null; artist: string | null; ended_at: number | null }>();
+    if (
+      previous &&
+      previous.ended_at !== null &&
+      now - previous.ended_at < REOPEN_WINDOW_MS &&
+      trackKey({ title: previous.title, artist: previous.artist, album: null, artworkUrl: null }) === key
+    ) {
+      statements.push(
+        env.DB.prepare(`UPDATE observations SET ended_at = NULL, last_seen_at = ?1 WHERE id = ?2`).bind(now, previous.id),
+        env.DB.prepare(`UPDATE collector_state SET observation_id = ?1 WHERE id = 1`).bind(previous.id),
+      );
+      await env.DB.batch(statements);
+      return;
+    }
     // Use the publisher's Last-Modified when it is plausible; never claim more
     // precision than we observed otherwise.
     const started =

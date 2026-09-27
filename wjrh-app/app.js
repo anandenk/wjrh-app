@@ -28,8 +28,32 @@
     joinEndpoint: '',                 // POST target for the interest list; mailto fallback when empty
 
     pollMs: 15000,                    // now-playing poll while foregrounded
-    logHours: 3                       // how much play history to keep on the device
+    logHours: 3,                      // how much play history to keep on the device
+
+    // Optional WJRH API (see ../backend/). Empty means the sources above are used
+    // directly, exactly as before. When set, now-playing, the schedule, station-wide
+    // recent tracks and the interest form all go through it.
+    apiBase: ''
   };
+
+  // Local testing: index.html?api=http://127.0.0.1:8787 points this tab at an API
+  // (remembered for the tab; ?api=off clears it). Production sets CONFIG.apiBase.
+  (function applyApiOverride() {
+    var m = /[?&]api=([^&#]+)/.exec(location.search);
+    try {
+      if (m) {
+        var v = decodeURIComponent(m[1]);
+        if (v === 'off') sessionStorage.removeItem('wjrh.api');
+        else if (/^https?:\/\//.test(v)) sessionStorage.setItem('wjrh.api', v);
+      }
+      CONFIG.apiBase = sessionStorage.getItem('wjrh.api') || CONFIG.apiBase;
+    } catch (e) { /* storage blocked: keep the configured value */ }
+    if (!CONFIG.apiBase) return;
+    CONFIG.apiBase = CONFIG.apiBase.replace(/\/$/, '');
+    CONFIG.nowPlayingUrl = CONFIG.apiBase + '/v1/now-playing';
+    CONFIG.scheduleUrl = CONFIG.apiBase + '/v1/schedule/weekly';   // same shape as schedule.json
+    CONFIG.joinEndpoint = CONFIG.apiBase + '/v1/join';
+  })();
 
   var ET_TZ = 'America/New_York';
   var DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
@@ -114,6 +138,7 @@
 
     track: null,             // { title, artist, album }
     schedule: null,
+    serverLog: null,         // station-wide history from /v1/recent, when the API is configured
     log: (store.log || []).filter(function (r) {
       return Date.now() - r.at < CONFIG.logHours * 3600e3;
     }),
@@ -226,7 +251,8 @@
     return fetch(CONFIG.nowPlayingUrl, { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (j) {
-        var np = j.nowplaying || j;
+        // /v1/now-playing already normalizes to { track: {title, artist, album} | null }.
+        var np = j.track !== undefined ? (j.track || {}) : (j.nowplaying || j);
         var title = cleanMeta(np.TITLE || np.title);
         var artist = cleanMeta(np.ARTIST || np.artist);
         // The station's feed carries no album today. The statutory webcasting
@@ -254,9 +280,36 @@
     saveStore({ log: S.log });
   }
 
+  // With the API configured, history is station-wide and survives closing the app.
+  // Without it (or if it fails) the device-local log above is used and labelled so.
+  function fetchRecent() {
+    if (!CONFIG.apiBase) return Promise.resolve();
+    var since = new Date(Date.now() - CONFIG.logHours * 3600e3).toISOString();
+    return fetch(CONFIG.apiBase + '/v1/recent?limit=60&since=' + encodeURIComponent(since), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) {
+        S.serverLog = j.items.map(function (i) {
+          return { title: i.title || '', artist: i.artist || '', album: i.album || '', at: Date.parse(i.startedAt),
+            showId: i.showId, occurrenceId: i.occurrenceId, showName: showNameFor(i.showId) };
+        });
+      })
+      .catch(function () { S.serverLog = null; });
+  }
+
+  function showNameFor(showId) {
+    if (!showId) return CONFIG.automationName;
+    var days = (S.schedule && S.schedule.days) || {};
+    for (var k in days) {
+      for (var i = 0; i < days[k].length; i++) if (days[k][i].showId === showId) return days[k][i].show;
+    }
+    return '';
+  }
+
+  function history() { return S.serverLog || S.log; }
+
   function recentHour() {
     var cut = Date.now() - 3600e3;
-    return S.log.filter(function (r) { return r.at >= cut; });
+    return history().filter(function (r) { return r.at >= cut; });
   }
 
   function showProvenance() {
@@ -269,6 +322,9 @@
     var occurrence = liveOccurrence();
     if (!occurrence || occurrence.slot.id !== slot.id) return [];
     var start = Date.now() - occurrence.elapsed * 60000;
+    if (S.serverLog && slot.occurrenceId) {
+      return S.serverLog.filter(function (r) { return r.occurrenceId === slot.occurrenceId; });
+    }
     return S.log.filter(function (r) { return r.showId === slot.id && r.at >= start; });
   }
 
@@ -550,8 +606,8 @@
       (!noMeta ? '<span class="trackcard-foot">Track details <span aria-hidden="true">↗</span></span>' : '<span class="trackcard-foot">' + (unavailable ? 'Use Retry to reconnect' : 'The broadcast can continue without track details') + '</span>') + '</button></section>';
     h += '<section class="activity-column" aria-label="Around the broadcast">' + renderToday() + (cur.live ? nextLive(false) : '');
     var rec = recentHour();
-    h += '<div class="recent-list"><div class="section-head"><h2>Last heard</h2><span class="count">' + rec.length + ' track' + (rec.length === 1 ? '' : 's') + '</span></div><p class="section-note">On this device · last hour</p>';
-    if (!rec.length) h += '<div class="empty"><strong>A little history starts here.</strong><span>Tracks appear here as this app receives them. Keep it open to see what you’ve heard.</span></div>';
+    h += '<div class="recent-list"><div class="section-head"><h2>Last heard</h2><span class="count">' + rec.length + ' track' + (rec.length === 1 ? '' : 's') + '</span></div><p class="section-note">' + (S.serverLog ? 'Station-wide' : 'On this device') + ' · last hour</p>';
+    if (!rec.length) h += '<div class="empty"><strong>A little history starts here.</strong><span>' + (S.serverLog ? 'No tracks have been logged by the station in the last hour.' : 'Tracks appear here as this app receives them. Keep it open to see what you’ve heard.') + '</span></div>';
     else {
       var previousShow;
       rec.forEach(function (r) {
@@ -649,7 +705,7 @@
       '<p class="confirm-line">' + (remOn ? 'Saved on this device. ' : '') + 'Browser reminders work only while this app is open.</p>';
     var rec = isLive ? showHistory(slot) : [];
     if (isLive) {
-      h += '<div class="section-head"><h2>Heard during this show</h2></div><p class="section-note">Tracks received on this device</p>';
+      h += '<div class="section-head"><h2>Heard during this show</h2></div><p class="section-note">' + (S.serverLog ? 'Tracks logged by the station' : 'Tracks received on this device') + '</p>';
       if (!rec.length) h += '<div class="empty"><span>No tracks recorded for this show yet.</span></div>';
       else rec.forEach(function (r) { h += trackRow(r); });
     }
@@ -902,7 +958,7 @@
         if (S.track) { S.sheet = Object.assign({ at: Date.now() }, S.track, showProvenance()); S.sheetIsLive = !S.metaError; S.copied = false; render(); }
         break;
       case 'open-log': {
-        var r = S.log.filter(function (record) { return record.at === +el.dataset.at; })[0];
+        var r = history().filter(function (record) { return record.at === +el.dataset.at; })[0];
         if (r) { S.sheet = r; S.sheetIsLive = false; S.copied = false; render(); }
         break;
       }
@@ -1049,7 +1105,8 @@
 
   // ---------------------------------------------------------------- loop
   var pollTimer = null;
-  function refresh() { return fetchNowPlaying().then(render); }
+  // Recent after now-playing: the API logs the current track as it serves it.
+  function refresh() { return fetchNowPlaying().then(fetchRecent).then(render); }
 
   function startPolling() {
     stopPolling();

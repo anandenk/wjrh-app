@@ -3,6 +3,7 @@
    Deliberately never caches:
      - the audio stream (it is live; a cached chunk is worse than nothing)
      - nowplaying.wjrh.org (must always be fresh)
+     - the WJRH API (/v1/*), which manages its own caching
    schedule.json uses network-first so an edit shows up on the next load,
    with the cached copy as the offline fallback. */
 
@@ -32,6 +33,9 @@ self.addEventListener('fetch', function (e) {
 
   var url = new URL(req.url);
   if (url.hostname === 'internetstreamer.lafayette.edu' || url.hostname === 'nowplaying.wjrh.org') return;
+  // The WJRH API sets its own cache headers; never cache it here or answer it
+  // with index.html when offline.
+  if (url.pathname.indexOf('/v1/') === 0) return;
 
   if (url.pathname.endsWith('schedule.json')) {
     e.respondWith(

@@ -150,6 +150,21 @@ describe('recent history collector', () => {
     expect(since.body.items).toHaveLength(1);
   });
 
+  it('treats a short metadata gap inside one track as a single play', async () => {
+    freezeAt(LIVE_SUPERCUT);
+    const up = stubUpstreams();
+    await runCron('* * * * *');
+    freezeAt('2026-10-02T20:31:00Z');
+    up.nowplaying = () => nowPlayingResponse({ ARTIST: 'Null', TITLE: 'Null' });
+    await runCron('* * * * *');
+    freezeAt('2026-10-02T20:32:00Z');
+    up.nowplaying = () => nowPlayingResponse({ ARTIST: 'Miri Vale', TITLE: 'Cellophane Wing' });
+    await runCron('* * * * *');
+    const { body } = await getJson('/v1/recent', 'recent');
+    expect(body.items).toHaveLength(1);
+    expect(body.items[0].endedAt).toBeNull();
+  });
+
   it('purges history older than the retention window', async () => {
     freezeAt('2026-08-01T12:00:00Z');
     stubUpstreams();
