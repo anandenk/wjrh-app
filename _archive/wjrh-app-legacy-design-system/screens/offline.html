@@ -1,0 +1,33 @@
+<!-- @dsCard group="Screens" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Now — offline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  /* Render as a phone regardless of the card's own size. */
+  html, body { height: 100%; overflow: hidden; }
+  #shell { max-width: 402px; height: 100%; }
+</style>
+</head>
+<body data-section="now">
+<audio id="audio" preload="none"></audio>
+<div id="shell">
+  <div id="scroll"><main id="app"></main></div>
+  <div id="dock"></div>
+  <div id="overlay"></div>
+</div>
+<p id="live-region" class="sr-only" role="status" aria-live="polite"></p>
+<script>
+  // Drives the real app into one state. See "design preview hook" in app.js.
+  window.__WJRH_PRESET = 'offline';
+  window.__WJRH_BASE = '../';
+</script>
+<script src="../app.js"></script>
+</body>
+</html>

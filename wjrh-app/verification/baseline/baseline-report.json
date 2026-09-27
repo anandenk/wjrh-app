@@ -1,0 +1,536 @@
+{
+  "date": "2026-09-21T03:52:23.596Z",
+  "base": "http://127.0.0.1:8000/",
+  "baseline": true,
+  "widths": [
+    320,
+    375,
+    402,
+    430,
+    1366
+  ],
+  "pages": [
+    {
+      "width": 320,
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 320,
+        "height": 874
+      },
+      "pageWidth": 320,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 320,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 661.6875
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "WJRH\n104.9 FM\ni\nON AIR\nUNTIL MON 12:00 PM\nSTATION ROTATION\nRotation between live shows · The Rodeo is next\nNOW PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen\nCOMING UP\n12:00 PM\nMON\nTHE RODEO\nJosie and Rosetta · Folk and anti-folk\n2:00 PM\nMON\nSARAH SMILES\nSarah · Music/Popculture (movies, shows, etc.)\n3:00 PM\nMON\nTHE SPINOFF WITH ORRY\nOrry · HipHop, soul, jazz, rock, ect.\nLAST HOUR\n1 track\n11:52 PM\nTHE KILLING MOON\nEcho & The Bunnymen\nLIVE · PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 320,
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 320,
+        "height": 874
+      },
+      "pageWidth": 320,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 320,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 453.5
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\n8:00 AM\nPOSTMODERN JRH\nScott\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n8:00 PM\nMOUTHPEACE\nLorelai\nTAP TO LISTEN LIVE\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 375,
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 375,
+        "height": 874
+      },
+      "pageWidth": 375,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 375,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 634.6875
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "WJRH\n104.9 FM\ni\nON AIR\nUNTIL MON 12:00 PM\nSTATION ROTATION\nRotation between live shows · The Rodeo is next\nNOW PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen\nCOMING UP\n12:00 PM\nMON\nTHE RODEO\nJosie and Rosetta · Folk and anti-folk\n2:00 PM\nMON\nSARAH SMILES\nSarah · Music/Popculture (movies, shows, etc.)\n3:00 PM\nMON\nTHE SPINOFF WITH ORRY\nOrry · HipHop, soul, jazz, rock, ect.\nLAST HOUR\n1 track\n11:52 PM\nTHE KILLING MOON\nEcho & The Bunnymen\nLIVE · PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 375,
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 375,
+        "height": 874
+      },
+      "pageWidth": 375,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 375,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 416.125
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\n8:00 AM\nPOSTMODERN JRH\nScott\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n8:00 PM\nMOUTHPEACE\nLorelai\nTAP TO LISTEN LIVE\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 402,
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 402,
+        "height": 874
+      },
+      "pageWidth": 402,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 402,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 639
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "WJRH\n104.9 FM\ni\nON AIR\nUNTIL MON 12:00 PM\nSTATION ROTATION\nRotation between live shows · The Rodeo is next\nNOW PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen\nCOMING UP\n12:00 PM\nMON\nTHE RODEO\nJosie and Rosetta · Folk and anti-folk\n2:00 PM\nMON\nSARAH SMILES\nSarah · Music/Popculture (movies, shows, etc.)\n3:00 PM\nMON\nTHE SPINOFF WITH ORRY\nOrry · HipHop, soul, jazz, rock, ect.\nLAST HOUR\n1 track\n11:52 PM\nTHE KILLING MOON\nEcho & The Bunnymen\nLIVE · PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 402,
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 402,
+        "height": 874
+      },
+      "pageWidth": 402,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 402,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 378.75
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\n8:00 AM\nPOSTMODERN JRH\nScott\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n8:00 PM\nMOUTHPEACE\nLorelai\nTAP TO LISTEN LIVE\nBLUE MONDAY 1988\nNew Order · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 430,
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 430,
+        "height": 874
+      },
+      "pageWidth": 430,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 430,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 660.6875
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "WJRH\n104.9 FM\ni\nON AIR\nUNTIL MON 12:00 PM\nSTATION ROTATION\nRotation between live shows · The Rodeo is next\nNOW PLAYING\nBLUE MONDAY 1988\nNew Order\nSubstance\nCOMING UP\n12:00 PM\nMON\nTHE RODEO\nJosie and Rosetta · Folk and anti-folk\n2:00 PM\nMON\nSARAH SMILES\nSarah · Music/Popculture (movies, shows, etc.)\n3:00 PM\nMON\nTHE SPINOFF WITH ORRY\nOrry · HipHop, soul, jazz, rock, ect.\nLAST HOUR\n1 track\n11:52 PM\nTHE KILLING MOON\nEcho & The Bunnymen\nLIVE · PLAYING\nBLUE MONDAY 1988\nNew Order · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 430,
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 430,
+        "height": 874
+      },
+      "pageWidth": 430,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 708,
+        "width": 430,
+        "height": 166
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 708
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 378.75
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\n8:00 AM\nPOSTMODERN JRH\nScott\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n8:00 PM\nMOUTHPEACE\nLorelai\nTAP TO LISTEN LIVE\nBLUE MONDAY 1988\nNew Order · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 1366,
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "pageWidth": 1366,
+      "shell": {
+        "x": 482,
+        "y": 24,
+        "width": 402,
+        "height": 852
+      },
+      "dock": {
+        "x": 485,
+        "y": 707,
+        "width": 396,
+        "height": 166
+      },
+      "scroll": {
+        "x": 485,
+        "y": 27,
+        "width": 396,
+        "height": 680
+      },
+      "main": {
+        "x": 485,
+        "y": 27,
+        "width": 396,
+        "height": 638.0625
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "WJRH\n104.9 FM\ni\nON AIR\nUNTIL MON 12:00 PM\nSTATION ROTATION\nRotation between live shows · The Rodeo is next\nNOW PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen\nCOMING UP\n12:00 PM\nMON\nTHE RODEO\nJosie and Rosetta · Folk and anti-folk\n2:00 PM\nMON\nSARAH SMILES\nSarah · Music/Popculture (movies, shows, etc.)\n3:00 PM\nMON\nTHE SPINOFF WITH ORRY\nOrry · HipHop, soul, jazz, rock, ect.\nLAST HOUR\n1 track\n11:52 PM\nTHE KILLING MOON\nEcho & The Bunnymen\nLIVE · PLAYING\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    },
+    {
+      "width": 1366,
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "pageWidth": 1366,
+      "shell": {
+        "x": 482,
+        "y": 24,
+        "width": 402,
+        "height": 852
+      },
+      "dock": {
+        "x": 485,
+        "y": 707,
+        "width": 396,
+        "height": 166
+      },
+      "scroll": {
+        "x": 485,
+        "y": 27,
+        "width": 396,
+        "height": 680
+      },
+      "main": {
+        "x": 485,
+        "y": 27,
+        "width": 396,
+        "height": 397.4375
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\n8:00 AM\nPOSTMODERN JRH\nScott\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n8:00 PM\nMOUTHPEACE\nLorelai\nTAP TO LISTEN LIVE\nTHE KILLING MOON\nEcho & The Bunnymen · Station rotation\nNOW\nSCHEDULE"
+    }
+  ],
+  "audits": [
+    {
+      "width": 320,
+      "findings": [
+        {
+          "check": "HDR_WRAP",
+          "screen": "Now",
+          "width": 320,
+          "el": "div",
+          "text": "WJRH104.9 FM",
+          "detail": "header item is 29px tall for 16px type — it wrapped"
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "findings": [
+        {
+          "check": "HDR_WRAP",
+          "screen": "Now",
+          "width": 375,
+          "el": "div",
+          "text": "WJRH104.9 FM",
+          "detail": "header item is 29px tall for 16px type — it wrapped"
+        }
+      ]
+    },
+    {
+      "width": 402,
+      "findings": [
+        {
+          "check": "HDR_WRAP",
+          "screen": "Now",
+          "width": 402,
+          "el": "div",
+          "text": "WJRH104.9 FM",
+          "detail": "header item is 29px tall for 16px type — it wrapped"
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "findings": [
+        {
+          "check": "HDR_WRAP",
+          "screen": "Now",
+          "width": 430,
+          "el": "div",
+          "text": "WJRH104.9 FM",
+          "detail": "header item is 29px tall for 16px type — it wrapped"
+        }
+      ]
+    },
+    {
+      "width": 1366,
+      "findings": [
+        {
+          "check": "HDR_WRAP",
+          "screen": "Now",
+          "width": 1366,
+          "el": "div",
+          "text": "WJRH104.9 FM",
+          "detail": "header item is 29px tall for 16px type — it wrapped"
+        }
+      ]
+    }
+  ],
+  "flows": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "failedResponses": [],
+  "summary": {
+    "pages": 10,
+    "auditFindings": 5,
+    "horizontalOverflows": 0,
+    "shortControlPages": 0,
+    "unlabeledControlPages": 0,
+    "failedFlows": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "failedResponses": []
+  }
+}

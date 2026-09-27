@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WJRH 104.9 FM — Lafayette College Radio</title>
+<meta name="description" content="Listen live to WJRH 104.9 FM, Lafayette College's student-run freeform radio station in Easton, PA.">
+
+<meta name="theme-color" content="#f4f0e6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="WJRH">
+<link rel="manifest" href="manifest.json">
+<!-- iOS ignores the manifest's icons; it needs this tag. -->
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-512.png" type="image/png">
+
+<link rel="preload" href="fonts/barlow-condensed-extrabold.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-section="now">
+
+<!-- Lives outside the render tree: re-rendering must never tear down playback.
+     Do NOT add crossorigin="anonymous": the Lafayette stream sends no CORS
+     headers, so requiring CORS makes playback fail with MEDIA_ERR_SRC_NOT_SUPPORTED.
+     A plain media element needs no CORS; only the Web Audio API would. -->
+<audio id="audio" preload="none"></audio>
+
+<div id="shell">
+  <div id="scroll"><main id="app">
+    <div class="fallback">
+      <h1>WJRH 104.9 FM</h1>
+      <p>Lafayette College radio · Easton, PA</p>
+      <p>The listener app is loading. If it cannot start, you can still open the live stream.</p>
+      <a href="https://internetstreamer.lafayette.edu/">Listen to the live stream ↗</a>
+      <noscript><p>Enable JavaScript to view the schedule and use reminders.</p></noscript>
+    </div>
+  </main></div>
+  <div id="dock"></div>
+  <!-- Sheets share the app viewport while the persistent audio remains outside. -->
+  <div id="overlay"></div>
+</div>
+<p id="live-region" class="sr-only" role="status" aria-live="polite"></p>
+
+<script src="app.js"></script>
+</body>
+</html>

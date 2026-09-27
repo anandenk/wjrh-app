@@ -1,0 +1,797 @@
+{
+  "date": "2026-09-21T03:58:23.167Z",
+  "base": "http://127.0.0.1:8000/",
+  "baseline": true,
+  "widths": [
+    320,
+    375,
+    402,
+    430,
+    1366
+  ],
+  "pages": [
+    {
+      "width": 320,
+      "preset": "playing",
+      "viewport": {
+        "width": 320,
+        "height": 874
+      },
+      "pageWidth": 320,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 725,
+        "width": 320,
+        "height": 149
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 725
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 841.296875
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "text": "WJRH\n104.9 FM\nLAFAYETTE COLLEGE\nEASTON, PA\ni\nON THE AIR\nFREEFORM RADIO\nSTATION ROTATION\nMusic between live shows.\nNEXT LIVE SHOW IN 12h 2m\nThe Rodeo\nMonday · 12:00 PM ET ↗\nNOW PLAYING\nBEVERLY HILLS\nWeezer\nAlbum not posted\nTrack details\n↗\nTODAY ON WJRH\n4 live shows ↗\n12a\n6a\nNoon\n6p\n12a\nLive shows marked · all times Eastern\nLAST HEARD\n1 track\n\nOn this device · last hour\n\nStation rotation\n11:58 PM\nBeverly Hills\nWeezer\n↗\nLIVE · PLAYING\nWJRH 104.9 FM\nNOW\nSCHEDULE\n\nLIVE · PLAYING"
+    },
+    {
+      "width": 320,
+      "preset": "schedule",
+      "viewport": {
+        "width": 320,
+        "height": 874
+      },
+      "pageWidth": 320,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 722.8125,
+        "width": 320,
+        "height": 151.1875
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 722.8125
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 681.515625
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\nTODAY\nSUNDAY\nALL TIMES EASTERN\n8:00 AM\nPOSTMODERN JRH\nScott\n+\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n+\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n+\n8:00 PM\nMOUTHPEACE\nLorelai\n+\n\nSave a show with the bell. Browser reminders work only while this app is open; saved shows stay on this device.\n\nSchedule updated Sep 18, 2026\n\nLISTEN LIVE\nBEVERLY HILLS\nWeezer · Station rotation\nNOW\nSCHEDULE\n\nLISTEN LIVE"
+    },
+    {
+      "width": 375,
+      "preset": "playing",
+      "viewport": {
+        "width": 375,
+        "height": 874
+      },
+      "pageWidth": 375,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 725,
+        "width": 375,
+        "height": 149
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 725
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 853.59375
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "text": "WJRH\n104.9 FM\nLAFAYETTE COLLEGE\nEASTON, PA\ni\nON THE AIR\nFREEFORM RADIO\nSTATION ROTATION\nMusic between live shows.\nNEXT LIVE SHOW IN 12h 2m\nThe Rodeo\nMonday · 12:00 PM ET ↗\nNOW PLAYING\nBEVERLY HILLS\nWeezer\nAlbum not posted\nTrack details\n↗\nTODAY ON WJRH\n4 live shows ↗\n12a\n6a\nNoon\n6p\n12a\nLive shows marked · all times Eastern\nLAST HEARD\n1 track\n\nOn this device · last hour\n\nStation rotation\n11:58 PM\nBeverly Hills\nWeezer\n↗\nLIVE · PLAYING\nWJRH 104.9 FM\nNOW\nSCHEDULE\n\nLIVE · PLAYING"
+    },
+    {
+      "width": 375,
+      "preset": "schedule",
+      "viewport": {
+        "width": 375,
+        "height": 874
+      },
+      "pageWidth": 375,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 722.8125,
+        "width": 375,
+        "height": 151.1875
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 722.8125
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 674.890625
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\nTODAY\nSUNDAY\nALL TIMES EASTERN\n8:00 AM\nPOSTMODERN JRH\nScott\n+\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n+\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n+\n8:00 PM\nMOUTHPEACE\nLorelai\n+\n\nSave a show with the bell. Browser reminders work only while this app is open; saved shows stay on this device.\n\nSchedule updated Sep 18, 2026\n\nLISTEN LIVE\nBEVERLY HILLS\nWeezer · Station rotation\nNOW\nSCHEDULE\n\nLISTEN LIVE"
+    },
+    {
+      "width": 402,
+      "preset": "playing",
+      "viewport": {
+        "width": 402,
+        "height": 874
+      },
+      "pageWidth": 402,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 725,
+        "width": 402,
+        "height": 149
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 725
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 856.296875
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "text": "WJRH\n104.9 FM\nLAFAYETTE COLLEGE\nEASTON, PA\ni\nON THE AIR\nFREEFORM RADIO\nSTATION ROTATION\nMusic between live shows.\nNEXT LIVE SHOW IN 12h 2m\nThe Rodeo\nMonday · 12:00 PM ET ↗\nNOW PLAYING\nBEVERLY HILLS\nWeezer\nAlbum not posted\nTrack details\n↗\nTODAY ON WJRH\n4 live shows ↗\n12a\n6a\nNoon\n6p\n12a\nLive shows marked · all times Eastern\nLAST HEARD\n1 track\n\nOn this device · last hour\n\nStation rotation\n11:58 PM\nBeverly Hills\nWeezer\n↗\nLIVE · PLAYING\nWJRH 104.9 FM\nNOW\nSCHEDULE\n\nLIVE · PLAYING"
+    },
+    {
+      "width": 402,
+      "preset": "schedule",
+      "viewport": {
+        "width": 402,
+        "height": 874
+      },
+      "pageWidth": 402,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 722.8125,
+        "width": 402,
+        "height": 151.1875
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 722.8125
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 402,
+        "height": 674.890625
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\nTODAY\nSUNDAY\nALL TIMES EASTERN\n8:00 AM\nPOSTMODERN JRH\nScott\n+\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n+\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n+\n8:00 PM\nMOUTHPEACE\nLorelai\n+\n\nSave a show with the bell. Browser reminders work only while this app is open; saved shows stay on this device.\n\nSchedule updated Sep 18, 2026\n\nLISTEN LIVE\nBEVERLY HILLS\nWeezer · Station rotation\nNOW\nSCHEDULE\n\nLISTEN LIVE"
+    },
+    {
+      "width": 430,
+      "preset": "playing",
+      "viewport": {
+        "width": 430,
+        "height": 874
+      },
+      "pageWidth": 430,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 725,
+        "width": 430,
+        "height": 149
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 725
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 859.09375
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "text": "WJRH\n104.9 FM\nLAFAYETTE COLLEGE\nEASTON, PA\ni\nON THE AIR\nFREEFORM RADIO\nSTATION ROTATION\nMusic between live shows.\nNEXT LIVE SHOW IN 12h 2m\nThe Rodeo\nMonday · 12:00 PM ET ↗\nNOW PLAYING\nBEVERLY HILLS\nWeezer\nAlbum not posted\nTrack details\n↗\nTODAY ON WJRH\n4 live shows ↗\n12a\n6a\nNoon\n6p\n12a\nLive shows marked · all times Eastern\nLAST HEARD\n1 track\n\nOn this device · last hour\n\nStation rotation\n11:58 PM\nBeverly Hills\nWeezer\n↗\nLIVE · PLAYING\nWJRH 104.9 FM\nNOW\nSCHEDULE\n\nLIVE · PLAYING"
+    },
+    {
+      "width": 430,
+      "preset": "schedule",
+      "viewport": {
+        "width": 430,
+        "height": 874
+      },
+      "pageWidth": 430,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 874
+      },
+      "dock": {
+        "x": 0,
+        "y": 722.8125,
+        "width": 430,
+        "height": 151.1875
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 722.8125
+      },
+      "main": {
+        "x": 0,
+        "y": 0,
+        "width": 430,
+        "height": 674.890625
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\nTODAY\nSUNDAY\nALL TIMES EASTERN\n8:00 AM\nPOSTMODERN JRH\nScott\n+\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n+\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n+\n8:00 PM\nMOUTHPEACE\nLorelai\n+\n\nSave a show with the bell. Browser reminders work only while this app is open; saved shows stay on this device.\n\nSchedule updated Sep 18, 2026\n\nLISTEN LIVE\nBEVERLY HILLS\nWeezer · Station rotation\nNOW\nSCHEDULE\n\nLISTEN LIVE"
+    },
+    {
+      "width": 1366,
+      "preset": "playing",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "pageWidth": 1366,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 900
+      },
+      "dock": {
+        "x": 0,
+        "y": 796,
+        "width": 1366,
+        "height": 104
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 796
+      },
+      "main": {
+        "x": 133,
+        "y": 0,
+        "width": 1100,
+        "height": 720.828125
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "now",
+        "streamState": "live",
+        "playing": true,
+        "connecting": false
+      },
+      "text": "WJRH\n104.9 FM\nLAFAYETTE COLLEGE\nEASTON, PA\ni\nON THE AIR\nFREEFORM RADIO\nSTATION ROTATION\nMusic between live shows.\nNEXT LIVE SHOW IN 12h 2m\nThe Rodeo\nMonday · 12:00 PM ET ↗\nNOW PLAYING\nBEVERLY HILLS\nWeezer\nAlbum not posted\nTrack details\n↗\nTODAY ON WJRH\n4 live shows ↗\n12a\n6a\nNoon\n6p\n12a\nLive shows marked · all times Eastern\nLAST HEARD\n1 track\n\nOn this device · last hour\n\nStation rotation\n11:58 PM\nBeverly Hills\nWeezer\n↗\nLIVE · PLAYING\nWJRH 104.9 FM\nNOW\nSCHEDULE\n\nLIVE · PLAYING"
+    },
+    {
+      "width": 1366,
+      "preset": "schedule",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "pageWidth": 1366,
+      "shell": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 900
+      },
+      "dock": {
+        "x": 0,
+        "y": 793.8125,
+        "width": 1366,
+        "height": 106.1875
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 793.8125
+      },
+      "main": {
+        "x": 133,
+        "y": 0,
+        "width": 1100,
+        "height": 737.703125
+      },
+      "overflow": false,
+      "shortControls": [],
+      "unlabeled": [],
+      "contrastFindings": [],
+      "audioOutsideRender": true,
+      "dialogs": [],
+      "state": {
+        "tab": "schedule",
+        "streamState": "live",
+        "playing": false,
+        "connecting": false
+      },
+      "text": "SCHEDULE ET\ni\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\nTODAY\nSUNDAY\nALL TIMES EASTERN\n8:00 AM\nPOSTMODERN JRH\nScott\n+\n11:00 AM\nFREAK SHOW\nSofie Nordstrom\n+\n6:00 PM\nHARRY SON'S HITS\nHarrison · Pop/Sports talk\n+\n8:00 PM\nMOUTHPEACE\nLorelai\n+\n\nSave a show with the bell. Browser reminders work only while this app is open; saved shows stay on this device.\n\nSchedule updated Sep 18, 2026\n\nLISTEN LIVE\nBEVERLY HILLS\nWeezer · Station rotation\nNOW\nSCHEDULE\n\nLISTEN LIVE"
+    }
+  ],
+  "audits": [
+    {
+      "width": 320,
+      "findings": [
+        {
+          "check": "UA_MARGIN",
+          "screen": "Now",
+          "width": 320,
+          "el": "h2.showcard-name.syne",
+          "text": "Station rotation",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 320,
+          "el": "span.today-band",
+          "text": "",
+          "detail": "292px content in 288px box"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 320,
+          "el": "span.today-marker",
+          "text": "",
+          "detail": "5px content in 2px box"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Show detail",
+          "width": 320,
+          "el": "h1.name.syne",
+          "text": "J-J-Jams",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Host sheet",
+          "width": 320,
+          "el": "p.sheet-copy",
+          "text": "Start a conversation with WJRH about getti",
+          "detail": "margin 12/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 320,
+          "el": "p.track-artist",
+          "text": "Weezer",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 320,
+          "el": "p.track-album",
+          "text": "Album not posted",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "findings": [
+        {
+          "check": "UA_MARGIN",
+          "screen": "Now",
+          "width": 375,
+          "el": "h2.showcard-name.syne",
+          "text": "Station rotation",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 375,
+          "el": "span.today-band",
+          "text": "",
+          "detail": "339px content in 335px box"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 375,
+          "el": "span.today-marker",
+          "text": "",
+          "detail": "5px content in 2px box"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Show detail",
+          "width": 375,
+          "el": "h1.name.syne",
+          "text": "J-J-Jams",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Host sheet",
+          "width": 375,
+          "el": "p.sheet-copy",
+          "text": "Start a conversation with WJRH about getti",
+          "detail": "margin 12/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 375,
+          "el": "p.track-artist",
+          "text": "Weezer",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 375,
+          "el": "p.track-album",
+          "text": "Album not posted",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        }
+      ]
+    },
+    {
+      "width": 402,
+      "findings": [
+        {
+          "check": "UA_MARGIN",
+          "screen": "Now",
+          "width": 402,
+          "el": "h2.showcard-name.syne",
+          "text": "Station rotation",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 402,
+          "el": "span.today-band",
+          "text": "",
+          "detail": "365px content in 362px box"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 402,
+          "el": "span.today-marker",
+          "text": "",
+          "detail": "5px content in 2px box"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Show detail",
+          "width": 402,
+          "el": "h1.name.syne",
+          "text": "J-J-Jams",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Host sheet",
+          "width": 402,
+          "el": "p.sheet-copy",
+          "text": "Start a conversation with WJRH about getti",
+          "detail": "margin 12/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 402,
+          "el": "p.track-artist",
+          "text": "Weezer",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 402,
+          "el": "p.track-album",
+          "text": "Album not posted",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "findings": [
+        {
+          "check": "UA_MARGIN",
+          "screen": "Now",
+          "width": 430,
+          "el": "h2.showcard-name.syne",
+          "text": "Station rotation",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 430,
+          "el": "span.today-band",
+          "text": "",
+          "detail": "393px content in 390px box"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 430,
+          "el": "span.today-marker",
+          "text": "",
+          "detail": "5px content in 2px box"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Show detail",
+          "width": 430,
+          "el": "h1.name.syne",
+          "text": "J-J-Jams",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Host sheet",
+          "width": 430,
+          "el": "p.sheet-copy",
+          "text": "Start a conversation with WJRH about getti",
+          "detail": "margin 12/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 430,
+          "el": "p.track-artist",
+          "text": "Weezer",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 430,
+          "el": "p.track-album",
+          "text": "Album not posted",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        }
+      ]
+    },
+    {
+      "width": 1366,
+      "findings": [
+        {
+          "check": "UA_MARGIN",
+          "screen": "Now",
+          "width": 1366,
+          "el": "h2.showcard-name.syne",
+          "text": "Station rotation",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 1366,
+          "el": "span.today-band",
+          "text": "",
+          "detail": "447px content in 444px box"
+        },
+        {
+          "check": "OVERFLOW_X",
+          "screen": "Now",
+          "width": 1366,
+          "el": "span.today-marker",
+          "text": "",
+          "detail": "5px content in 2px box"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Show detail",
+          "width": 1366,
+          "el": "h1.name.syne",
+          "text": "J-J-Jams",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Host sheet",
+          "width": 1366,
+          "el": "p.sheet-copy",
+          "text": "Start a conversation with WJRH about getti",
+          "detail": "margin 12/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 1366,
+          "el": "p.track-artist",
+          "text": "Weezer",
+          "detail": "margin 10/0px — likely an unreset browser default"
+        },
+        {
+          "check": "UA_MARGIN",
+          "screen": "Track sheet",
+          "width": 1366,
+          "el": "p.track-album",
+          "text": "Album not posted",
+          "detail": "margin 8/0px — likely an unreset browser default"
+        }
+      ]
+    }
+  ],
+  "flows": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "failedResponses": [],
+  "summary": {
+    "pages": 10,
+    "auditFindings": 35,
+    "horizontalOverflows": 0,
+    "shortControlPages": 0,
+    "unlabeledControlPages": 0,
+    "contrastFindingPages": 0,
+    "failedFlows": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "failedResponses": []
+  }
+}

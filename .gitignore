@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.log
+
+# Generated deployment bundles — rebuild by zipping the source folder
+*.zip

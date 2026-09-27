@@ -1,0 +1,17 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../_card.css">
+</head>
+<body data-section="now">
+<div class="card">
+<h2>Player</h2>
+<p class="sub">One card on every section, tinted to the active palette. The text block is the tap target for the track sheet; play and output sit outside it.</p>
+<h3>Playing</h3><div class="stage" style="padding:14px 0"><div class="player"><button class="playbtn"><svg width="26" height="26" viewBox="0 0 24 24"><rect x="5" y="4" width="5" height="16" fill="currentColor"/><rect x="14" y="4" width="5" height="16" fill="currentColor"/></svg></button><span class="player-body"><div class="player-status">Live · playing</div><div class="player-title syne ellipsis">Blue Monday 1988</div><div class="player-sub ellipsis">New Order · Hoggbot</div></span></div></div><h3>Idle</h3><div class="stage" style="padding:14px 0"><div class="player"><button class="playbtn"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg></button><span class="player-body"><div class="player-status">Tap to listen live</div><div class="player-title syne ellipsis">Blue Monday 1988</div><div class="player-sub ellipsis">New Order · Hoggbot</div></span></div></div><h3>Connecting</h3><div class="stage" style="padding:14px 0"><div class="player"><button class="playbtn"><div class="spinner"></div></button><span class="player-body"><div class="player-status">Connecting…</div><div class="player-title syne ellipsis">Blue Monday 1988</div><div class="player-sub ellipsis">New Order · Hoggbot</div></span></div></div><h3>Stream down — disabled</h3><div class="stage" style="padding:14px 0"><div class="player"><button class="playbtn" disabled><svg width="26" height="26" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg></button><span class="player-body"><div class="player-status">Stream down</div><div class="player-title syne ellipsis">Back SAT 2:00 PM</div><div class="player-sub ellipsis">Alternative Sound</div></span></div></div>
+</div>
+</body></html>

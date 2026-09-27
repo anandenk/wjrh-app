@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Internal WJRH listener experience prototype for board review.">
+<meta name="theme-color" content="#4A111E">
+<title>WJRH Listener Prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+  /* Hallmark · genre: atmospheric · macrostructure: photographic Now + Index-First Archive + tabular broadcast ledger + continuous broadcast ledger Schedule · theme: studied-DNA (source: current WJRH prototype + supplied archive reference) · tone: warm broadcast utility · anchor: Lafayette maroon · nav: existing listener dock · footer: none · studied: yes · DNA-source: user reference image · archive contrast: pass (40–41) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (34,49–57) · icons: pass (30) · slop: pass (42–45) */
+  @font-face {
+    font-family:'WJRH Display';
+    src:url('./fonts/barlow-condensed-extrabold.ttf') format('truetype');
+    font-weight:800;
+    font-style:normal;
+    font-display:swap;
+  }
+  :root {
+    --page:#4A111E; --bg:#F8E5BF; --surface:#FFF1D2; --surface-2:#E9C887;
+    --ink:#351018; --ink-2:#6C3F42; --ink-3:#744D47;
+    --live:#861F2C; --idle:#B76524; --off:#8B6B5B;
+    --glow:rgba(250,193,101,0.30); --logo-gold:#FAC165; --live-line:rgba(134,31,44,0.50);
+    --rim:rgba(134,31,44,0.18); --strip:rgba(250,193,101,0.45);
+    --font-body:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --font-display:'WJRH Display',Impact,sans-serif;
+    --accent-ink:#FFF3D7; --on-image:#FFF3D7; --on-image-muted:rgba(255,243,215,0.80);
+    --on-image-faint:rgba(255,243,215,0.62); --image-shadow:rgba(31,4,11,0.72);
+    --image-overlay:rgba(45,8,19,0.94); --image-overlay-mid:rgba(45,8,19,0.77); --image-overlay-end:rgba(45,8,19,0.40);
+    --hero-scrim:linear-gradient(180deg,rgba(53,16,24,0.04) 12%,rgba(53,16,24,0.88) 100%);
+    --now-scrim:linear-gradient(180deg,rgba(31,4,11,0.22) 0%,rgba(31,4,11,0.05) 30%,rgba(31,4,11,0.94) 100%);
+    --tile-scrim:linear-gradient(180deg,rgba(53,16,24,0.03) 18%,rgba(53,16,24,0.88) 100%);
+    --recent-outline:rgba(252,224,180,0.20); --device-shadow:rgba(31,4,11,0.28);
+    --player-glass:color-mix(in srgb,var(--surface) 58%,transparent);
+    --player-track:color-mix(in srgb,var(--ink-2) 18%,transparent);
+    --player-thumb-ring:color-mix(in srgb,var(--surface) 82%,transparent);
+    --schedule-bg:color-mix(in oklch,var(--page) 82%,var(--bg));
+    --schedule-hover:color-mix(in oklch,var(--schedule-bg) 88%,var(--bg));
+    --hamster-wheel:oklch(68% 0.01 70); --hamster-fur:oklch(94% 0.055 80);
+    --hamster-fur-mid:oklch(85% 0.11 72); --hamster-fur-deep:oklch(72% 0.18 55);
+    --hamster-pink:oklch(82% 0.10 25); --hamster-pink-light:oklch(90% 0.06 25);
+    --hamster-dur:1s; --dino-ink:oklch(43% 0.01 70);
+    --focus:var(--live); --ease:cubic-bezier(0.25,1,0.5,1);
+    --ease-out:cubic-bezier(0.16,1,0.3,1); --ease-in:cubic-bezier(0.7,0,0.84,0);
+    --dur-micro:120ms; --dur-short:180ms;
+    --timeline-columns:54px 8px minmax(0,1fr); --timeline-gap:6px;
+  }
+  html,body { width:100%; min-height:100%; margin:0; overflow-x:clip; background:var(--page); }
+  body { font-family:var(--font-body); }
+  button,input,select,textarea { font:inherit; }
+  button { color:inherit; }
+  a { color:var(--live); text-decoration:none; }
+  a:hover { color:var(--off); }
+  a:active,button:active { opacity:.78; }
+  a:focus-visible,button:focus-visible,[tabindex]:focus-visible {
+    outline:3px solid var(--focus); outline-offset:3px;
+  }
+  button:disabled,[aria-disabled="true"] { cursor:not-allowed; opacity:.52; }
+  .preview-stage {
+    width:100%; height:100vh; height:100dvh; padding:0; box-sizing:border-box;
+    display:grid; place-items:center; overflow:hidden; background:var(--page);
+  }
+  .app-shell {
+    width:100%; max-width:none; height:100%; min-height:0; position:relative;
+    display:flex; flex-direction:column; overflow:hidden; color:var(--ink); background:var(--bg);
+  }
+  .app-scroll {
+    flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
+    overscroll-behavior-y:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch;
+    padding-bottom:calc(184px + var(--sab, env(safe-area-inset-bottom))); box-sizing:border-box;
+    scrollbar-width:thin; scrollbar-color:var(--live-line) transparent;
+  }
+  .app-scroll:has(.schedule-screen),.app-scroll:has(.archive-screen),.app-scroll:has(.archive-detail-screen) { background:var(--schedule-bg); }
+  .app-scroll::-webkit-scrollbar { width:6px; }
+  .app-scroll::-webkit-scrollbar-thumb { border-radius:9999px; background:var(--live-line); }
+  .app-header { padding:calc(24px + env(safe-area-inset-top)) 20px 18px; display:flex; align-items:center; justify-content:space-between; }
+  .player-dock { bottom:calc(47px + max(0px, calc(var(--sab, env(safe-area-inset-bottom)) - 14px))) !important; }
+  .tab-dock { bottom:0 !important; }
+  .tab-dock button { -webkit-tap-highlight-color:transparent; }
+  .numeric { font-variant-numeric:tabular-nums lining-nums; }
+  .sr-only { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
+  .display-type {
+    min-width:0; overflow-wrap:anywhere;
+    font-family:var(--font-display) !important;
+    font-weight:800 !important;
+    letter-spacing:0.01em !important;
+    text-transform:uppercase;
+  }
+  .on-air-card { border-radius:12px !important; overflow:hidden; }
+  .station-logo-wrap {
+    width:126px;
+    padding:8px 10px 7px;
+    border-radius:4px;
+    background:var(--live);
+    box-sizing:border-box;
+  }
+  .station-logo { width:100%; height:auto; display:block; }
+  .flat-section {
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    border-top:1px solid var(--rim);
+    padding:18px 4px !important;
+  }
+  .now-playing-section { border-radius:12px !important; overflow:hidden; }
+  .track-layout { display:grid; grid-template-columns:minmax(0,1fr) 68px; gap:16px; align-items:center; }
+  .show-art { width:68px; height:68px; object-fit:cover; border-radius:6px; border:1px solid var(--rim); }
+  .about-photo { width:100%; height:176px; object-fit:cover; object-position:center 46%; display:block; margin-top:18px; border-radius:6px; border:1px solid var(--rim); box-sizing:border-box; }
+  .station-screen { padding:0 20px; }
+  .station-back {
+    min-height:44px; border:0; background:transparent; padding:10px 12px 10px 0; cursor:pointer;
+    font-family:var(--font-body); font-weight:700; font-size:12px; letter-spacing:0.04em; color:var(--ink-2);
+  }
+  .station-hero { position:relative; height:214px; overflow:hidden; border-radius:12px; border:1px solid var(--rim); background:var(--surface-2); }
+  .station-hero > img { width:100%; height:100%; object-fit:cover; display:block; }
+  .station-hero-shade { position:absolute; inset:0; background:var(--hero-scrim); }
+  .station-hero-copy { position:absolute; left:18px; right:18px; bottom:17px; color:var(--on-image); }
+  .station-kicker { font-family:var(--font-body); font-size:13px; line-height:1.35; font-weight:700; letter-spacing:0; }
+  .station-title { min-width:0; overflow-wrap:anywhere; font-family:var(--font-display); font-size:34px; line-height:1; letter-spacing:0.01em; text-transform:uppercase; text-wrap:pretty; }
+  .station-intro { margin-top:16px; font-size:15px; line-height:1.58; color:var(--ink-2); text-wrap:pretty; }
+  .station-note { margin-top:18px; padding:14px 15px; border-radius:10px; background:var(--surface); border:1px solid var(--rim); }
+  .station-section-label { margin:26px 0 10px; font-family:var(--font-body); font-size:16px; line-height:1.25; font-weight:700; letter-spacing:-0.01em; color:var(--ink); }
+  .station-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:10px; }
+  .station-tile { position:relative; height:126px; overflow:hidden; padding:0; border:1px solid var(--rim); border-radius:12px; background:var(--surface); cursor:pointer; text-align:left; }
+  .station-tile.wide { grid-column:1 / -1; height:150px; }
+  .station-tile > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .station-tile::after { content:''; position:absolute; inset:0; background:var(--tile-scrim); }
+  .station-tile-copy { position:absolute; z-index:1; left:13px; right:13px; bottom:12px; min-width:0; color:var(--on-image); }
+  .station-tile-title { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:var(--font-display); font-size:22px; line-height:1.05; letter-spacing:0.01em; text-transform:uppercase; }
+  .station-tile-sub { margin-top:4px; font-size:12px; line-height:1.3; color:var(--on-image-muted); }
+  .station-row-link { width:100%; min-height:56px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 4px; border:0; border-top:1px solid var(--rim); background:transparent; color:var(--ink); cursor:pointer; text-align:left; }
+  .station-row-link span:first-child { font-family:var(--font-body); font-size:14px; font-weight:600; }
+  .station-row-link span:last-child { color:var(--live); font-size:16px; }
+  .info-hero { width:100%; height:190px; object-fit:cover; display:block; border-radius:12px; border:1px solid var(--rim); box-sizing:border-box; }
+  .info-credit { margin-top:7px; font-family:var(--font-body); font-size:12px; line-height:1.4; color:var(--ink-3); }
+  .info-copy { margin-top:16px; font-size:14px; line-height:1.62; color:var(--ink-2); text-wrap:pretty; }
+  .fact-grid { margin-top:18px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .fact-card { min-height:76px; padding:13px; border-radius:10px; background:var(--surface); border:1px solid var(--rim); box-sizing:border-box; }
+  .fact-big { font-family:var(--font-display); font-size:25px; line-height:1; color:var(--live); text-transform:uppercase; font-variant-numeric:tabular-nums; }
+  .fact-small { margin-top:5px; font-size:12px; line-height:1.3; font-weight:700; color:var(--ink-3); }
+  .info-cta { min-height:48px; padding:0 18px; border:1px solid transparent; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; background:var(--live); color:var(--accent-ink); font-family:var(--font-body); font-size:13px; font-weight:700; text-decoration:none; white-space:nowrap; cursor:pointer; }
+  .info-cta:hover { color:var(--accent-ink); }
+  .info-cta.secondary { background:var(--surface); color:var(--live); border:1px solid var(--rim); }
+  .info-list { margin-top:18px; border-top:1px solid var(--rim); }
+  .info-list-item { padding:14px 2px; border-bottom:1px solid var(--rim); }
+  .info-list-title { font-size:14px; font-weight:600; color:var(--ink); }
+  .info-list-meta { margin-top:4px; font-size:12px; line-height:1.4; color:var(--ink-3); }
+  .team-person { min-height:54px; padding:11px 2px; display:flex; align-items:center; justify-content:space-between; gap:14px; border-bottom:1px solid var(--rim); color:var(--ink); }
+  .team-person:hover { color:var(--live); }
+  .team-name { font-size:14px; font-weight:600; }
+  .team-role { margin-top:3px; font-size:12px; line-height:1.35; color:var(--ink-3); }
+  .contact-card { padding:15px 2px; border-top:1px solid var(--rim); }
+  .contact-label { font-family:var(--font-body); font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--ink-3); }
+  .contact-value { display:inline-block; margin-top:7px; font-size:15px; line-height:1.45; color:var(--ink); }
+  .social-grid {
+    margin:14px 0 0; padding:0; list-style:none;
+    display:flex; align-items:center; justify-content:center; gap:18px;
+  }
+  .social-handle { flex:0 0 auto; display:grid; place-items:center; }
+  .social-button {
+    width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
+    border:1px solid var(--live-line); background:var(--live); color:var(--logo-gold);
+    transition:background-color 160ms var(--ease),color 160ms var(--ease),transform 100ms var(--ease);
+  }
+  .social-button svg { width:31px; height:31px; display:block; }
+  .social-fcc-mark { font-size:14px; font-weight:800; letter-spacing:.06em; line-height:1; }
+  .social-button:hover { background:var(--ink); color:var(--logo-gold); }
+  .social-button:focus-visible { outline-color:var(--logo-gold); outline-offset:3px; }
+  .social-button:active { transform:scale(.96); }
+  .social-button[aria-disabled="true"] { opacity:.45; cursor:not-allowed; pointer-events:none; background:var(--surface-2); color:var(--ink-3); }
+  .social-handle-label {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap; border:0;
+  }
+  /* Hamster animation adapted from Uiverse.io by Nawsome. */
+  .wheel-and-hamster {
+    --dur:var(--hamster-dur); position:relative; width:12em; height:12em;
+    flex:0 0 12em; font-size:7.3333px;
+  }
+  .wheel,.hamster,.hamster div,.spoke { position:absolute; }
+  .wheel,.spoke { top:0; left:0; width:100%; height:100%; border-radius:50%; }
+  .wheel { z-index:2; background:radial-gradient(100% 100% at center,transparent 47.8%,var(--hamster-wheel) 48%); }
+  .hamster {
+    z-index:1; top:50%; left:calc(50% - 3.5em); width:7em; height:3.75em;
+    transform:rotate(4deg) translate(-0.8em,1.85em); transform-origin:50% 0;
+    animation:hamster-run var(--dur) var(--ease) infinite;
+  }
+  .hamster__head {
+    top:0; left:-2em; width:2.75em; height:2.5em; transform-origin:100% 50%;
+    border-radius:70% 30% 0 100% / 40% 25% 25% 60%; background:var(--hamster-fur-deep);
+    box-shadow:0 -0.25em 0 var(--hamster-fur-mid) inset,0.75em -1.55em 0 var(--hamster-fur) inset;
+    animation:hamster-head var(--dur) var(--ease) infinite;
+  }
+  .hamster__ear {
+    top:-0.25em; right:-0.25em; width:0.75em; height:0.75em; transform-origin:50% 75%;
+    border-radius:50%; background:var(--hamster-pink-light); box-shadow:-0.25em 0 var(--hamster-fur-deep) inset;
+    animation:hamster-ear var(--dur) var(--ease) infinite;
+  }
+  .hamster__eye { top:0.375em; left:1.25em; width:0.5em; height:0.5em; border-radius:50%; background:var(--ink); animation:hamster-eye var(--dur) linear infinite; }
+  .hamster__nose { top:0.75em; left:0; width:0.2em; height:0.25em; border-radius:35% 65% 85% 15% / 70% 50% 50% 30%; background:var(--hamster-pink); }
+  .hamster__body {
+    top:0.25em; left:2em; width:4.5em; height:3em; transform-origin:17% 50%; transform-style:preserve-3d;
+    border-radius:50% 30% 50% 30% / 15% 60% 40% 40%; background:var(--hamster-fur);
+    box-shadow:0.1em 0.75em 0 var(--hamster-fur-deep) inset,0.15em -0.5em 0 var(--hamster-fur-mid) inset;
+    animation:hamster-body var(--dur) var(--ease) infinite;
+  }
+  .hamster__limb--fr,.hamster__limb--fl { top:2em; left:0.5em; width:1em; height:1.5em; transform-origin:50% 0; clip-path:polygon(0 0,100% 0,70% 80%,60% 100%,0% 100%,40% 80%); }
+  .hamster__limb--fr { background:linear-gradient(var(--hamster-fur-mid) 80%,var(--hamster-pink) 80%); transform:rotate(15deg) translateZ(-1px); animation:hamster-fr-limb var(--dur) linear infinite; }
+  .hamster__limb--fl { background:linear-gradient(var(--hamster-fur) 80%,var(--hamster-pink-light) 80%); transform:rotate(15deg); animation:hamster-fl-limb var(--dur) linear infinite; }
+  .hamster__limb--br,.hamster__limb--bl { top:1em; left:2.8em; width:1.5em; height:2.5em; transform-origin:50% 30%; border-radius:0.75em 0.75em 0 0; clip-path:polygon(0 0,100% 0,100% 30%,70% 90%,70% 100%,30% 100%,40% 90%,0% 30%); }
+  .hamster__limb--br { background:linear-gradient(var(--hamster-fur-mid) 90%,var(--hamster-pink) 90%); transform:rotate(-25deg) translateZ(-1px); animation:hamster-br-limb var(--dur) linear infinite; }
+  .hamster__limb--bl { background:linear-gradient(var(--hamster-fur) 90%,var(--hamster-pink-light) 90%); transform:rotate(-25deg); animation:hamster-bl-limb var(--dur) linear infinite; }
+  .hamster__tail {
+    top:1.5em; right:-0.5em; width:1em; height:0.5em; transform:rotate(30deg) translateZ(-1px); transform-origin:0.25em 0.25em;
+    border-radius:0.25em 50% 50% 0.25em; background:var(--hamster-pink-light); box-shadow:0 -0.2em 0 var(--hamster-pink) inset;
+    animation:hamster-tail var(--dur) linear infinite;
+  }
+  .spoke { animation:hamster-spoke var(--dur) linear infinite; background:radial-gradient(100% 100% at center,var(--hamster-wheel) 4.8%,transparent 5%),linear-gradient(transparent 46.9%,var(--hamster-wheel) 47% 52.9%,transparent 53%) 50% 50% / 99% 99% no-repeat; }
+  /* Chrome-style offline dinosaur, compacted from the Uiverse loader by 20essentials. */
+  .offline-dino-card {
+    width:88px; height:88px; flex:0 0 88px; box-sizing:border-box; padding:10px;
+    display:grid; place-items:center; border:1px solid var(--rim); border-radius:18px;
+    background:var(--surface-2); color:var(--dino-ink);
+  }
+  .offline-dino { width:62px; height:62px; display:block; image-rendering:pixelated; animation:dino-bob 300ms steps(2,end) infinite; }
+  .offline-dino__stride-a { animation:dino-stride-a 300ms steps(1,end) infinite; }
+  .offline-dino__stride-b { animation:dino-stride-b 300ms steps(1,end) infinite; }
+  .broadcast-state-label { font-family:var(--font-body); font-size:15px; font-weight:700; line-height:1.2; letter-spacing:0.02em; color:var(--ink-2); white-space:nowrap; }
+  .broadcast-state-label.on-air { display:inline-flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:28px; font-weight:800; line-height:1; letter-spacing:0.015em; color:var(--live); }
+  .broadcast-state-label.on-air::before { content:""; width:9px; height:9px; flex:0 0 9px; border-radius:50%; background:var(--live); box-shadow:0 0 0 4px var(--live-line); }
+  .broadcast-state-label.offline { color:var(--off); }
+  @keyframes hamster-run { from,to { transform:rotate(4deg) translate(-0.8em,1.85em); } 50% { transform:rotate(0) translate(-0.8em,1.85em); } }
+  @keyframes hamster-head { from,25%,50%,75%,to { transform:rotate(0); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(8deg); } }
+  @keyframes hamster-eye { from,90%,to { transform:scaleY(1); } 95% { transform:scaleY(0); } }
+  @keyframes hamster-ear { from,25%,50%,75%,to { transform:rotate(0); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(12deg); } }
+  @keyframes hamster-body { from,25%,50%,75%,to { transform:rotate(0); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(-2deg); } }
+  @keyframes hamster-fr-limb { from,25%,50%,75%,to { transform:rotate(50deg) translateZ(-1px); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(-30deg) translateZ(-1px); } }
+  @keyframes hamster-fl-limb { from,25%,50%,75%,to { transform:rotate(-30deg); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(50deg); } }
+  @keyframes hamster-br-limb { from,25%,50%,75%,to { transform:rotate(-60deg) translateZ(-1px); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(20deg) translateZ(-1px); } }
+  @keyframes hamster-bl-limb { from,25%,50%,75%,to { transform:rotate(20deg); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(-60deg); } }
+  @keyframes hamster-tail { from,25%,50%,75%,to { transform:rotate(30deg) translateZ(-1px); } 12.5%,37.5%,62.5%,87.5% { transform:rotate(10deg) translateZ(-1px); } }
+  @keyframes hamster-spoke { from { transform:rotate(0); } to { transform:rotate(-1turn); } }
+  @keyframes dino-bob { from,to { transform:translateY(0); } 50% { transform:translateY(1px); } }
+  @keyframes dino-stride-a { from,49% { opacity:1; } 50%,to { opacity:0; } }
+  @keyframes dino-stride-b { from,49% { opacity:0; } 50%,to { opacity:1; } }
+  /* Hallmark · component: persistent audio player · genre: editorial broadcast utility · theme: existing Lafayette
+   * states: default · hover · focus · active · disabled · loading · error · success
+   * contrast: inherited verified palette pairs
+   */
+  .player-dock {
+    position:absolute; z-index:12; left:0; right:0;
+    display:grid; grid-template-columns:44px minmax(0,1fr); column-gap:10px; row-gap:0;
+    align-items:center; padding:8px 16px; box-sizing:border-box;
+    border:0; border-top:1px solid var(--rim); border-radius:0;
+    background:var(--player-glass); color:var(--ink);
+    -webkit-backdrop-filter:blur(14px) saturate(112%);
+    backdrop-filter:blur(14px) saturate(112%);
+  }
+  .player-dock[data-mode="archive"] { padding:4px 16px 13px; }
+  .player-dock[data-mode="archive"] .dock-meta-button { min-height:38px; }
+  .dock-play-button {
+    position:relative; grid-row:1 / 3; width:44px; height:44px; min-width:44px; min-height:44px; padding:0;
+    border:0; border-radius:0; display:grid; place-items:center;
+    background:transparent; color:var(--live); cursor:pointer;
+    transition:transform var(--dur-micro) var(--ease-out),opacity var(--dur-short) var(--ease-out);
+  }
+  .dock-play-button:focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+  .dock-play-button:active { transform:scale(.96); }
+  .dock-play-button:disabled { cursor:not-allowed; opacity:.42; }
+  .dock-play-button[aria-busy="true"] { cursor:progress; }
+  .player-dock[data-state="error"] .dock-play-button { color:var(--off); }
+  .player-dock[data-state="playing"] .dock-play-button { color:var(--live); }
+  .dock-control-icon { display:block; opacity:.88; }
+  .dock-play-icon { width:28px; height:28px; transform:translateX(1px); }
+  .dock-stop-square { width:20px; height:20px; background:currentColor; }
+  .dock-spinner {
+    width:24px; height:24px; box-sizing:border-box; border:3px solid var(--strip);
+    border-top-color:currentColor; border-radius:50%; animation:now-spin 680ms linear infinite;
+  }
+  .dock-meta { grid-column:2; grid-row:1; min-width:0; }
+  .dock-meta-button {
+    width:100%; min-width:0; min-height:44px; padding:0; border:0; display:flex;
+    flex-direction:column; justify-content:center; background:transparent; color:inherit;
+    text-align:left; cursor:pointer; transition:opacity var(--dur-short) var(--ease-out);
+  }
+  .dock-meta-button:focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+  .dock-meta-button:active { opacity:.64; }
+  .dock-meta-button:disabled { cursor:default; opacity:1; }
+  .dock-meta-button .dock-title,.dock-meta-button .dock-sub { display:block; width:100%; }
+  .dock-title {
+    min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size:13px; line-height:1.15; font-weight:600; letter-spacing:-.01em; color:var(--ink);
+  }
+  .dock-sub {
+    margin-top:1px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size:10px; line-height:1.2; color:var(--ink); opacity:.84;
+  }
+  .dock-scrub-row {
+    grid-column:2; grid-row:2; height:18px; min-height:0;
+    display:grid; grid-template-columns:32px minmax(0,1fr) 38px;
+    align-items:center; gap:6px; min-width:0; transform:translateY(-2px);
+  }
+  .dock-time {
+    font-family:var(--font-body); font-size:9px; line-height:1; font-weight:600;
+    font-variant-numeric:tabular-nums lining-nums; color:var(--ink); white-space:nowrap;
+  }
+  .dock-time:last-child { text-align:right; }
+  .dock-scrub {
+    position:relative; min-width:0; height:44px; margin-block:-7px; display:flex; align-items:center;
+  }
+  .dock-scrub-rail {
+    position:absolute; inset-inline:0; top:50%; height:2px; overflow:hidden;
+    transform:translateY(-50%); background:var(--player-track); pointer-events:none;
+  }
+  .dock-scrub-fill { width:0; height:100%; display:block; background:var(--live); }
+  .dock-scrub-input {
+    position:relative; z-index:1; width:100%; height:44px; margin:0; padding:0;
+    border:0; outline:0; appearance:none; -webkit-appearance:none;
+    background:transparent; cursor:pointer; accent-color:var(--live);
+  }
+  .dock-scrub-input::-webkit-slider-runnable-track { height:2px; background:transparent; }
+  .dock-scrub-input::-moz-range-track { height:2px; background:transparent; }
+  .dock-scrub-input::-webkit-slider-thumb {
+    width:12px; height:12px; margin-top:-5px; border:1px solid var(--player-thumb-ring); border-radius:50%;
+    appearance:none; -webkit-appearance:none; background:var(--live); box-shadow:0 0 0 1px var(--live);
+  }
+  .dock-scrub-input::-moz-range-thumb {
+    width:12px; height:12px; border:1px solid var(--player-thumb-ring); border-radius:50%;
+    background:var(--live); box-shadow:0 0 0 1px var(--live);
+  }
+  .dock-scrub-input:focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+  .dock-scrub-input:disabled { cursor:not-allowed; opacity:.45; }
+  .dock-scrub-input[aria-busy="true"] { cursor:progress; }
+  @media (hover:hover) and (pointer:fine) {
+    .dock-play-button:hover,.dock-meta-button:not(:disabled):hover { opacity:.72; }
+    .dock-scrub-input:hover::-webkit-slider-thumb { transform:scale(1.15); }
+    .dock-scrub-input:hover::-moz-range-thumb { transform:scale(1.15); }
+  }
+  .click-surface { width:100%; border:0; background:transparent; padding:0; text-align:left; cursor:pointer; }
+  .show-trigger { margin-top:16px; }
+  .promoted-next { border-top:1px solid var(--surface-2); padding-top:18px; }
+  .next-live-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 10px; align-items:baseline; padding:8px 4px; }
+  .next-live-row .next-label { grid-column:1 / -1; }
+  .section-heading { margin:0; font-size:16px; line-height:1.3; font-weight:700; letter-spacing:-0.01em; color:var(--ink); }
+  .track-layout { margin-top:12px; }
+  .now-screen { display:flex; flex-direction:column; }
+  .now-live-canvas {
+    position:relative; width:100%; aspect-ratio:1 / 1; min-height:320px;
+    overflow:hidden; isolation:isolate; background:var(--surface-2); color:var(--on-image);
+  }
+  .now-live-art { position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; object-position:center; }
+  .now-live-shade { position:absolute; inset:0; z-index:1; background:var(--now-scrim); pointer-events:none; }
+  .now-live-content {
+    position:absolute; inset:0; z-index:2; box-sizing:border-box;
+    padding:calc(24px + env(safe-area-inset-top)) 20px 20px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .now-live-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+  .now-live-logo { width:126px; padding:8px 10px 7px; border-radius:4px; background:var(--live); box-sizing:border-box; }
+  .now-live-logo img { width:100%; height:auto; display:block; }
+  .now-live-state {
+    min-height:32px; display:inline-flex; align-items:center; gap:8px; padding:0 11px;
+    border:1px solid var(--recent-outline); border-radius:9999px;
+    background:var(--image-overlay-mid); color:var(--on-image);
+    font-family:var(--font-body); font-size:11px; line-height:1; font-weight:700; letter-spacing:.09em;
+    white-space:nowrap;
+  }
+  .now-live-state-dot { width:7px; height:7px; flex:0 0 7px; border-radius:50%; background:var(--logo-gold); }
+  .now-live-lower { display:flex; flex-direction:column; gap:18px; }
+  .now-show-trigger { width:100%; padding:0; border:0; background:transparent; color:var(--on-image); text-align:left; cursor:pointer; transition:opacity 120ms var(--ease); }
+  .now-show-title {
+    margin:0; max-width:11ch; min-width:0; overflow-wrap:anywhere;
+    font-family:var(--font-display); font-size:clamp(34px,10vw,46px); font-weight:800;
+    line-height:1.02; letter-spacing:.01em; text-transform:uppercase; text-wrap:balance;
+    text-shadow:0 2px 18px var(--image-shadow);
+  }
+  .now-show-host { margin-top:7px; font-size:14px; line-height:1.35; color:var(--on-image-muted); text-shadow:0 1px 12px var(--image-shadow); }
+  .now-track-row { display:grid; grid-template-columns:72px minmax(0,1fr); align-items:center; gap:15px; }
+  .now-play {
+    width:72px; height:72px; padding:0; border:0; border-radius:0; display:grid; place-items:center;
+    background:transparent; color:var(--on-image); cursor:pointer;
+    transition:transform 120ms var(--ease),opacity 120ms var(--ease);
+  }
+  .now-play:active { transform:scale(.96); }
+  .now-play:focus-visible { outline:3px solid var(--logo-gold); outline-offset:3px; }
+  .now-play-triangle { width:54px; height:54px; display:block; filter:drop-shadow(0 1px 10px var(--image-shadow)); }
+  .now-stop-square { width:38px; height:38px; display:block; background:currentColor; filter:drop-shadow(0 1px 10px var(--image-shadow)); }
+  .now-spinner { width:38px; height:38px; display:block; border:4px solid var(--on-image-faint); border-top-color:currentColor; border-radius:50%; box-sizing:border-box; filter:drop-shadow(0 1px 10px var(--image-shadow)); animation:now-spin 680ms linear infinite; }
+  .now-track { min-width:0; }
+  .now-track-label { font-size:11px; line-height:1; font-weight:700; letter-spacing:.1em; color:var(--on-image-faint); }
+  .now-track-title { margin-top:7px; font-size:18px; line-height:1.16; font-weight:600; letter-spacing:-.01em; color:var(--on-image); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-shadow:0 1px 12px var(--image-shadow); }
+  .now-track-artist { margin-top:4px; font-size:13px; line-height:1.25; color:var(--on-image-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-shadow:0 1px 10px var(--image-shadow); }
+  .recent-section { padding:28px 20px 24px; }
+  .archive-screen {
+    min-height:100%; padding:0 0 24px; box-sizing:border-box;
+    background:var(--schedule-bg); color:var(--accent-ink);
+  }
+  .archive-masthead {
+    padding:calc(24px + env(safe-area-inset-top)) 20px 16px;
+    position:sticky; top:0; z-index:3;
+    border-bottom:1px solid var(--on-image-faint); background:var(--schedule-bg);
+  }
+  .archive-title {
+    margin:0; min-width:0; overflow-wrap:anywhere; font-family:var(--font-display); font-size:42px; line-height:1;
+    font-weight:800; letter-spacing:.01em; text-transform:uppercase; color:var(--accent-ink);
+  }
+  .archive-subtitle {
+    margin-top:8px; font-size:11px; line-height:1; font-weight:700;
+    letter-spacing:.09em; color:var(--on-image-muted); text-transform:uppercase;
+  }
+  .archive-grid {
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2px;
+    background:var(--schedule-bg);
+  }
+  .archive-tile {
+    position:relative; min-width:0; aspect-ratio:1; overflow:hidden; isolation:isolate;
+    background:var(--surface-2); color:var(--on-image);
+  }
+  .archive-art { position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; }
+  .archive-shade { position:absolute; inset:0; z-index:1; background:var(--tile-scrim); pointer-events:none; }
+  .archive-open {
+    position:absolute; inset:0; z-index:2; width:100%; height:100%; padding:0; border:0;
+    background:transparent; color:inherit; cursor:pointer;
+  }
+  .archive-open:focus-visible { outline:3px solid var(--logo-gold); outline-offset:-4px; }
+  .archive-copy { position:absolute; z-index:3; left:12px; right:12px; bottom:12px; min-width:0; pointer-events:none; }
+  .archive-show {
+    display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:2;
+    font-family:var(--font-display); font-size:20px; line-height:1.02; font-weight:800;
+    letter-spacing:.01em; text-transform:uppercase; text-wrap:balance;
+    text-shadow:0 1px 12px var(--image-shadow);
+  }
+  .archive-host {
+    margin-top:8px; font-size:10px; line-height:1; font-weight:700; letter-spacing:.07em;
+    color:var(--on-image-muted); text-transform:uppercase; white-space:nowrap;
+    text-shadow:0 1px 10px var(--image-shadow);
+  }
+  .archive-play-icon { width:42px; height:42px; display:block; filter:drop-shadow(0 1px 10px var(--image-shadow)); }
+  .archive-stop-icon { width:30px; height:30px; display:block; background:currentColor; filter:drop-shadow(0 1px 10px var(--image-shadow)); }
+  .archive-spinner {
+    width:32px; height:32px; display:block; box-sizing:border-box; border:3px solid var(--on-image-faint);
+    border-top-color:currentColor; border-radius:50%; filter:drop-shadow(0 1px 10px var(--image-shadow));
+    animation:now-spin 680ms linear infinite;
+  }
+  .archive-note { padding:16px 20px 0; font-size:10px; line-height:1.45; color:var(--on-image-muted); }
+  .archive-detail-screen {
+    min-height:100%; padding:0 0 28px; box-sizing:border-box;
+    background:var(--schedule-bg); color:var(--accent-ink);
+  }
+  .archive-detail-header {
+    min-height:60px; padding:calc(8px + env(safe-area-inset-top)) 12px 8px; box-sizing:border-box;
+    display:grid; grid-template-columns:minmax(72px,1fr) auto minmax(72px,1fr); align-items:center;
+    border-bottom:1px solid var(--on-image-faint); background:var(--schedule-bg);
+  }
+  .archive-detail-back {
+    justify-self:start; min-height:44px; padding:0 8px 0 0; border:0; display:inline-flex;
+    align-items:center; gap:6px; background:transparent; color:var(--accent-ink); cursor:pointer;
+    font-family:var(--font-body); font-size:11px; line-height:1; font-weight:700; letter-spacing:.07em;
+  }
+  .archive-detail-back svg { width:16px; height:16px; flex:0 0 16px; }
+  .archive-detail-header-title {
+    margin:0; font-family:var(--font-display); font-size:24px; line-height:1; font-weight:800;
+    letter-spacing:.01em; text-transform:uppercase; color:var(--accent-ink);
+  }
+  .archive-detail-frequency { justify-self:end; font-size:10px; line-height:1; font-weight:700; letter-spacing:.06em; color:var(--on-image-muted); white-space:nowrap; }
+  .archive-detail-hero { position:relative; width:100%; aspect-ratio:1; overflow:hidden; isolation:isolate; background:var(--surface-2); }
+  .archive-detail-art { position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; }
+  .archive-detail-shade { position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,transparent 54%,var(--image-overlay-mid) 100%); pointer-events:none; }
+  /* Hallmark · component: archive artwork transport · genre: atmospheric broadcast utility · theme: existing Lafayette
+   * states: default · hover · focus · active · disabled · loading · error · success
+   * contrast: solid on-image controls supported by the artwork shade
+   */
+  .archive-detail-transport { position:absolute; z-index:2; inset:0; color:var(--on-image); pointer-events:none; }
+  .archive-detail-main-controls {
+    position:absolute; inset:0 16px 52px; display:flex; align-items:center; justify-content:center; gap:16px;
+  }
+  .archive-detail-transport button,
+  .archive-detail-range { pointer-events:auto; }
+  .archive-detail-skip,
+  .archive-detail-transport-play {
+    padding:0; border:0; display:grid; place-items:center; background:transparent; color:inherit; cursor:pointer;
+    transition:opacity var(--dur-micro) var(--ease-out),transform var(--dur-micro) var(--ease-out);
+  }
+  .archive-detail-skip { width:52px; height:52px; }
+  .archive-detail-transport-play { width:84px; height:84px; }
+  .archive-detail-skip:active,
+  .archive-detail-transport-play:active { transform:scale(.96); }
+  .archive-detail-skip:focus-visible,
+  .archive-detail-transport-play:focus-visible,
+  .archive-detail-range:focus-visible { outline:3px solid var(--logo-gold); outline-offset:2px; }
+  .archive-detail-skip:disabled,
+  .archive-detail-transport-play:disabled,
+  .archive-detail-range:disabled { cursor:not-allowed; opacity:.45; }
+  .archive-detail-transport[data-state="loading"] { cursor:progress; }
+  .archive-detail-transport[data-state="error"],
+  .archive-detail-transport[data-state="success"] { color:var(--on-image); }
+  .archive-detail-skip-glyph {
+    position:relative; width:38px; height:38px; display:grid; place-items:center;
+    border:4px solid currentColor; border-right-color:transparent; border-radius:50%;
+  }
+  .archive-detail-skip-glyph::before {
+    content:""; position:absolute; right:-4px; top:-3px; width:0; height:0;
+    border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:8px solid currentColor;
+    transform:rotate(22deg);
+  }
+  .archive-detail-skip-glyph.forward { transform:scaleX(-1); }
+  .archive-detail-skip-glyph.forward span { transform:scaleX(-1); }
+  .archive-detail-skip-glyph span { font-size:11px; line-height:1; font-weight:800; font-variant-numeric:tabular-nums; }
+  .archive-detail-transport-play .archive-play-icon { width:68px; height:68px; filter:none; }
+  .archive-detail-pause { display:flex; align-items:center; justify-content:center; gap:12px; }
+  .archive-detail-pause span { width:14px; height:62px; display:block; background:currentColor; }
+  .archive-detail-transport-play .archive-spinner { width:48px; height:48px; border-width:5px; filter:none; }
+  .archive-detail-progress { position:absolute; left:16px; right:16px; bottom:8px; }
+  .archive-detail-range-wrap { position:relative; height:40px; display:flex; align-items:center; }
+  .archive-detail-range-rail {
+    position:absolute; left:0; right:0; height:4px; overflow:hidden; border-radius:9999px;
+    background:var(--on-image-faint); pointer-events:none;
+  }
+  .archive-detail-range-fill { width:0; height:100%; display:block; background:var(--on-image); }
+  .archive-detail-range {
+    position:relative; z-index:1; width:100%; height:44px; margin:0; padding:0; appearance:none;
+    -webkit-appearance:none; background:transparent; cursor:pointer;
+  }
+  .archive-detail-range::-webkit-slider-runnable-track { height:4px; background:transparent; }
+  .archive-detail-range::-moz-range-track { height:4px; background:transparent; }
+  .archive-detail-range::-webkit-slider-thumb {
+    width:18px; height:18px; margin-top:-7px; border:0; border-radius:50%; appearance:none;
+    -webkit-appearance:none; background:var(--on-image); box-shadow:none;
+  }
+  .archive-detail-range::-moz-range-thumb {
+    width:18px; height:18px; border:0; border-radius:50%; background:var(--on-image);
+    box-shadow:none;
+  }
+  .archive-detail-time-row {
+    display:flex; align-items:center; justify-content:space-between; margin-top:-2px;
+    font-size:11px; line-height:1; font-weight:700; color:var(--on-image); text-shadow:0 1px 8px var(--image-shadow);
+  }
+  .archive-detail-copy { padding:20px 20px 24px; border-bottom:1px solid var(--on-image-faint); }
+  .archive-detail-kicker { font-size:10px; line-height:1; font-weight:700; letter-spacing:.09em; color:var(--logo-gold); text-transform:uppercase; }
+  .archive-detail-name {
+    margin:8px 0 0; min-width:0; overflow-wrap:anywhere; font-family:var(--font-display);
+    font-size:clamp(38px,11vw,52px); line-height:.96; font-weight:800; letter-spacing:.01em;
+    text-transform:uppercase; text-wrap:balance; color:var(--accent-ink);
+  }
+  .archive-detail-host { margin-top:10px; font-size:14px; line-height:1.35; color:var(--on-image-muted); }
+  .archive-detail-description-note { margin-top:16px; font-size:9px; line-height:1; font-weight:700; letter-spacing:.08em; color:var(--logo-gold); text-transform:uppercase; }
+  .archive-detail-description { margin:8px 0 0; font-size:13px; line-height:1.55; color:var(--on-image-muted); text-wrap:pretty; }
+  .archive-broadcasts { padding:22px 0 4px; }
+  .archive-broadcasts-heading {
+    margin:0; padding:0 20px; font-family:var(--font-display); font-size:28px; line-height:1;
+    font-weight:800; letter-spacing:.01em; text-transform:uppercase; color:var(--accent-ink);
+  }
+  .archive-broadcasts-note { margin:7px 20px 14px; font-size:10px; line-height:1.4; font-weight:700; letter-spacing:.05em; color:var(--logo-gold); text-transform:uppercase; }
+  .archive-broadcast-list { list-style:none; margin:0; padding:0; border-top:1px solid var(--on-image-faint); }
+  .archive-broadcasts-empty {
+    margin:0; padding:20px; border-top:1px solid var(--on-image-faint);
+    font-size:13px; line-height:1.5; color:var(--on-image-muted);
+  }
+  .archive-broadcast-row {
+    min-width:0; padding:16px 20px; box-sizing:border-box; display:grid;
+    grid-template-columns:96px minmax(0,1fr) 52px; align-items:center; gap:16px;
+    border-bottom:1px solid var(--on-image-faint);
+  }
+  .archive-broadcast-art { width:96px; height:96px; aspect-ratio:1; display:block; object-fit:cover; background:var(--surface-2); }
+  .archive-broadcast-copy { min-width:0; }
+  .archive-broadcast-title {
+    min-width:0; overflow-wrap:anywhere; font-family:var(--font-display); font-size:20px;
+    line-height:1.02; font-weight:800; letter-spacing:.01em; text-transform:uppercase;
+    color:var(--accent-ink); text-wrap:balance;
+  }
+  .archive-broadcast-meta { margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:10px; line-height:1.25; font-weight:700; letter-spacing:.05em; color:var(--on-image-muted); text-transform:uppercase; }
+  .archive-broadcast-control {
+    width:52px; height:52px; padding:0; border:0; border-radius:0; display:grid; place-items:center;
+    background:transparent; color:var(--accent-ink); cursor:pointer;
+    transition:opacity var(--dur-micro) var(--ease-out),transform var(--dur-micro) var(--ease-out);
+  }
+  .archive-broadcast-control:active { transform:scale(.96); }
+  .archive-broadcast-control:focus-visible { outline:3px solid var(--logo-gold); outline-offset:0; }
+  .archive-broadcast-control .archive-play-icon { width:38px; height:38px; }
+  .archive-broadcast-control .archive-stop-icon { width:28px; height:28px; }
+  .archive-broadcast-control .archive-spinner { width:30px; height:30px; }
+  .schedule-screen {
+    min-height:100%; padding:0 0 28px; box-sizing:border-box;
+    background:var(--schedule-bg); color:var(--accent-ink);
+  }
+  .schedule-masthead {
+    padding:calc(24px + env(safe-area-inset-top)) 20px 16px; box-sizing:border-box;
+    display:flex; flex-direction:column; align-items:stretch; gap:8px;
+    position:sticky; top:0; z-index:3; border-bottom:1px solid var(--on-image-faint); background:var(--schedule-bg);
+  }
+  .schedule-masthead-meta { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .schedule-masthead-side {
+    font-family:var(--font-body); font-size:11px; line-height:1;
+    font-weight:700; letter-spacing:.06em; color:var(--on-image-muted); white-space:nowrap;
+  }
+  .schedule-masthead-side:last-child { text-align:right; }
+  .schedule-title {
+    margin:0; min-width:0; overflow-wrap:anywhere; font-family:var(--font-display);
+    font-size:42px; line-height:1; font-weight:800; letter-spacing:.01em; text-transform:uppercase;
+    color:var(--accent-ink);
+  }
+  .schedule-stream { display:flex; flex-direction:column; }
+  .schedule-day-marker {
+    margin:0; padding:12px 20px; background:var(--accent-ink); color:var(--ink);
+    font-family:var(--font-body); font-size:18px; line-height:1; font-weight:700;
+    letter-spacing:-.01em; text-transform:uppercase; scroll-margin-top:104px;
+  }
+  .schedule-show-row {
+    width:100%; min-height:64px; padding:12px 20px; border:0; box-sizing:border-box;
+    display:grid; grid-template-columns:84px minmax(0,1fr); align-items:start; column-gap:16px;
+    background:transparent; color:var(--accent-ink); text-align:left; cursor:pointer;
+    transition:background-color 140ms var(--ease),opacity 140ms var(--ease);
+  }
+  .schedule-show-row:hover { background:var(--schedule-hover); }
+  .schedule-show-row:active { opacity:.72; }
+  .schedule-show-row:focus-visible { position:relative; z-index:1; outline:3px solid var(--logo-gold); outline-offset:-3px; }
+  .schedule-show-row:disabled { cursor:not-allowed; opacity:.52; }
+  .schedule-time-range {
+    padding-top:2px; font-family:var(--font-body); font-size:12px; line-height:1.2;
+    font-weight:500; font-variant-numeric:tabular-nums lining-nums; color:var(--on-image-muted); white-space:nowrap;
+  }
+  .schedule-show-copy { min-width:0; }
+  .schedule-show-title {
+    display:block; min-width:0; overflow-wrap:anywhere; font-family:var(--font-display); font-size:22px;
+    line-height:1.02; font-weight:800; letter-spacing:.01em; text-transform:uppercase; color:var(--accent-ink);
+  }
+  .schedule-show-meta { display:block; margin-top:4px; font-size:12px; line-height:1.25; color:var(--on-image-muted); text-wrap:pretty; }
+  .schedule-live-label {
+    display:inline-flex; align-items:center; gap:8px; margin-top:8px; font-size:11px;
+    line-height:1; font-weight:700; letter-spacing:.08em; color:var(--logo-gold); white-space:nowrap;
+  }
+  .schedule-live-label::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .schedule-freshness { padding:20px 20px 4px; font-size:11px; line-height:1.4; color:var(--on-image-faint); }
+  @media (hover:hover) and (pointer:fine) {
+    .now-show-trigger:hover,.now-play:hover,.archive-broadcast-control:hover,.archive-open:hover,
+    .archive-detail-skip:hover,.archive-detail-transport-play:hover { opacity:.88; }
+    .archive-detail-range:hover::-webkit-slider-thumb { transform:scale(1.08); }
+    .archive-detail-range:hover::-moz-range-thumb { transform:scale(1.08); }
+  }
+  .archive-detail-range:active::-webkit-slider-thumb { transform:scale(.92); }
+  .archive-detail-range:active::-moz-range-thumb { transform:scale(.92); }
+  .row-trigger { min-height:44px; }
+  .external-link-icon { width:14px; height:14px; margin-left:6px; display:block; flex:0 0 14px; }
+  .station-row-link .row-arrow { width:18px; height:18px; display:block; flex:0 0 18px; }
+  .station-row-link .row-arrow svg { width:100%; height:100%; display:block; }
+  @media (max-width:24.99rem) {
+    .archive-masthead { padding-inline:16px; }
+    .archive-title { font-size:38px; }
+    .archive-show { font-size:18px; }
+    .archive-copy { left:8px; right:8px; bottom:8px; }
+    .archive-broadcasts-heading { padding-inline:16px; }
+    .archive-broadcasts-note { margin-inline:16px; }
+    .archive-broadcast-row { grid-template-columns:80px minmax(0,1fr) 44px; gap:12px; padding:12px 16px; }
+    .archive-broadcast-art { width:80px; height:80px; }
+    .archive-broadcast-title { font-size:18px; }
+    .archive-broadcast-control { width:44px; height:44px; }
+    .schedule-masthead { padding-inline:16px; }
+    .schedule-masthead-side { font-size:10px; }
+    .schedule-title { font-size:38px; }
+    .schedule-day-marker { padding-inline:16px; }
+    .schedule-show-row { grid-template-columns:84px minmax(0,1fr); column-gap:12px; padding-inline:16px; }
+    .schedule-show-title { font-size:20px; }
+  }
+  @media (min-width:25rem) {
+    :root { --timeline-columns:68px 10px minmax(0,1fr); --timeline-gap:10px; }
+    .station-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .next-live-row { grid-template-columns:auto minmax(0,1fr) auto; }
+    .next-live-row .next-label { grid-column:auto; }
+  }
+  @media (min-width:37.5rem) {
+    .preview-stage { padding:24px 20px; }
+    .app-shell { max-width:402px; height:min(874px,calc(100dvh - 48px)); border:1px solid var(--rim); border-radius:20px; box-shadow:0 24px 70px var(--device-shadow); }
+    .app-header { padding-top:24px; }
+    .now-live-content { padding-top:24px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    .dock-spinner { animation-duration:1.4s !important; animation-iteration-count:infinite !important; }
+    .hamster,.hamster div,.spoke,.offline-dino,.offline-dino g { animation:none !important; }
+  }
+  @keyframes now-spin { to { transform:rotate(360deg); } }
+</style>
+<script type="importmap">
+{"imports":{
+  "react":"./react-shim.js",
+  "react/jsx-runtime":"./react-jsx-runtime-shim.js",
+  "react/jsx-dev-runtime":"./react-jsx-runtime-shim.js",
+  "react-dom":"./react-dom-shim.js",
+  "react-dom/client":"./react-dom-shim.js"
+}}
+</script>
+</helmet>
+<div class="preview-stage">
+<div class="app-shell">
+
+  <div class="app-scroll" style="{{ appScrollStyle }}">
+
+    <sc-if value="{{ showAppHeader }}" hint-placeholder-val="false">
+    <header class="app-header">
+      <div style="min-width:0">
+        <div class="station-logo-wrap"><img class="station-logo" src="./assets/wjrh-logo.svg" alt="WJRH"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:9px;white-space:nowrap">
+          <span class="numeric" style="font-family:var(--font-body);font-weight:700;font-size:13px;line-height:1;letter-spacing:-0.02em;color:var(--ink-2)">104.9 FM</span>
+          <span style="{{ dotStyle }}"></span>
+          <span style="font-family:var(--font-body);font-weight:700;font-size:12px;line-height:1;letter-spacing:0.02em;color:var(--ink-3)">Lafayette College Radio</span>
+        </div>
+      </div>
+      <span aria-hidden="true" style="width:72px;height:36px"></span>
+    </header>
+    </sc-if>
+
+    <sc-if value="{{ isNow }}" hint-placeholder-val="{{ true }}">
+    <div class="now-screen">
+      <h1 class="sr-only">WJRH now</h1>
+
+      <section class="now-live-canvas" aria-label="Live broadcast">
+        <img class="now-live-art" src="{{ onAirArt }}" alt="{{ onAirArtAlt }}" width="640" height="640" fetchpriority="high">
+        <div class="now-live-shade" aria-hidden="true"></div>
+        <div class="now-live-content">
+          <div class="now-live-top">
+            <div class="now-live-logo"><img src="./assets/wjrh-logo.svg" alt="WJRH 104.9 FM" width="964" height="302"></div>
+            <div class="now-live-state" role="status" aria-live="polite">
+              <span class="now-live-state-dot" style="{{ nowStateDotStyle }}" aria-hidden="true"></span>
+              <span>{{ nowStateLabel }}</span>
+            </div>
+          </div>
+
+          <div class="now-live-lower">
+          <sc-if value="{{ onAirActionable }}" hint-placeholder-val="{{ true }}">
+          <button type="button" class="now-show-trigger" onClick="{{ openOnAir }}" aria-label="Open details for {{ onAirName }}">
+            <div class="now-show-title">{{ onAirName }}</div>
+            <div class="now-show-host">{{ onAirSub }}</div>
+          </button>
+          </sc-if>
+          <sc-if value="{{ onAirStatic }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div class="now-show-title">{{ onAirName }}</div>
+            <div class="now-show-host">{{ onAirSub }}</div>
+          </div>
+          </sc-if>
+
+          <div class="now-track-row">
+          <button type="button" class="now-play" onClick="{{ togglePlay }}" aria-label="{{ playA11y }}" aria-pressed="{{ playerIsPlaying }}" aria-busy="{{ playerIsLoading }}" disabled="{{ playerDisabled }}">
+            <sc-if value="{{ playerIsLoading }}" hint-placeholder-val="{{ false }}">
+              <span class="now-spinner" aria-hidden="true"></span>
+            </sc-if>
+            <sc-if value="{{ playerControlReady }}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{ playerIsPlaying }}" hint-placeholder-val="{{ true }}">
+                <span class="now-stop-square" aria-hidden="true"></span>
+              </sc-if>
+              <sc-if value="{{ playerIsPaused }}" hint-placeholder-val="{{ false }}">
+                <svg class="now-play-triangle" viewBox="0 0 54 54" fill="currentColor" aria-hidden="true"><polygon points="13.5,6 13.5,48 54,27"></polygon></svg>
+              </sc-if>
+            </sc-if>
+          </button>
+          <div class="now-track">
+            <div class="now-track-label">NOW PLAYING</div>
+            <div class="now-track-title">{{ track.title }}</div>
+            <div class="now-track-artist">{{ track.artist }}</div>
+          </div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="recent-section">
+        <h2 class="section-heading">Recently played</h2>
+        <div style="margin-top:8px;display:flex;flex-direction:column">
+          <sc-for list="{{ recent }}" as="row" hint-placeholder-count="6">
+            <div style="{{ row.wrapStyle }}">
+              <sc-if value="{{ row.isBreak }}" hint-placeholder-val="{{ false }}">
+                <span style="height:1px;background:var(--surface-2);flex:0 0 14px"></span>
+                <span style="font-family:var(--font-body);font-weight:700;font-size:12px;color:var(--ink-3);white-space:nowrap">{{ row.label }}</span>
+                <span style="height:1px;background:var(--surface-2);flex:1 1 auto"></span>
+                <span class="numeric" style="font-family:var(--font-body);font-weight:700;font-size:12px;color:var(--ink-3);flex:0 0 auto">{{ row.at }}</span>
+              </sc-if>
+              <sc-if value="{{ row.isTrack }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:1;min-width:0">
+                  <div style="{{ row.titleStyle }}">{{ row.title }}</div>
+                  <div style="{{ row.artistStyle }}">{{ row.artist }}</div>
+                </div>
+                <span style="{{ row.timeStyle }}">{{ row.at }}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isArchive }}" hint-placeholder-val="{{ false }}">
+    <section class="archive-screen" aria-labelledby="archive-title">
+      <header class="archive-masthead">
+        <h1 id="archive-title" class="archive-title">Archive</h1>
+        <div class="archive-subtitle">Past shows</div>
+      </header>
+
+      <div class="archive-grid">
+        <sc-for list="{{ archiveItems }}" as="show" hint-placeholder-count="6">
+          <article class="archive-tile">
+            <img class="archive-art" src="{{ show.art }}" alt="" width="640" height="640" loading="lazy">
+            <div class="archive-shade" aria-hidden="true"></div>
+            <button type="button" class="archive-open" onClick="{{ show.onOpen }}" aria-label="Open broadcast history for {{ show.name }}"></button>
+            <div class="archive-copy">
+              <div class="archive-show">{{ show.name }}</div>
+              <div class="archive-host">With {{ show.host }}</div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+
+      <div class="archive-note">Live Google Calendar roster · real album covers used as prototype placeholders · sample broadcast history.</div>
+    </section>
+    </sc-if>
+
+    <sc-if value="{{ isArchiveDetail }}" hint-placeholder-val="{{ false }}">
+    <article class="archive-detail-screen" aria-labelledby="archive-detail-title">
+      <header class="archive-detail-header">
+        <button type="button" class="archive-detail-back" onClick="{{ archiveDetailBack }}" aria-label="Back to {{ archiveDetailBackLabel }}">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          <span>{{ archiveDetailBackLabel }}</span>
+        </button>
+        <div class="archive-detail-header-title">Archive</div>
+        <div class="archive-detail-frequency numeric">104.9 FM</div>
+      </header>
+
+      <div class="archive-detail-hero">
+        <img class="archive-detail-art" src="{{ archiveDetail.art }}" alt="{{ archiveDetail.artAlt }}" width="640" height="640">
+        <div class="archive-detail-shade" aria-hidden="true"></div>
+        <sc-if value="{{ archiveDetail.showTransport }}" hint-placeholder-val="{{ false }}">
+        <div class="archive-detail-transport" data-state="{{ archiveDetail.transportState }}" aria-label="Selected broadcast playback controls">
+          <div class="archive-detail-main-controls">
+            <button type="button" class="archive-detail-skip" onClick="{{ archiveDetail.seekBack30 }}" aria-label="Rewind selected broadcast 30 seconds" disabled="{{ archiveDetail.isDisabled }}">
+              <span class="archive-detail-skip-glyph forward" aria-hidden="true"><span>30</span></span>
+            </button>
+            <button type="button" class="archive-detail-transport-play" onClick="{{ archiveDetail.onToggle }}" aria-label="{{ archiveDetail.playA11y }}" aria-pressed="{{ archiveDetail.isPlaying }}" aria-busy="{{ archiveDetail.isLoading }}" disabled="{{ archiveDetail.isDisabled }}">
+              <sc-if value="{{ archiveDetail.isLoading }}" hint-placeholder-val="{{ false }}">
+                <span class="archive-spinner" aria-hidden="true"></span>
+              </sc-if>
+              <sc-if value="{{ archiveDetail.controlReady }}" hint-placeholder-val="{{ true }}">
+                <sc-if value="{{ archiveDetail.isPlaying }}" hint-placeholder-val="{{ false }}">
+                  <span class="archive-detail-pause" aria-hidden="true"><span></span><span></span></span>
+                </sc-if>
+                <sc-if value="{{ archiveDetail.isPaused }}" hint-placeholder-val="{{ true }}">
+                  <svg class="archive-play-icon" viewBox="0 0 68 68" fill="currentColor" aria-hidden="true"><polygon points="9,6 9,62 62,34"></polygon></svg>
+                </sc-if>
+              </sc-if>
+            </button>
+            <button type="button" class="archive-detail-skip" onClick="{{ archiveDetail.seekForward30 }}" aria-label="Fast forward selected broadcast 30 seconds" disabled="{{ archiveDetail.isDisabled }}">
+              <span class="archive-detail-skip-glyph" aria-hidden="true"><span>30</span></span>
+            </button>
+          </div>
+          <div class="archive-detail-progress">
+            <label class="sr-only" for="archive-detail-range">Seek through selected {{ archiveDetail.name }} broadcast</label>
+            <div class="archive-detail-range-wrap">
+              <span class="archive-detail-range-rail" aria-hidden="true"><span class="archive-detail-range-fill" style="{{ archiveDetail.scrubFillStyle }}"></span></span>
+              <input id="archive-detail-range" class="archive-detail-range" type="range" min="0" max="{{ archiveDetail.durationSeconds }}" step="1" value="{{ archiveDetail.position }}" onInput="{{ archiveDetail.onScrub }}" aria-valuetext="{{ archiveDetail.scrubA11y }}" disabled="{{ archiveDetail.isDisabled }}">
+            </div>
+            <div class="archive-detail-time-row numeric">
+              <time datetime="{{ archiveDetail.elapsedDateTime }}">{{ archiveDetail.elapsed }}</time>
+              <time datetime="{{ archiveDetail.durationDateTime }}">{{ archiveDetail.duration }}</time>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+
+      <section class="archive-detail-copy">
+        <div class="archive-detail-kicker">Show archive</div>
+        <h1 id="archive-detail-title" class="archive-detail-name">{{ archiveDetail.name }}</h1>
+        <div class="archive-detail-host">with {{ archiveDetail.host }}</div>
+        <sc-if value="{{ archiveDetail.description }}" hint-placeholder-val="{{ false }}">
+          <div class="archive-detail-description-note">Generated prototype description</div>
+          <p class="archive-detail-description">{{ archiveDetail.description }}</p>
+        </sc-if>
+      </section>
+
+      <section class="archive-broadcasts" aria-labelledby="archive-broadcasts-title">
+        <h2 id="archive-broadcasts-title" class="archive-broadcasts-heading">Past broadcasts</h2>
+        <div class="archive-broadcasts-note">Sample dates and recordings · proof of concept</div>
+        <sc-if value="{{ archiveDetail.noBroadcasts }}" hint-placeholder-val="{{ false }}">
+          <p class="archive-broadcasts-empty">No archived broadcasts are available for this show yet.</p>
+        </sc-if>
+        <sc-if value="{{ archiveDetail.hasBroadcasts }}" hint-placeholder-val="{{ true }}">
+        <ol class="archive-broadcast-list">
+          <sc-for list="{{ archiveDetail.broadcasts }}" as="broadcast" hint-placeholder-count="3">
+            <li class="archive-broadcast-row">
+              <img class="archive-broadcast-art" src="{{ broadcast.art }}" alt="" width="192" height="192" loading="lazy">
+              <div class="archive-broadcast-copy">
+                <div class="archive-broadcast-title">{{ archiveDetail.name }}</div>
+                <div class="archive-broadcast-meta numeric">
+                  <span>{{ broadcast.date }}</span>
+                </div>
+              </div>
+              <button type="button" class="archive-broadcast-control" onClick="{{ broadcast.onToggle }}" aria-label="{{ broadcast.playA11y }}" aria-pressed="{{ broadcast.isPlaying }}" aria-busy="{{ broadcast.isLoading }}" disabled="{{ broadcast.isLoading }}">
+                <sc-if value="{{ broadcast.isLoading }}" hint-placeholder-val="{{ false }}">
+                  <span class="archive-spinner" aria-hidden="true"></span>
+                </sc-if>
+                <sc-if value="{{ broadcast.controlReady }}" hint-placeholder-val="{{ true }}">
+                  <sc-if value="{{ broadcast.isPlaying }}" hint-placeholder-val="{{ false }}">
+                    <span class="archive-stop-icon" aria-hidden="true"></span>
+                  </sc-if>
+                  <sc-if value="{{ broadcast.isPaused }}" hint-placeholder-val="{{ true }}">
+                    <svg class="archive-play-icon" viewBox="0 0 42 42" fill="currentColor" aria-hidden="true"><polygon points="5,4 5,38 37,21"></polygon></svg>
+                  </sc-if>
+                </sc-if>
+              </button>
+            </li>
+          </sc-for>
+        </ol>
+        </sc-if>
+      </section>
+    </article>
+    </sc-if>
+
+    <sc-if value="{{ isSchedule }}" hint-placeholder-val="{{ false }}">
+    <section class="schedule-screen" aria-labelledby="schedule-title">
+      <header class="schedule-masthead">
+        <h1 id="schedule-title" class="schedule-title">Schedule</h1>
+        <div class="schedule-masthead-meta">
+          <div class="schedule-masthead-side numeric">104.9 FM</div>
+          <div class="schedule-masthead-side">TIMES ET</div>
+        </div>
+      </header>
+
+      <div class="schedule-stream">
+        <sc-for list="{{ scheduleItems }}" as="row" hint-placeholder-count="12">
+          <sc-if value="{{ row.isDay }}" hint-placeholder-val="{{ false }}">
+            <h2 id="{{ row.dayId }}" class="schedule-day-marker">{{ row.dayLabel }}</h2>
+          </sc-if>
+          <sc-if value="{{ row.isShow }}" hint-placeholder-val="{{ true }}">
+            <button id="{{ row.triggerId }}" type="button" class="schedule-show-row" aria-label="{{ row.openA11y }}" onClick="{{ row.onOpen }}" style="{{ row.buttonStyle }}">
+              <span class="schedule-time-range numeric">{{ row.timeRange }}</span>
+              <span class="schedule-show-copy">
+                <span class="schedule-show-title">{{ row.name }}</span>
+                <span class="schedule-show-meta">{{ row.sub }}</span>
+                <sc-if value="{{ row.onAir }}" hint-placeholder-val="{{ false }}">
+                  <span class="schedule-live-label">ON AIR NOW</span>
+                </sc-if>
+              </span>
+            </button>
+          </sc-if>
+        </sc-for>
+      </div>
+
+      <div class="schedule-freshness">{{ freshness }}</div>
+    </section>
+    </sc-if>
+
+    <sc-if value="{{ isStation }}" hint-placeholder-val="{{ false }}">
+    <div class="station-screen">
+      <sc-if value="{{ showStationBack }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;padding:4px 0 16px">
+          <button type="button" class="station-back" onClick="{{ stationBack }}" style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Station</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ infoHome }}" hint-placeholder-val="{{ true }}">
+        <div class="station-hero">
+          <img src="./assets/home.jpg" alt="WJRH student leadership gathered on Lafayette College’s campus">
+          <span class="station-hero-shade"></span>
+          <div class="station-hero-copy">
+            <div class="station-kicker">Lafayette College · Easton, PA</div>
+            <h1 class="station-title" style="margin:7px 0 0">Student-run since 1946</h1>
+          </div>
+        </div>
+        <div class="info-credit">Photograph by Jaquan Alston</div>
+        <div class="station-intro">WJRH is Lafayette College’s freeform, all-volunteer radio station—on 104.9 FM across the Lehigh Valley and online around the clock.</div>
+
+        <h2 class="station-section-label">Get closer to the signal</h2>
+        <div class="station-grid">
+          <button type="button" class="station-tile wide" onClick="{{ openEvents }}">
+            <img src="./assets/events.jpg" alt="">
+            <span class="station-tile-copy">
+              <span class="station-tile-title">Events</span>
+              <span class="station-tile-sub" style="display:block">Artist shows, workshops, and trips into the local music scene</span>
+            </span>
+          </button>
+          <button type="button" class="station-tile" onClick="{{ openInvolved }}">
+            <img src="./assets/get-involved.jpg" alt="">
+            <span class="station-tile-copy">
+              <span class="station-tile-title">Get involved</span>
+              <span class="station-tile-sub" style="display:block">Become a DJ</span>
+            </span>
+          </button>
+          <button type="button" class="station-tile" onClick="{{ openSupport }}">
+            <img src="./assets/supportwjrh.jpg" alt="">
+            <span class="station-tile-copy">
+              <span class="station-tile-title">Support WJRH</span>
+              <span class="station-tile-sub" style="display:block">Keep student radio thriving</span>
+            </span>
+          </button>
+        </div>
+
+        <h2 class="station-section-label">Explore WJRH</h2>
+        <button type="button" class="station-row-link" onClick="{{ openAbout }}"><span>About WJRH</span><span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
+        <button type="button" class="station-row-link" onClick="{{ openHistory }}"><span>History</span><span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
+        <button type="button" class="station-row-link" onClick="{{ openTeam }}"><span>Leadership team</span><span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
+        <button type="button" class="station-row-link" onClick="{{ openContact }}"><span>Contact & follow</span><span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
+
+        <h2 class="station-section-label">Follow & verify</h2>
+        <ul class="social-grid" aria-label="WJRH social media and public records">
+          <li class="social-handle">
+            <a class="social-button" href="https://instagram.com/wjrh_radio" target="_blank" rel="noopener noreferrer" aria-label="WJRH on Instagram, @wjrh_radio">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8Zm5-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm7.597 2.214a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2h-.01a1 1 0 0 1-1-1ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm-5 3a5 5 0 1 1 10 0 5 5 0 0 1-10 0Z"></path></svg>
+            </a>
+            <span class="social-handle-label">@wjrh_radio</span>
+          </li>
+          <li class="social-handle">
+            <a class="social-button" href="https://www.facebook.com/WJRH1049" target="_blank" rel="noopener noreferrer" aria-label="WJRH on Facebook, WJRH1049">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3c-3.3 0-5 2-5 5v3H6v4h3v6h4v-6h3l1-4h-4V9c0-.7.3-1 1-1Z"></path></svg>
+            </a>
+            <span class="social-handle-label">WJRH1049</span>
+          </li>
+          <li class="social-handle">
+            <a class="social-button" href="https://twitter.com/wjrh1049fm/" target="_blank" rel="noopener noreferrer" aria-label="WJRH on Twitter, @wjrh1049fm">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M22 5.892a8.178 8.178 0 0 1-2.355.635 4.074 4.074 0 0 0 1.8-2.235 8.343 8.343 0 0 1-2.605.981A4.13 4.13 0 0 0 15.85 4a4.068 4.068 0 0 0-4.1 4.038c0 .31.035.618.105.919A11.705 11.705 0 0 1 3.4 4.734a4.006 4.006 0 0 0 1.268 5.392 4.165 4.165 0 0 1-1.859-.5v.05A4.057 4.057 0 0 0 6.1 13.635a4.192 4.192 0 0 1-1.856.07 4.108 4.108 0 0 0 3.831 2.807A8.36 8.36 0 0 1 2 18.184 11.732 11.732 0 0 0 8.291 20 11.502 11.502 0 0 0 19.964 8.5c0-.177 0-.349-.012-.523A8.143 8.143 0 0 0 22 5.892Z"></path></svg>
+            </a>
+            <span class="social-handle-label">@wjrh1049fm</span>
+          </li>
+          <li class="social-handle">
+            <a class="social-button" href="https://publicfiles.fcc.gov/fm-profile/WJRH" target="_blank" rel="noopener noreferrer" aria-label="WJRH FCC public file">
+              <span class="social-fcc-mark" aria-hidden="true">FCC</span>
+            </a>
+            <span class="social-handle-label">FCC public file</span>
+          </li>
+        </ul>
+      </sc-if>
+
+      <sc-if value="{{ infoAbout }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">About the station</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">Freeform by design</h1>
+        <img class="info-hero" src="./assets/about.jpg" alt="Inside WJRH’s Hogg Hall radio studio" style="margin-top:18px">
+        <div class="info-copy">Broadcasting from Hogg Hall since 1946, WJRH gives live DJs full control of what reaches the air. The station is entirely student-managed, all-volunteer, and built around programming that would be difficult to hear anywhere else.</div>
+        <div class="info-copy">WJRH is a federally licensed, noncommercial educational station owned by the Lafayette College Board of Trustees. It never airs commercials and offers hands-on experience in music, broadcasting, audio production, engineering, acoustics, podcasting, and station management.</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-big">24 / 7</div><div class="fact-small">ON AIR ALL YEAR</div></div>
+          <div class="fact-card"><div class="fact-big">104.9</div><div class="fact-small">FM · LEHIGH VALLEY</div></div>
+          <div class="fact-card"><div class="fact-big">100%</div><div class="fact-small">STUDENT MANAGED</div></div>
+          <div class="fact-card"><div class="fact-big">ZERO</div><div class="fact-small">COMMERCIALS</div></div>
+        </div>
+        <h2 class="station-section-label">Keep exploring</h2>
+        <button type="button" class="station-row-link" onClick="{{ openHistory }}"><span>Read the history</span><span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
+        <button type="button" class="station-row-link" onClick="{{ openTeam }}"><span>Meet the team</span><span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
+      </sc-if>
+
+      <sc-if value="{{ infoHistory }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">The archive</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">From Radio Lafayette to WJRH</h1>
+        <img class="info-hero" src="./assets/history.jpg" alt="Original WJRH members testing early broadcasting equipment" style="margin-top:18px;object-position:center 42%">
+        <div class="info-credit">Photograph courtesy of Skillman Library Special Collections</div>
+        <div class="info-copy">Radio Lafayette began on the third floor of Hogg Hall in 1946. The call letters WJRH arrived in May 1947, honoring James Renwick Hogg, whose name the station’s home still carries.</div>
+        <div class="info-list">
+          <div class="info-list-item"><div class="info-list-title">1946</div><div class="info-list-meta">Radio Lafayette is established in Hogg Hall.</div></div>
+          <div class="info-list-item"><div class="info-list-title">October 1, 1947</div><div class="info-list-meta">The first official broadcast, “Songs at Seven,” airs from 7 to 11 PM.</div></div>
+          <div class="info-list-item"><div class="info-list-title">1948–1949</div><div class="info-list-meta">Regular sports coverage begins, followed by quiz shows and talk programming.</div></div>
+          <div class="info-list-item"><div class="info-list-title">2011</div><div class="info-list-meta">WJRH begins streaming online at WJRH.org.</div></div>
+          <div class="info-list-item"><div class="info-list-title">Today</div><div class="info-list-meta">A recording studio, podcasting, student and community DJs, and a proudly freeform signal.</div></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ infoTeam }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">The people behind 104.9</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">Leadership team</h1>
+        <img class="info-hero" src="./assets/our-team.jpg" alt="Members of the WJRH leadership team" style="margin-top:18px;object-position:center 42%">
+        <div class="info-credit">Members of the WJRH leadership team · not everyone pictured</div>
+        <div class="info-copy">Students manage WJRH’s music, events, finances, FCC compliance, community outreach, and the technology that keeps the station connected.</div>
+        <div class="info-list">
+          <sc-for list="{{ team }}" as="person" hint-placeholder-count="8">
+            <a class="team-person" href="{{ person.href }}">
+              <span><span class="team-name">{{ person.name }}</span><span class="team-role" style="display:block">{{ person.role }}</span></span>
+              <span style="font-size:12px;color:var(--live)">EMAIL</span>
+            </a>
+          </sc-for>
+        </div>
+        <div class="info-credit" style="margin-top:12px">Station leadership changes regularly.</div>
+      </sc-if>
+
+      <sc-if value="{{ infoEvents }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">Beyond the booth</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">Events at WJRH</h1>
+        <img class="info-hero" src="./assets/events.jpg" alt="Ella, Josie, and Tom at the Fall 2026 club fair" style="margin-top:18px">
+        <div class="info-credit">WJRH at the Fall 2026 club fair</div>
+        <div class="info-copy">WJRH brings artists to Lafayette, runs creative workshops, and organizes trips into the local music scene. Campus events are often open to the Lehigh Valley community; visitors should confirm access with the events director.</div>
+        <h2 class="station-section-label">Event archive</h2>
+        <div class="info-list" style="margin-top:0">
+          <sc-for list="{{ events }}" as="event" hint-placeholder-count="5">
+            <div class="info-list-item"><div class="info-list-title">{{ event.name }}</div><div class="info-list-meta">{{ event.date }}</div></div>
+          </sc-for>
+        </div>
+        <a class="info-cta secondary" href="https://www.wjrh.org/events/" target="_blank" rel="noopener noreferrer" style="margin-top:18px">View event archive<svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"></path><path d="M10 14 21 3"></path><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path></svg></a>
+      </sc-if>
+
+      <sc-if value="{{ infoInvolved }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">Your show could be next</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">Get involved</h1>
+        <img class="info-hero" src="./assets/get-involved.jpg" alt="WJRH students making radio together" style="margin-top:18px">
+        <div class="info-credit">Photograph by Jaquan Alston</div>
+        <div class="info-copy">Put your favorite music on the air, start a talk show, learn audio engineering, or help run the station. WJRH welcomes new DJs at the beginning of each broadcast season and accepts mid-semester proposals too.</div>
+        <div class="station-note">
+          <div><div style="font-size:12px;font-weight:700;color:var(--ink)">START WITH GROUPME</div><div style="font-size:12px;line-height:1.45;color:var(--ink-2);margin-top:3px">Applications, meeting details, event updates, and DJ troubleshooting are shared there.</div></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:18px">
+          <a class="info-cta" href="https://groupme.com/join_group/117035363/79wo8rF2" target="_blank" rel="noopener noreferrer">Join 2026–27 GroupMe<svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"></path><path d="M10 14 21 3"></path><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path></svg></a>
+          <button type="button" class="info-cta secondary" onClick="{{ stationGoSchedule }}">Check schedule</button>
+        </div>
+        <h2 class="station-section-label">Pitching mid-semester</h2>
+        <div class="info-copy" style="margin-top:0">Email the general manager with your name, any cohosts, the show format or genre, and your top three available time slots. New DJs are welcome throughout the semester.</div>
+        <a class="info-cta secondary" href="mailto:wjrh@lafayette.edu?subject=WJRH%20show%20proposal" style="margin-top:16px">Email the general manager</a>
+      </sc-if>
+
+      <sc-if value="{{ infoSupport }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">Keep freeform radio free</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">Support WJRH</h1>
+        <img class="info-hero" src="./assets/supportwjrh.jpg" alt="WJRH support artwork" style="margin-top:18px">
+        <div class="info-copy">Individual gifts help WJRH pursue new station projects and keep a vibrant, student-run radio community available to future generations of Lafayette Leopards.</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-big">ONE-TIME</div><div class="fact-small">GIVE WHEN YOU CAN</div></div>
+          <div class="fact-card"><div class="fact-big">RECURRING</div><div class="fact-small">SUSTAIN THE SIGNAL</div></div>
+        </div>
+        <a class="info-cta" href="https://securelb.imodules.com/s/1699/interior.aspx?bledit=1&amp;cid=1122&amp;dids=187&amp;gid=2&amp;pgid=446&amp;sid=1699&amp;sort=1" target="_blank" rel="noopener noreferrer" style="margin-top:20px">Give to the WJRH Fund<svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"></path><path d="M10 14 21 3"></path><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path></svg></a>
+        <div class="info-credit" style="margin-top:10px">Opens Lafayette College’s giving form with WJRH Radio selected.</div>
+      </sc-if>
+
+      <sc-if value="{{ infoContact }}" hint-placeholder-val="{{ false }}">
+        <div class="station-kicker" style="color:var(--live)">Come say hello</div>
+        <h1 class="station-title" style="color:var(--ink);margin:8px 0 0">Contact & follow</h1>
+        <img class="info-hero" src="./assets/contact.png" alt="Illustrated WJRH contact artwork" style="margin-top:18px">
+        <div class="contact-card" style="margin-top:18px"><div class="contact-label">OPEN BOARD MEETING</div><div class="contact-value">Tuesday · 7 PM · Hogg Hall studio</div><div class="info-list-meta">Only while Lafayette is in session.</div></div>
+        <div class="contact-card"><div class="contact-label">EMAIL</div><a class="contact-value" href="mailto:wjrh@lafayette.edu?subject=%23readnow%20">wjrh@lafayette.edu</a><div class="info-list-meta">Add #readnow to the subject of a direct email so it reaches the top of the station inbox.</div></div>
+        <div class="contact-card"><div class="contact-label">REQUEST LINE</div><a class="contact-value" href="tel:+16103305316">+1 610-330-5316</a><div class="info-list-meta">For on-air requests—not a business line.</div></div>
+        <div class="contact-card"><div class="contact-label">VISIT THE STUDIO</div><div class="contact-value">Hogg Hall · Lafayette College</div><div class="info-list-meta">Use 730 High Street, Easton, PA for GPS, park at Markle Parking Deck, then walk south to the gothic building on the Quad. Arrange tours by email.</div><a class="info-cta secondary" href="https://www.openstreetmap.org/?mlat=40.6993813&amp;mlon=-75.2069092#map=17/40.6993813/-75.2069092" target="_blank" rel="noopener noreferrer" style="margin-top:12px">Open map<svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"></path><path d="M10 14 21 3"></path><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path></svg></a></div>
+        <div class="contact-card"><div class="contact-label">SNAIL MAIL</div><div class="contact-value">WJRH Secretariat<br>Box 9473 · 111 Quad Drive<br>Easton, PA 18042</div></div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{ showPlayerDock }}" hint-placeholder-val="false">
+  <section class="player-dock" aria-label="Audio player" data-mode="{{ dockPlayerMode }}" data-state="{{ dockPlayerState }}">
+    <button type="button" class="dock-play-button" onClick="{{ toggleDock }}" aria-label="{{ dockPlayA11y }}" aria-pressed="{{ dockPlayerIsPlaying }}" aria-busy="{{ dockPlayerIsLoading }}" disabled="{{ dockPlayerDisabled }}">
+      <sc-if value="{{ dockPlayerIsLoading }}" hint-placeholder-val="{{ false }}">
+        <span class="dock-control-icon dock-spinner" aria-hidden="true"></span>
+      </sc-if>
+      <sc-if value="{{ dockPlayerControlReady }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ dockPlayerIsPlaying }}" hint-placeholder-val="{{ true }}">
+          <span class="dock-control-icon dock-stop-square" aria-hidden="true"></span>
+        </sc-if>
+        <sc-if value="{{ dockPlayerIsPaused }}" hint-placeholder-val="{{ false }}">
+          <svg class="dock-control-icon dock-play-icon" viewBox="0 0 42 42" fill="currentColor" aria-hidden="true"><polygon points="5,4 5,38 37,21"></polygon></svg>
+        </sc-if>
+      </sc-if>
+    </button>
+    <div class="dock-meta">
+      <button type="button" class="dock-meta-button" onClick="{{ openDockDetails }}" aria-label="{{ dockOpenA11y }}" disabled="{{ dockDetailsDisabled }}">
+        <span class="dock-title">{{ dockTitle }}</span>
+        <span class="dock-sub">{{ dockSub }}</span>
+      </button>
+    </div>
+    <sc-if value="{{ showArchiveScrub }}" hint-placeholder-val="{{ false }}">
+      <div class="dock-scrub-row">
+        <time class="dock-time" datetime="{{ dockElapsedDateTime }}">{{ dockElapsed }}</time>
+        <div class="dock-scrub">
+          <span class="dock-scrub-rail" aria-hidden="true"><span class="dock-scrub-fill" style="{{ dockScrubFillStyle }}"></span></span>
+          <input class="dock-scrub-input" type="range" min="0" max="{{ dockDuration }}" step="1" value="{{ dockPosition }}" onInput="{{ scrubDock }}" aria-label="Seek through {{ dockTitle }}" aria-valuetext="{{ dockScrubA11y }}" aria-busy="{{ dockPlayerIsLoading }}" disabled="{{ dockScrubDisabled }}">
+        </div>
+        <time class="dock-time" datetime="{{ dockDurationDateTime }}">{{ dockDurationText }}</time>
+      </div>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <nav class="tab-dock" aria-label="Primary" style="position:absolute;z-index:11;left:0;right:0;bottom:0;display:flex;padding:0 0 max(0px, calc(var(--sab, env(safe-area-inset-bottom)) - 14px));gap:0;border-top:1px solid var(--rim);border-radius:0;background:var(--surface)">
+    <span aria-hidden="true" style="{{ tabIndicatorStyle }}"><span style="{{ tabIndicatorInnerStyle }}"></span></span>
+    <button type="button" onClick="{{ goNow }}" aria-current="{{ tabNowCurrent }}" style="{{ tabNowStyle }}">NOW</button>
+    <button type="button" onClick="{{ goArchive }}" aria-current="{{ tabArchiveCurrent }}" style="{{ tabArchiveStyle }}">ARCHIVE</button>
+    <button type="button" onClick="{{ goSchedule }}" aria-current="{{ tabSchedCurrent }}" style="{{ tabSchedStyle }}">SCHEDULE</button>
+    <button type="button" onClick="{{ goStation }}" aria-current="{{ tabStationCurrent }}" style="{{ tabStationStyle }}">STATION</button>
+  </nav>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 482, &quot;height&quot;: 954 },
+  &quot;palette&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;lafayette&quot;, &quot;obsidian&quot;, &quot;cobalt&quot;, &quot;oxblood&quot;, &quot;verdant&quot;, &quot;amethyst&quot;, &quot;solar&quot;], &quot;default&quot;: &quot;lafayette&quot;, &quot;tsType&quot;: &quot;'lafayette'|'obsidian'|'cobalt'|'oxblood'|'verdant'|'amethyst'|'solar'&quot;, &quot;section&quot;: &quot;Palette&quot; },
+  &quot;broadcast&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;live&quot;, &quot;automation&quot;, &quot;catchup&quot;, &quot;streamdown&quot;], &quot;default&quot;: &quot;live&quot;, &quot;tsType&quot;: &quot;'live'|'automation'|'catchup'|'streamdown'&quot;, &quot;section&quot;: &quot;Broadcast state&quot; },
+  &quot;stationContent&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Proposal switches&quot; },
+  &quot;dockTextOnNow&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Proposal switches&quot; },
+  &quot;reducedMotion&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Proposal switches&quot; },
+  &quot;automationName&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Hoggbot&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Proposal switches&quot; }
+}">
+const PALETTES = {
+  // WJRH logo palette: College maroon, warm gold, and letterpress cream.
+  lafayette: {
+    page: '#4A111E', bg: '#F8E5BF', surface: '#FFF1D2', 'surface-2': '#E9C887',
+    ink: '#351018', 'ink-2': '#6C3F42', 'ink-3': '#744D47',
+    live: '#861F2C', 'accent-ink': '#FFF3D7', idle: '#B76524', off: '#8B6B5B',
+    glow: 'rgba(250,193,101,0.30)', 'live-line': 'rgba(134,31,44,0.50)',
+    rim: 'rgba(134,31,44,0.18)', strip: 'rgba(250,193,101,0.45)', light: true
+  },
+  // Shipped system: deep obsidian, indigo biometric pulse.
+  obsidian: {
+    page: '#07070A', bg: '#0A0A0E', surface: '#12121A', 'surface-2': '#1A1A26',
+    ink: '#FFFFFF', 'ink-2': '#A7A7B8', 'ink-3': '#8A8AA1',
+    live: '#818CF8', 'accent-ink': '#0A0A0E', idle: '#34D399', off: '#A78BFA',
+    'live-line': 'rgba(129,140,248,0.35)',
+    rim: 'rgba(255,255,255,0.05)', strip: 'rgba(255,255,255,0.22)'
+  },
+  // Royal blue canvas — the transmitter-room blue, sky for live.
+  cobalt: {
+    page: '#071B4D', bg: '#0B2361', surface: '#163278', 'surface-2': '#22438F',
+    ink: '#F4F8FF', 'ink-2': '#B3C7F0', 'ink-3': '#A8BDE8',
+    live: '#7DD3FC', 'accent-ink': '#071B4D', idle: '#6EE7B7', off: '#FDA4AF',
+    'live-line': 'rgba(125,211,252,0.40)',
+    rim: 'rgba(255,255,255,0.08)', strip: 'rgba(255,255,255,0.28)'
+  },
+  // Wine red, gold signal. Warmest of the dark set.
+  oxblood: {
+    page: '#2A0611', bg: '#380A17', surface: '#4C1024', 'surface-2': '#61182F',
+    ink: '#FFF1F4', 'ink-2': '#F0B9C6', 'ink-3': '#DC9BAB',
+    live: '#FCD34D', 'accent-ink': '#2A0611', idle: '#7DD3FC', off: '#C4B5FD',
+    'live-line': 'rgba(252,211,77,0.40)',
+    rim: 'rgba(255,255,255,0.08)', strip: 'rgba(255,255,255,0.28)'
+  },
+  // Emerald canvas, lime-gold signal.
+  verdant: {
+    page: '#04241A', bg: '#063326', surface: '#0C4837', 'surface-2': '#135C47',
+    ink: '#EFFFF9', 'ink-2': '#A7DEC8', 'ink-3': '#9BD1BA',
+    live: '#FDE047', 'accent-ink': '#04241A', idle: '#7DD3FC', off: '#FDA4AF',
+    'live-line': 'rgba(253,224,71,0.40)',
+    rim: 'rgba(255,255,255,0.08)', strip: 'rgba(255,255,255,0.28)'
+  },
+  // Violet canvas, fuchsia signal. The loudest option.
+  amethyst: {
+    page: '#1B0B36', bg: '#241145', surface: '#34195D', 'surface-2': '#452576',
+    ink: '#F9F3FF', 'ink-2': '#CDB6F0', 'ink-3': '#B197DE',
+    live: '#F0ABFC', 'accent-ink': '#1B0B36', idle: '#6EE7B7', off: '#FCD34D',
+    'live-line': 'rgba(240,171,252,0.40)',
+    rim: 'rgba(255,255,255,0.08)', strip: 'rgba(255,255,255,0.28)'
+  },
+  // The real departure: warm paper, ink on light. Inverts the whole system.
+  solar: {
+    page: '#FFF4E3', bg: '#FFFCF5', surface: '#FFF0DB', 'surface-2': '#FCE3BE',
+    ink: '#1F1408', 'ink-2': '#6A5231', 'ink-3': '#7A5E38',
+    live: '#C2410C', 'accent-ink': '#FFF3D7', idle: '#15803D', off: '#9F1239',
+    'live-line': 'rgba(194,65,12,0.45)',
+    rim: 'rgba(0,0,0,0.07)', strip: 'rgba(31,20,8,0.25)', light: true
+  }
+};
+
+const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+const LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const UI_FONT = "var(--font-body)";
+const EASE = 'cubic-bezier(0.25,1,0.5,1)';
+
+// Live roster fetched from WJRH's public Google Calendar on Sep 22, 2026.
+// Names, hosts, airtimes, durations, and supplied genres come from the calendar.
+// The longer blurbs below are generated prototype copy, not station-supplied bios.
+const SHOWS = [
+  [0, 720, 60, 'The Rodeo', 'Josie and Rosetta', 'Folk and anti-folk', 'Josie and Rosetta move between folk standards, anti-folk outliers, and contemporary songwriters for an hour that keeps acoustic music loose and surprising.', ''],
+  [0, 840, 60, 'Sarah Smiles', 'Sarah', 'Music/Popculture (movies, shows, etc.)', 'Sarah connects pop songs with the movies, television, and cultural moments around them, mixing familiar favorites with sharp left-field picks.', ''],
+  [0, 900, 60, 'The Spinoff with Orry', 'Orry', 'HipHop, soul, jazz, rock, ect.', 'Orry traces the links between hip-hop, soul, jazz, rock, and the samples and collaborations that keep those sounds in conversation.', ''],
+  [0, 960, 60, "Mayo's Mix", 'Mayloni Belcher', '', 'Mayloni builds a free-form hour around mood rather than genre, moving from immediate favorites to unexpected discoveries without losing the thread.', ''],
+  [0, 1140, 60, 'Barthalomew & The Aquarium', 'Ben', '', 'Ben dives into a fluid mix of deep cuts, atmospheric selections, and curious finds designed for listeners who like not knowing what comes next.', ''],
+  [1, 1020, 60, 'Giuseppe', 'Cameron and Mats', '', 'Cameron and Mats trade favorite tracks, oddball discoveries, and friendly curveballs in a collaborative hour shaped by two distinct musical instincts.', ''],
+  [1, 1080, 60, 'Naive Melody', 'Koby', '', 'Koby follows melody wherever it leads, pairing artful pop, indie discoveries, and enduring songs that reveal something new with another listen.', ''],
+  [2, 780, 60, 'Fatou Talks', 'Fatoumata', '', 'Fatoumata pairs a personal music selection with candid conversation, creating an open-ended hour for stories, ideas, and songs worth sharing.', ''],
+  [2, 1020, 60, 'Amber on Audio', 'Amber', '', 'Amber explores texture, mood, and close listening through a carefully sequenced hour of immersive tracks, unexpected transitions, and sonic detail.', ''],
+  [2, 1080, 60, 'Earworm', 'Calvin', '', 'Calvin chases the songs that stay in your head, balancing undeniable hooks with overlooked tracks that deserve to become somebody’s next obsession.', ''],
+  [2, 1140, 60, 'Basement Jams', 'Darby', '', 'Darby keeps the session loose with underground favorites, lived-in grooves, and the kind of tracks that sound best discovered in a basement.', ''],
+  [3, 600, 60, "Fern's Folk Fun", 'Fern', '', 'Fern brings an upbeat morning pass through folk traditions, new acoustic voices, and playful selections from the genre’s stranger edges.', ''],
+  [3, 780, 60, 'C SQUARED', 'Cora and Cassie', '', 'Cora and Cassie meet in the middle for a shared hour of contrasting picks, fast handoffs, and songs chosen to surprise one another.', ''],
+  [3, 960, 60, 'SoupBurger!!', 'Sonia Pattie and Lawson Campbell', 'everything', 'Sonia Pattie and Lawson Campbell put everything on the menu: high-energy favorites, total wild cards, and genre collisions held together by pure enthusiasm.', ''],
+  [3, 1020, 60, 'API on Air', 'Cassie', '', 'Cassie spotlights Asian and Pacific Islander artists alongside pop, indie pop, Hawaiian music, and personal favorites from across the diaspora.', ''],
+  [3, 1170, 60, 'Playlist of the Month', 'Ella Selnick', '', 'Ella builds each month around a fresh listening idea, using a rotating theme to connect new discoveries, enduring favorites, and one-off obsessions.', ''],
+  [4, 900, 60, 'J-J-Jams', 'Janella and Josie', '', 'Janella and Josie trade feel-good selections and current favorites in a collaborative set built for an energetic start to Friday afternoon.', ''],
+  [4, 960, 60, 'Supercut', 'Reese', 'Indie, alternative, oldies', 'Reese edits indie, alternative, and oldies into one continuous supercut, finding new connections between different eras and familiar sounds.', ''],
+  [4, 1020, 60, 'API on Air', 'Cassie', 'Pop, indie pop, hawaiian, asian and pacific islander…', 'Cassie spotlights Asian and Pacific Islander artists alongside pop, indie pop, Hawaiian music, and personal favorites from across the diaspora.', ''],
+  [4, 1080, 60, 'Off The Record', 'Jolie', '', 'Jolie moves past the obvious singles for deep cuts, overlooked favorites, and songs that make the strongest case for listening beyond the algorithm.', ''],
+  [4, 1140, 60, 'The Bit', 'Tom', 'Eclectic, alternative, metal, jazz, soul, R and B…', 'Tom treats every genre as part of the same conversation, jumping through alternative, metal, jazz, soul, R&B, electronic music, and whatever fits the bit.', ''],
+  [4, 1320, 60, 'What’s Poppin’? Radio Show', 'Téo', '', 'Téo closes out Friday with current discoveries, high-energy favorites, and a quick-moving mix built to answer the question in the title.', ''],
+  [5, 840, 60, 'Alternative Sound', 'Jamya', '', 'Jamya surveys alternative music in its widest sense, pairing recognizable touchstones with emerging artists and boundary-pushing tracks.', ''],
+  [5, 1020, 60, 'Rock on Evening', 'Isabella Mazza', 'Rock, pop punk, emo, alternative', 'Isabella Mazza turns up rock, pop-punk, emo, and alternative favorites for a Saturday evening set with big hooks and cathartic energy.', ''],
+  [6, 480, 120, 'Postmodern JRH', 'Scott', '', 'Scott opens Sunday with a two-hour blend of thoughtful selections, long-form pacing, and musical detours made for an unhurried morning listen.', ''],
+  [6, 660, 60, 'Freak Show', 'Sofie Nordstrom', '', 'Sofie Nordstrom makes room for the offbeat, theatrical, experimental, and gloriously strange in an hour for music that refuses to blend in.', ''],
+  [6, 1080, 60, "Harry Son's Hits", 'Harrison', 'Pop/Sports talk', 'Harrison combines pop hits with sports talk, moving between the week’s biggest songs, standout moments, and opinions ready for airtime.', ''],
+  [6, 1200, 60, 'MouthPeace', 'Lorelai', '', 'Lorelai closes the week with an intimate late-evening mix of expressive favorites, quiet discoveries, and songs chosen for a softer landing.', '']
+].map(function (r) {
+  return {
+    day: r[0], start: r[1], dur: r[2], name: r[3], dj: r[4], genre: r[5], blurb: r[6], bio: r[7],
+    slug: DAYS[r[0]].toLowerCase() + '-' + r[1] + '-' + r[3].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  };
+});
+
+const STATES = {
+  live:       { day: 2, min: 1042, playing: true,  down: false },
+  automation: { day: 1, min: 550,  playing: true,  down: false },
+  catchup:    { day: 2, min: 1145, playing: true,  down: false },
+  streamdown: { day: 2, min: 1042, playing: false, down: true }
+};
+
+const LOG_LIVE = [
+  { t: 'track', title: 'Cellophane Wing', artist: 'Miri Vale', at: '5:18 PM' },
+  { t: 'track', title: 'Gasket Weather', artist: '', at: '5:11 PM' },
+  { t: 'track', title: 'Hollowpoint Blue', artist: 'Ada Kray', at: '5:04 PM' },
+  { t: 'break', label: 'Amber on Audio started', at: '5:00 PM' },
+  { t: 'track', title: 'Nine Volt Sermon', artist: 'Cousin Marbles', at: '4:51 PM' },
+  { t: 'track', title: 'Slow Iron', artist: 'Nell Abiodun', at: '4:44 PM' }
+];
+const LOG_AUTO = [
+  { t: 'track', title: 'Perennial Static', artist: 'Bright Antenna', at: '9:06 AM' },
+  { t: 'track', title: 'Foxglove', artist: 'The Hardy Boys Club', at: '8:58 AM' },
+  { t: 'track', title: 'Marbled Air', artist: '', at: '8:50 AM' },
+  { t: 'break', label: 'Hoggbot rotation', at: '8:00 AM' },
+  { t: 'track', title: 'Low Ceiling', artist: 'Iona Pryce', at: '7:52 AM' }
+];
+
+// Public-domain cover art used only as visual placeholders for the fictional demo tracks.
+const RECENT_COVERS = [
+  './assets/recent-cover-01.jpg',
+  './assets/recent-cover-02.jpg',
+  './assets/recent-cover-03.jpg',
+  './assets/recent-cover-04.jpg',
+  './assets/recent-cover-05.jpg'
+];
+
+// Proof-of-concept archive history. Show names, hosts, airtimes, and durations come
+// from the live calendar; dates and recordings are placeholders. These real album
+// covers are prototype-only stand-ins and must be replaced with DJ-supplied artwork
+// before any public release.
+const ARCHIVE_ALBUM_ART = [
+  { album: 'The Queen Is Dead', artist: 'The Smiths', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/1a/e8/70/1ae870c3-b402-096b-c4c4-8022af5a2ed9/745099189662.jpg/600x600bb.jpg' },
+  { album: 'Heaven or Las Vegas', artist: 'Cocteau Twins', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/76/cd/61/76cd61e7-0714-dce5-c48e-0f05f8fcb84b/652637001280.png/600x600bb.jpg' },
+  { album: 'To Pimp a Butterfly', artist: 'Kendrick Lamar', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/b5/a6/91/b5a69171-5232-3d5b-9c15-8963802f83dd/15UMGIM15814.rgb.jpg/600x600bb.jpg' },
+  { album: 'Worldwide Underground', artist: 'Erykah Badu', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/73/f5/09/73f50998-4b58-0fe9-fac6-c2d83ca067c5/00602557325478.rgb.jpg/600x600bb.jpg' },
+  { album: 'm b v', artist: 'my bloody valentine', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f9/7e/6b/f97e6b94-f307-ae7f-e94c-d74860a44350/887830016094.png/600x600bb.jpg' },
+  { album: 'Dummy', artist: 'Portishead', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/c1/71/93/c1719342-df7d-e9c5-c87c-53dae5afb289/00042282855329.rgb.jpg/600x600bb.jpg' },
+  { album: 'Pink Moon', artist: 'Nick Drake', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/2f/9a/a0/2f9aa0ed-18c9-5e42-4630-2637efbc876a/00042284292320.rgb.jpg/600x600bb.jpg' },
+  { album: 'Songs in the Key of Life', artist: 'Stevie Wonder', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/eb/1f/12/eb1f12ec-474c-63aa-43af-09282f423b9d/00602537004737.rgb.jpg/600x600bb.jpg' },
+  { album: 'Vespertine', artist: 'Björk', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/32/d6/28/32d62861-0e24-2111-d3ed-3b54f23083d5/081227607265.jpg/600x600bb.jpg' },
+  { album: 'Remain in Light', artist: 'Talking Heads', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music/87/5f/5b/mzi.zzquknhm.jpg/600x600bb.jpg' },
+  { album: 'The Miseducation of Lauryn Hill', artist: 'Lauryn Hill', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/09/6b/55/096b55c4-ee8f-23bd-df8f-0ca0821f3028/886446727189.jpg/600x600bb.jpg' },
+  { album: 'Since I Left You', artist: 'The Avalanches', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/dc/38/47/dc3847df-0457-0c03-467c-cf4d1ac57896/19UMGIM71485.rgb.jpg/600x600bb.jpg' },
+  { album: 'Either/Or', artist: 'Elliott Smith', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ff/ea/28/ffea28a4-988a-f02e-7e1a-8566db3cab02/mzi.uoqucyoy.jpg/600x600bb.jpg' },
+  { album: 'New Amerykah, Pt. 2', artist: 'Erykah Badu', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/64/27/c7642714-7f61-74c4-3109-246bd790befe/10UMGIM06657.rgb.jpg/600x600bb.jpg' },
+  { album: 'Blue Lines', artist: 'Massive Attack', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/e5/f7/c0/e5f7c07d-2182-e732-8ad6-be03814fe93c/13UABIM04453.rgb.jpg/600x600bb.jpg' },
+  { album: '3 Feet High and Rising', artist: 'De La Soul', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/17/43/a2/1743a2ab-0630-6527-cca5-a73d855df4a1/810098505963.png/600x600bb.jpg' },
+  { album: 'Titanic Rising', artist: 'Weyes Blood', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/54/f6/fc/54f6fc73-6a18-d97a-a634-a4630ec35593/WeyesBlood_TitanicRising_3600.jpg/600x600bb.jpg' },
+  { album: 'The Slow Rush', artist: 'Tame Impala', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/65/e3/e7/65e3e740-b69f-f5cb-f2e6-7dedb5265ac9/19UMGIM96748.rgb.jpg/600x600bb.jpg' },
+  { album: 'In Rainbows', artist: 'Radiohead', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/dd/50/c7/dd50c790-99ac-d3d0-5ab8-e3891fb8fd52/634904032463.png/600x600bb.jpg' },
+  { album: "What's Going On", artist: 'Marvin Gaye', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/76/36/2d/76362d74-cb7a-8ef9-104e-cde1d858e9a9/20UMGIM95279.rgb.jpg/600x600bb.jpg' },
+  { album: 'We got it from Here... Thank You 4 Your service', artist: 'A Tribe Called Quest', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/12/b4/0c/12b40cae-c845-1729-a374-cb5f3619d061/886446229980.jpg/600x600bb.jpg' },
+  { album: 'Disintegration', artist: 'The Cure', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music/93/3c/2c/mzi.ujtdsknz.jpg/600x600bb.jpg' },
+  { album: 'Ctrl', artist: 'SZA', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/a2/bc/ad/a2bcad46-b389-4be1-8bac-5a0959b0b8e4/886446548449.jpg/600x600bb.jpg' },
+  { album: 'The Velvet Underground & Nico', artist: 'The Velvet Underground & Nico', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/92/93/39/9293397f-a707-237e-ec7e-0ca613a67e3c/06UMGIM04143.rgb.jpg/600x600bb.jpg' },
+  { album: 'Jubilee', artist: 'Japanese Breakfast', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/93/8b/8b/938b8b5d-1022-414f-995e-a25608fc68c3/17251.jpg/600x600bb.jpg' },
+  { album: 'Copycat Killer', artist: 'Phoebe Bridgers', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5a/5d/1f/5a5d1fde-7f6f-9997-3bca-d75f1e799464/656605154565.jpg/600x600bb.jpg' },
+  { album: 'Bryter Layter', artist: 'Nick Drake', src: 'https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/f5/94/72/f59472e7-54ff-9b04-6dcd-88055bdebf29/23UMGIM85119.rgb.jpg/600x600bb.jpg' }
+];
+const PROOF_ARCHIVE_DATES = [
+  ['Sep 21, 2026', 'Sep 14, 2026', 'Sep 7, 2026'],
+  ['Sep 15, 2026', 'Sep 8, 2026', 'Sep 1, 2026'],
+  ['Sep 16, 2026', 'Sep 9, 2026', 'Sep 2, 2026'],
+  ['Sep 17, 2026', 'Sep 10, 2026', 'Sep 3, 2026'],
+  ['Sep 18, 2026', 'Sep 11, 2026', 'Sep 4, 2026'],
+  ['Sep 19, 2026', 'Sep 12, 2026', 'Sep 5, 2026'],
+  ['Sep 20, 2026', 'Sep 13, 2026', 'Sep 6, 2026']
+];
+const archiveShowByName = {};
+const ARCHIVE_SHOWS = [];
+SHOWS.forEach(function (show) {
+  let archiveShow = archiveShowByName[show.name];
+  if (!archiveShow) {
+    const id = show.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const art = ARCHIVE_ALBUM_ART[ARCHIVE_SHOWS.length % ARCHIVE_ALBUM_ART.length];
+    archiveShow = {
+      id: id,
+      name: show.name,
+      host: show.dj,
+      art: art.src,
+      artAlt: 'Prototype album-cover placeholder: ' + art.album + ' by ' + art.artist,
+      episodes: []
+    };
+    archiveShowByName[show.name] = archiveShow;
+    ARCHIVE_SHOWS.push(archiveShow);
+  }
+  PROOF_ARCHIVE_DATES[show.day].forEach(function (date) {
+    if (archiveShow.episodes.some(function (episode) { return episode.date === date; })) return;
+    archiveShow.episodes.push({
+      id: archiveShow.id + '-' + date.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      name: archiveShow.name,
+      host: archiveShow.host,
+      art: archiveShow.art,
+      artAlt: archiveShow.artAlt,
+      slot: archiveShow.episodes.length + 1,
+      date: date,
+      durationSeconds: show.dur * 60,
+      isPlaceholder: true
+    });
+  });
+  archiveShow.episodes.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+});
+const ARCHIVE_EPISODES = ARCHIVE_SHOWS.reduce(function (episodes, show) {
+  return episodes.concat(show.episodes);
+}, []);
+
+const TEAM = [];
+
+const EVENTS = [
+  { name: 'Record Painting with WJRH', date: 'October 16, 2025' },
+  { name: 'Zine Making with Arts Society', date: 'October 15, 2025' },
+  { name: 'Mosie with j soloman and Star Moles', date: 'May 6, 2022' },
+  { name: 'Isa Reyes and Vasey Hall', date: 'October 12, 2018' },
+  { name: 'Sixpress', date: 'February 17, 2018' }
+];
+
+function fmtTime(m) {
+  const h24 = Math.floor(m / 60) % 24, mm = m % 60;
+  const h = h24 % 12 === 0 ? 12 : h24 % 12;
+  return h + ':' + String(mm).padStart(2, '0') + ' ' + (h24 < 12 ? 'AM' : 'PM');
+}
+function fmtScheduleRange(start, dur) {
+  const clock24 = function (m) {
+    const wrapped = ((m % 1440) + 1440) % 1440;
+    return String(Math.floor(wrapped / 60)).padStart(2, '0') + ':' + String(wrapped % 60).padStart(2, '0');
+  };
+  return clock24(start) + '\u2013' + clock24(start + dur);
+}
+function fmtDur(mins) {
+  if (mins < 60) return 'in ' + mins + 'm';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return m === 0 ? 'in ' + h + 'h' : 'in ' + h + 'h ' + m + 'm';
+}
+function archiveDurationFor(episode) {
+  const supplied = Number(episode && episode.durationSeconds);
+  return Number.isFinite(supplied) && supplied > 0 ? Math.floor(supplied) : 3600;
+}
+function fmtPlaybackTime(seconds) {
+  const total = Math.max(0, Math.floor(Number(seconds) || 0));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  return hours > 0
+    ? hours + ':' + String(minutes).padStart(2, '0') + ':' + String(secs).padStart(2, '0')
+    : minutes + ':' + String(secs).padStart(2, '0');
+}
+class Component extends DCLogic {
+  state = {
+    screen: 'now', from: 'now', infoPage: 'hub', selDay: 2,
+    tabMotion: null,
+    playing: null, loading: false,
+    archiveId: null, archivePlaying: false, archiveLoading: null, archivePosition: 0,
+    archiveDetailId: null, archiveDetailFrom: 'archive'
+  };
+
+  componentDidMount() {
+    this.applyPalette();
+    const self = this;
+    this.archiveClock = window.setInterval(function () {
+      if (!self.state.archiveId || !self.state.archivePlaying || self.state.archiveLoading) return;
+      const episode = ARCHIVE_EPISODES.find(function (item) { return item.id === self.state.archiveId; });
+      if (!episode) return;
+      const duration = archiveDurationFor(episode);
+      const next = Math.min(duration, (Number(self.state.archivePosition) || 0) + 1);
+      self.setState({ archivePosition: next, archivePlaying: next < duration });
+    }, 1000);
+    try { if (history.state && history.state.wjrhSub) history.replaceState(null, ''); } catch (e) {}
+    this.onPopState = function () {
+      if (!self.isSubpage()) return;
+      self.poppingBack = true;
+      self.goBack();
+    };
+    window.addEventListener('popstate', this.onPopState);
+    this.installSwipeBack();
+  }
+  componentDidUpdate() { this.applyPalette(); this.syncHistory(); }
+  componentWillUnmount() {
+    if (this.archiveClock) window.clearInterval(this.archiveClock);
+    window.removeEventListener('popstate', this.onPopState);
+    if (this.removeSwipeBack) this.removeSwipeBack();
+  }
+
+  // Show pages and Station sub-pages sit one level above the tabs. Each gets a
+  // history entry so the browser's own back gesture (and Android back) returns
+  // to where the listener came from instead of leaving the site.
+  isSubpage() {
+    const s = this.state;
+    return s.screen === 'archive-detail' || (s.screen === 'station' && s.infoPage !== 'hub');
+  }
+  syncHistory() {
+    const sub = this.isSubpage();
+    if (sub === !!this.wasSubpage) return;
+    this.wasSubpage = sub;
+    try {
+      if (sub) history.pushState({ wjrhSub: true }, '');
+      else if (this.poppingBack) this.poppingBack = false;
+      else if (history.state && history.state.wjrhSub) history.back();
+    } catch (e) {}
+  }
+  goBack() {
+    const s = this.state;
+    if (s.screen === 'archive-detail') {
+      const destination = s.archiveDetailFrom === 'schedule' ? 'schedule' : (s.archiveDetailFrom === 'now' ? 'now' : 'archive');
+      const key = STATES[this.props.broadcast] ? this.props.broadcast : 'live';
+      this.setState({ screen: destination, archiveDetailId: null, tabMotion: 'left' });
+      if (destination === 'schedule') this.scrollScheduleSoon('schedule-day-' + STATES[key].day);
+      else this.scrollTopSoon();
+    } else if (s.screen === 'station' && s.infoPage !== 'hub') {
+      this.setState({ infoPage: 'hub' });
+      this.scrollTopSoon();
+    }
+  }
+
+  // Swipe right anywhere on a sub-page to go back. iOS Safari already runs its
+  // own back swipe against the history entry above (landing in onPopState), and
+  // running both moves the page twice, so this only covers the installed web
+  // app and other touch browsers, leaving their outer 24px to the system.
+  installSwipeBack() {
+    const self = this;
+    let g = null;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 && !/Android/.test(navigator.userAgent));
+    const settle = function (node) { node.style.transition = ''; node.style.transform = ''; node.style.willChange = ''; };
+    const onStart = function (e) {
+      g = null;
+      if (e.touches.length !== 1 || !self.isSubpage()) return;
+      if (e.target.closest && e.target.closest('input, textarea, select, .player-dock, .tab-dock')) return;
+      const t = e.touches[0];
+      const standalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+      if (!standalone && (isIOS || t.clientX < 24)) return;
+      const scroller = document.querySelector('.app-scroll');
+      if (scroller) g = { x: t.clientX, y: t.clientY, dx: 0, v: 0, at: e.timeStamp, engaged: false, node: scroller };
+    };
+    const onMove = function (e) {
+      if (!g) return;
+      const t = e.touches[0], dx = t.clientX - g.x, dy = t.clientY - g.y;
+      if (!g.engaged) {
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+        if (dx <= 0 || dx < Math.abs(dy) * 1.4) { g = null; return; }
+        g.engaged = true;
+        g.node.style.transition = 'none';
+        g.node.style.willChange = 'transform';
+      }
+      e.preventDefault();
+      const next = Math.max(0, dx);
+      g.v = (next - g.dx) / Math.max(1, e.timeStamp - g.at);
+      g.dx = next; g.at = e.timeStamp;
+      g.node.style.transform = 'translateX(' + next + 'px)';
+    };
+    const onEnd = function (e) {
+      const cur = g; g = null;
+      if (!cur || !cur.engaged) return;
+      const node = cur.node, width = node.offsetWidth;
+      const done = e.type === 'touchend' && (cur.dx > width * 0.33 || (cur.v > 0.45 && cur.dx > 40));
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        settle(node);
+        if (done) self.goBack();
+        return;
+      }
+      node.style.transition = 'transform 180ms cubic-bezier(.2,.7,.3,1)';
+      node.style.transform = done ? 'translateX(' + width + 'px)' : 'translateX(0)';
+      window.setTimeout(function () {
+        if (!done) { settle(node); return; }
+        node.style.transition = 'none';
+        self.goBack();
+        requestAnimationFrame(function () { settle(node); });
+      }, 190);
+    };
+    document.addEventListener('touchstart', onStart, { passive: true });
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', onEnd);
+    this.removeSwipeBack = function () {
+      document.removeEventListener('touchstart', onStart);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+      document.removeEventListener('touchcancel', onEnd);
+    };
+  }
+  palette() { return PALETTES[this.props.palette] || PALETTES.lafayette; }
+  applyPalette() {
+    const p = this.palette(), root = document.documentElement;
+    root.style.removeProperty('--voice');
+    const SKIP = { light: 1 };
+    for (const k in p) { if (!SKIP[k]) root.style.setProperty('--' + k, p[k]); }
+  }
+
+  scrollTopSoon() {
+    requestAnimationFrame(function () {
+      const scroller = document.querySelector('.app-scroll');
+      if (scroller) scroller.scrollTop = 0;
+    });
+  }
+
+  focusSoon(id) {
+    requestAnimationFrame(function () {
+      const node = document.getElementById(id);
+      if (node) node.focus({ preventScroll: true });
+    });
+  }
+
+  scrollScheduleSoon(id) {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        const scroller = document.querySelector('.app-scroll');
+        const marker = document.getElementById(id);
+        const masthead = document.querySelector('.schedule-masthead');
+        if (scroller && marker) scroller.scrollTop = Math.max(0, marker.offsetTop - (masthead ? masthead.offsetHeight : 0));
+      });
+    });
+  }
+
+  showInfo(page) {
+    this.setState({ screen: 'station', infoPage: page });
+    this.scrollTopSoon();
+  }
+
+  slotsFor(d) { return SHOWS.filter(function (s) { return s.day === d; }); }
+  // Canonical show-page invariant: Now, the persistent player, Schedule, and Archive
+  // all converge here. Schedule rows never expand inline.
+  openShow(s, from) {
+    const archivedShow = ARCHIVE_SHOWS.find(function (show) { return show.name === s.name; }) || null;
+    const origin = from === 'archive-detail' ? this.state.archiveDetailFrom : (from || 'schedule');
+    this.setState({
+      screen: 'archive-detail',
+      archiveDetailId: archivedShow ? archivedShow.id : 'show:' + s.slug,
+      archiveDetailFrom: origin,
+      selDay: s.day,
+      from: origin,
+      tabMotion: 'right'
+    });
+    this.scrollTopSoon();
+  }
+  renderVals() {
+    const self = this;
+    const key = STATES[this.props.broadcast] ? this.props.broadcast : 'live';
+    const st = STATES[key];
+    const frozen = !!this.props.reducedMotion || (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const automationName = this.props.automationName || 'Hoggbot';
+    const playing = this.state.playing === null ? st.playing : this.state.playing;
+    const down = st.down;
+    const scr = this.state.screen;
+
+    const onAir = SHOWS.find(function (s) { return s.day === st.day && st.min >= s.start && st.min < s.start + s.dur; }) || null;
+    const onAirArchiveShow = onAir
+      ? ARCHIVE_SHOWS.find(function (show) { return show.name === onAir.name; }) || null
+      : null;
+    const onAirArt = onAirArchiveShow ? onAirArchiveShow.art : './assets/signal-collage.jpg';
+    const onAirArtAlt = onAirArchiveShow
+      ? onAirArchiveShow.artAlt
+      : 'Abstract WJRH live broadcast collage artwork';
+
+    const abs = st.day * 1440 + st.min;
+    let nextShow = null, nextMins = Infinity;
+    SHOWS.forEach(function (s) {
+      for (let w = 0; w < 2; w++) {
+        const d = (s.day + w * 7) * 1440 + s.start - abs;
+        if (d > 0 && d < nextMins) { nextMins = d; nextShow = s; }
+      }
+    });
+
+    const stateColor = down ? 'var(--off)' : (onAir ? 'var(--live)' : 'var(--idle)');
+    const dot = function (c) {
+      return { width: '6px', height: '6px', borderRadius: '9999px', flex: '0 0 auto', background: c };
+    };
+    const minsLeft = onAir ? onAir.start + onAir.dur - st.min : 0;
+    const elapsed = onAir ? st.min - onAir.start : 0;
+
+    const log = key === 'automation' ? LOG_AUTO : LOG_LIVE;
+    const first = log.find(function (r) { return r.t === 'track'; });
+    const unknown = !first.artist;
+    const track = {
+      title: down ? 'Signal Broadcast' : first.title,
+      artist: down ? 'Reconnecting' : (unknown ? 'Live from a DJ computer' : first.artist),
+      album: unknown ? 'Artist metadata is not available from this source' : 'Album not posted'
+    };
+    const trackBlockStyle = {
+      marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '3px',
+      opacity: (unknown || down) ? 0.55 : 1, transition: 'opacity 160ms ' + EASE
+    };
+
+    let recentCoverIndex = 0;
+    const recent = log.map(function (r) {
+      const noArtist = r.t === 'track' && !r.artist;
+      const cover = r.t === 'track' ? RECENT_COVERS[recentCoverIndex++ % RECENT_COVERS.length] : '';
+      return {
+        isBreak: r.t === 'break', isTrack: r.t === 'track',
+        label: r.label, at: r.at, title: r.title,
+        artist: noArtist ? 'Artist metadata unavailable' : r.artist,
+        wrapStyle: {
+          display: 'flex', alignItems: 'center', gap: '12px',
+          minHeight: r.t === 'break' ? '30px' : '78px',
+          marginTop: r.t === 'break' ? '6px' : '8px', marginBottom: r.t === 'break' ? '2px' : '0',
+          padding: r.t === 'track' ? '12px 14px' : '0', boxSizing: 'border-box',
+          position: 'relative', overflow: 'hidden', borderRadius: r.t === 'track' ? '8px' : '0',
+          backgroundImage: r.t === 'track' ? 'linear-gradient(90deg,var(--image-overlay) 0%,var(--image-overlay-mid) 56%,var(--image-overlay-end) 100%),url(' + cover + ')' : 'none',
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          boxShadow: r.t === 'track' ? 'inset 0 0 0 1px var(--recent-outline)' : 'none'
+        },
+        titleStyle: { fontSize: '15px', fontWeight: '600', letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--on-image)', textShadow: '0 1px 12px var(--image-shadow)' },
+        artistStyle: { fontSize: '12px', marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: noArtist ? 'var(--on-image-faint)' : 'var(--on-image-muted)', textShadow: '0 1px 10px var(--image-shadow)' },
+        timeStyle: { fontFamily: UI_FONT, fontWeight: '700', fontSize: '12px', fontVariantNumeric: 'tabular-nums', color: 'var(--on-image-muted)', flex: '0 0 auto', textShadow: '0 1px 10px var(--image-shadow)' }
+      };
+    });
+
+    const archiveEpisode = ARCHIVE_EPISODES.find(function (episode) { return episode.id === self.state.archiveId; }) || null;
+    const archiveIsLoading = !!(archiveEpisode && self.state.archiveLoading === archiveEpisode.id);
+    const archiveIsPlaying = !!(archiveEpisode && self.state.archivePlaying && !archiveIsLoading);
+    const beginArchive = function (episode) {
+      self.setState({
+        archiveId: episode.id, archivePlaying: false, archiveLoading: episode.id,
+        archivePosition: self.state.archiveId === episode.id ? self.state.archivePosition : 0,
+        playing: false, loading: false
+      });
+      window.setTimeout(function () {
+        if (self.state.archiveId === episode.id && self.state.archiveLoading === episode.id) {
+          self.setState({ archivePlaying: true, archiveLoading: null });
+        }
+      }, 720);
+    };
+    const setArchivePositionForEpisode = function (episode, value) {
+      if (!episode) return;
+      const duration = archiveDurationFor(episode);
+      const numericValue = Number(value);
+      const safeValue = Math.min(duration, Math.max(0, Number.isFinite(numericValue) ? numericValue : 0));
+      const sameEpisode = self.state.archiveId === episode.id;
+      self.setState({
+        archiveId: episode.id,
+        archivePosition: safeValue,
+        archivePlaying: sameEpisode ? !!self.state.archivePlaying && safeValue < duration : false,
+        archiveLoading: null,
+        playing: false,
+        loading: false
+      });
+    };
+    const openArchiveShow = function (show, from) {
+      self.setState({
+        screen: 'archive-detail', archiveDetailId: show.id,
+        archiveDetailFrom: from || 'archive', tabMotion: 'right'
+      });
+      self.scrollTopSoon();
+    };
+    const archiveItems = ARCHIVE_SHOWS.map(function (show) {
+      return {
+        id: show.id, name: show.name, host: show.host, art: show.art, artAlt: show.artAlt,
+        onOpen: function () { openArchiveShow(show, 'archive'); }
+      };
+    });
+    const savedArchiveDetailShow = ARCHIVE_SHOWS.find(function (show) { return show.id === self.state.archiveDetailId; }) || null;
+    const scheduleDetailSlug = typeof self.state.archiveDetailId === 'string' && self.state.archiveDetailId.indexOf('show:') === 0
+      ? self.state.archiveDetailId.slice(5)
+      : null;
+    const scheduleDetailShow = scheduleDetailSlug
+      ? SHOWS.find(function (show) { return show.slug === scheduleDetailSlug; }) || null
+      : null;
+    const archiveDetailShow = savedArchiveDetailShow || (scheduleDetailShow ? {
+      id: 'show:' + scheduleDetailShow.slug,
+      name: scheduleDetailShow.name,
+      host: scheduleDetailShow.dj,
+      art: './assets/signal-collage.jpg',
+      artAlt: 'Abstract WJRH live broadcast collage artwork',
+      episodes: []
+    } : null);
+    let archiveDetail = {};
+    if (archiveDetailShow) {
+      const sourceShow = SHOWS.find(function (show) { return show.name === archiveDetailShow.name && show.blurb; })
+        || SHOWS.find(function (show) { return show.name === archiveDetailShow.name; })
+        || null;
+      const selectedEpisode = archiveDetailShow.episodes.find(function (episode) { return episode.id === self.state.archiveId; }) || null;
+      const selectedIsLoading = !!(selectedEpisode && self.state.archiveLoading === selectedEpisode.id);
+      const selectedIsPlaying = !!(selectedEpisode && self.state.archivePlaying && !selectedIsLoading);
+      const selectedDuration = selectedEpisode ? archiveDurationFor(selectedEpisode) : 0;
+      const selectedPosition = selectedEpisode
+        ? Math.min(selectedDuration, Math.max(0, Number(self.state.archivePosition) || 0))
+        : 0;
+      const selectedProgress = selectedDuration > 0 ? (selectedPosition / selectedDuration) * 100 : 0;
+      const broadcasts = archiveDetailShow.episodes.map(function (episode) {
+        const isLoading = self.state.archiveLoading === episode.id;
+        const isPlaying = self.state.archiveId === episode.id && self.state.archivePlaying && !isLoading;
+        return {
+          id: episode.id, art: episode.art, artAlt: episode.artAlt, date: episode.date,
+          isLoading: isLoading, controlReady: !isLoading, isPlaying: isPlaying, isPaused: !isPlaying,
+          playA11y: isLoading
+            ? 'Loading archived broadcast ' + episode.slot + ' of ' + episode.name
+            : (isPlaying ? 'Pause ' : 'Play ') + 'archived broadcast ' + episode.slot + ' of ' + episode.name,
+          onToggle: function () {
+            if (isLoading) return;
+            if (self.state.archiveId === episode.id && self.state.archivePlaying) {
+              self.setState({ archivePlaying: false, archiveLoading: null });
+              return;
+            }
+            beginArchive(episode);
+          }
+        };
+      });
+      archiveDetail = {
+        id: archiveDetailShow.id,
+        name: archiveDetailShow.name,
+        host: archiveDetailShow.host,
+        art: archiveDetailShow.art,
+        artAlt: archiveDetailShow.artAlt,
+        description: sourceShow && sourceShow.blurb && self.props.stationContent !== false ? sourceShow.blurb : '',
+        broadcasts: broadcasts,
+        hasBroadcasts: broadcasts.length > 0,
+        noBroadcasts: broadcasts.length === 0,
+        showTransport: !!selectedEpisode,
+        transportState: selectedIsLoading ? 'loading' : (selectedIsPlaying ? 'playing' : 'paused'),
+        isLoading: selectedIsLoading,
+        isDisabled: selectedIsLoading,
+        controlReady: !selectedIsLoading,
+        isPlaying: selectedIsPlaying,
+        isPaused: !selectedIsPlaying,
+        playA11y: selectedEpisode
+          ? (selectedIsLoading
+            ? 'Loading ' + archiveDetailShow.name + ' broadcast from ' + selectedEpisode.date
+            : (selectedIsPlaying ? 'Pause ' : 'Play ') + archiveDetailShow.name + ' broadcast from ' + selectedEpisode.date)
+          : '',
+        durationSeconds: selectedDuration,
+        position: selectedPosition,
+        elapsed: fmtPlaybackTime(selectedPosition),
+        duration: fmtPlaybackTime(selectedDuration),
+        elapsedDateTime: 'PT' + Math.floor(selectedPosition) + 'S',
+        durationDateTime: 'PT' + Math.floor(selectedDuration) + 'S',
+        scrubA11y: fmtPlaybackTime(selectedPosition) + ' of ' + fmtPlaybackTime(selectedDuration),
+        scrubFillStyle: { width: selectedProgress + '%' },
+        onScrub: function (event) {
+          if (!selectedEpisode || selectedIsLoading) return;
+          setArchivePositionForEpisode(selectedEpisode, event && event.target ? event.target.value : selectedPosition);
+        },
+        seekBack30: function () {
+          if (selectedEpisode && !selectedIsLoading) setArchivePositionForEpisode(selectedEpisode, selectedPosition - 30);
+        },
+        seekForward30: function () {
+          if (selectedEpisode && !selectedIsLoading) setArchivePositionForEpisode(selectedEpisode, selectedPosition + 30);
+        },
+        onToggle: function () {
+          if (!selectedEpisode || selectedIsLoading) return;
+          if (self.state.archiveId === selectedEpisode.id && self.state.archivePlaying) {
+            self.setState({ archivePlaying: false, archiveLoading: null });
+            return;
+          }
+          beginArchive(selectedEpisode);
+        }
+      };
+    }
+
+    const scheduleItems = [];
+    let scheduleDay = -1;
+    SHOWS.slice().sort(function (a, b) { return a.day - b.day || a.start - b.start; }).forEach(function (s) {
+      if (s.day !== scheduleDay) {
+        scheduleDay = s.day;
+        scheduleItems.push({ isDay: true, isShow: false, dayId: 'schedule-day-' + s.day, dayLabel: LONG[s.day] });
+      }
+      const live = !!(onAir && onAir.slug === s.slug);
+      scheduleItems.push({
+        isDay: false, isShow: true,
+        triggerId: 'schedule-trigger-' + s.slug,
+        timeRange: fmtScheduleRange(s.start, s.dur), name: s.name, dj: s.dj,
+        sub: s.genre ? s.dj + ' · ' + s.genre : s.dj,
+        onAir: live,
+        openA11y: 'Open show page for ' + s.name + ', ' + fmtScheduleRange(s.start, s.dur),
+        buttonStyle: { background: live ? 'var(--image-overlay-mid)' : 'transparent' },
+        onOpen: function () { self.openShow(s, 'schedule'); }
+      });
+    });
+
+    const tab = function (active) {
+      return {
+        position: 'relative', zIndex: '1', flex: '1', minHeight: '46px', borderRadius: '0', cursor: 'pointer', padding: '0',
+        border: '0', background: 'transparent', boxShadow: 'none',
+        fontFamily: UI_FONT, fontWeight: 700, fontSize: '12px', letterSpacing: '0.06em', whiteSpace: 'nowrap',
+        transition: 'color 160ms ' + EASE,
+        color: active ? 'var(--live)' : 'var(--ink-3)'
+      };
+    };
+    const tabIndex = scr === 'station' ? 3 : (scr === 'schedule' ? 2 : ((scr === 'archive' || scr === 'archive-detail') ? 1 : 0));
+    const tabOnArchive = tabIndex === 1;
+    const tabOnSchedule = tabIndex === 2;
+    const tabOnStation = tabIndex === 3;
+    const tabTransforms = ['translateX(0)', 'translateX(100%)', 'translateX(200%)', 'translateX(300%)'];
+    const tabIndicatorStyle = {
+      position: 'absolute', zIndex: '2', top: '-1px', height: '3px', left: '0',
+      width: '25%', pointerEvents: 'none',
+      transformOrigin: 'center', willChange: 'transform',
+      transform: tabTransforms[tabIndex],
+      transition: frozen ? 'none' : 'transform 340ms cubic-bezier(0.4,0,0.2,1)'
+    };
+    const tabIndicatorInnerStyle = {
+      position: 'absolute', top: '0', bottom: '0', left: '50%', width: '32px', transform: 'translateX(-50%)',
+      background: 'var(--live)'
+    };
+
+    const toggleLive = function () {
+      if (down || self.state.loading) return;
+      if (!archiveEpisode && playing) {
+        self.setState({ playing: false, loading: false });
+        return;
+      }
+      self.setState({
+        playing: false, loading: true,
+        archiveId: null, archivePlaying: false, archiveLoading: null
+      });
+      window.setTimeout(function () {
+        if (self.state.loading && !self.state.archiveId) self.setState({ playing: true, loading: false });
+      }, 720);
+    };
+    const toggleDock = function () {
+      if (!archiveEpisode) {
+        toggleLive();
+        return;
+      }
+      if (archiveIsLoading) return;
+      if (archiveIsPlaying) {
+        self.setState({ archivePlaying: false, archiveLoading: null });
+        return;
+      }
+      beginArchive(archiveEpisode);
+    };
+    const dockPlayerIsLoading = archiveEpisode ? archiveIsLoading : !!(self.state.loading && !down);
+    const dockPlayerIsPlaying = archiveEpisode ? archiveIsPlaying : !!(playing && !down && !self.state.loading);
+    const dockPlayerIsPaused = !dockPlayerIsLoading && !dockPlayerIsPlaying;
+    const dockPlayerDisabled = archiveEpisode ? false : down;
+    const dockTitle = archiveEpisode ? archiveEpisode.name : track.title;
+    const dockSub = archiveEpisode ? archiveEpisode.host + ' · ' + archiveEpisode.date : track.artist + ' · ' + (onAir ? onAir.name : automationName);
+    const dockArchiveShow = archiveEpisode ? ARCHIVE_SHOWS.find(function (show) { return show.name === archiveEpisode.name; }) || null : null;
+    const dockDetailsDisabled = archiveEpisode ? !dockArchiveShow : !onAir;
+    const dockOpenA11y = archiveEpisode
+      ? (dockArchiveShow ? 'Open archive for ' + dockArchiveShow.name : 'Archive details unavailable')
+      : (onAir ? 'Open details for ' + onAir.name : 'Show details unavailable');
+    const openDockDetails = function () {
+      if (archiveEpisode) {
+        if (dockArchiveShow) openArchiveShow(dockArchiveShow, 'archive');
+        return;
+      }
+      if (onAir) self.openShow(onAir, scr);
+    };
+    const dockPlayA11y = archiveEpisode
+      ? (archiveIsLoading ? 'Loading ' + archiveEpisode.name : (archiveIsPlaying ? 'Pause ' + archiveEpisode.name : 'Play ' + archiveEpisode.name))
+      : (down ? 'Live stream offline' : (self.state.loading ? 'Connecting to live stream' : (playing ? 'Pause live stream' : 'Play live stream')));
+    const dockDuration = archiveEpisode ? archiveDurationFor(archiveEpisode) : 0;
+    const dockPosition = archiveEpisode ? Math.min(dockDuration, Math.max(0, Number(self.state.archivePosition) || 0)) : 0;
+    const dockProgress = dockDuration > 0 ? (dockPosition / dockDuration) * 100 : 0;
+    const scrubDock = function (event) {
+      if (!archiveEpisode || archiveIsLoading) return;
+      const value = event && event.target ? Number(event.target.value) : dockPosition;
+      self.setState({ archivePosition: Math.min(dockDuration, Math.max(0, Number.isFinite(value) ? value : dockPosition)) });
+    };
+
+    return {
+      yes: true, frozen: frozen, automationName: automationName,
+      isNow: scr === 'now', isArchive: scr === 'archive', isArchiveDetail: scr === 'archive-detail' && !!archiveDetailShow, isSchedule: scr === 'schedule', isStation: scr === 'station',
+      showAppHeader: scr !== 'now' && scr !== 'archive' && scr !== 'archive-detail' && scr !== 'schedule', showPlayerDock: scr !== 'now' || !!archiveEpisode,
+      appScrollStyle: { paddingBottom: scr === 'now' && !archiveEpisode ? 'calc(78px + var(--sab, env(safe-area-inset-bottom)))' : (archiveEpisode ? 'calc(176px + var(--sab, env(safe-area-inset-bottom)))' : (scr === 'station' ? 'calc(152px + var(--sab, env(safe-area-inset-bottom)))' : 'calc(170px + var(--sab, env(safe-area-inset-bottom)))')) },
+      infoHome: this.state.infoPage === 'hub',
+      infoAbout: this.state.infoPage === 'about', infoHistory: this.state.infoPage === 'history',
+      infoTeam: this.state.infoPage === 'team', infoEvents: this.state.infoPage === 'events',
+      infoInvolved: this.state.infoPage === 'involved', infoSupport: this.state.infoPage === 'support',
+      infoContact: this.state.infoPage === 'contact',
+      showStationBack: this.state.infoPage !== 'hub',
+
+      dotStyle: Object.assign({}, dot(stateColor), { width: '8px', height: '8px' }),
+      nowStateLabel: down ? 'OFFLINE' : (onAir ? 'LIVE' : 'AUTOMATED'),
+      nowStateDotStyle: { background: down ? 'var(--off)' : (onAir ? 'var(--logo-gold)' : 'var(--idle)') },
+
+      showHamster: !down,
+      showOfflineDino: down,
+      hamsterLabel: onAir ? 'ON AIR' : 'AUTOMATED DJ',
+      hamsterLabelClass: onAir ? 'broadcast-state-label on-air' : 'broadcast-state-label',
+      hamsterA11y: onAir ? 'Orange and tan hamster running in a wheel while WJRH is on air' : 'Orange and tan hamster running in a wheel for the automated DJ',
+      onAirName: onAir ? onAir.name : automationName,
+      onAirSub: onAir ? 'with ' + onAir.dj : 'Rotation between live shows',
+      onAirArt: onAirArt,
+      onAirArtAlt: onAirArtAlt,
+      onAirActionable: !!onAir,
+      onAirStatic: !onAir,
+      openOnAir: function () { if (onAir) self.openShow(onAir, 'now'); },
+      hasClock: !!onAir && !down,
+      clockText: minsLeft + ' min left',
+      clockA11y: onAir ? elapsed + ' minutes elapsed, ' + minsLeft + ' minutes left in ' + onAir.name : '',
+
+      promoteNext: !onAir || down,
+      showNextLine: !!onAir && !down,
+      nextName: nextShow ? nextShow.name : '—',
+      nextIn: nextShow ? fmtDur(nextMins) : '',
+      openNext: function () { if (nextShow) self.openShow(nextShow, 'now'); },
+
+      track: track, trackBlockStyle: trackBlockStyle, recent: recent, archiveItems: archiveItems,
+      archiveDetail: archiveDetail,
+      archiveDetailBackLabel: this.state.archiveDetailFrom === 'schedule' ? 'SCHEDULE' : (this.state.archiveDetailFrom === 'now' ? 'NOW' : 'ARCHIVE'),
+      archiveDetailBack: function () { self.goBack(); },
+
+      scheduleItems: scheduleItems,
+      freshness: 'Schedule synced from WJRH Google Calendar · Sep 22',
+
+      goStation: function () {
+        self.setState({
+          screen: 'station', infoPage: 'hub', from: 'station',
+          tabMotion: tabIndex < 3 ? 'right' : self.state.tabMotion
+        });
+        self.scrollTopSoon();
+      },
+      stationBack: function () { self.goBack(); },
+      openAbout: function () { self.showInfo('about'); },
+      openHistory: function () { self.showInfo('history'); },
+      openTeam: function () { self.showInfo('team'); },
+      openEvents: function () { self.showInfo('events'); },
+      openInvolved: function () { self.showInfo('involved'); },
+      openSupport: function () { self.showInfo('support'); },
+      openContact: function () { self.showInfo('contact'); },
+      stationGoSchedule: function () {
+        self.setState({ screen: 'schedule', infoPage: 'hub', tabMotion: 'left' });
+        self.scrollScheduleSoon('schedule-day-' + st.day);
+      },
+      team: TEAM, events: EVENTS,
+
+      playerIsLoading: !!(this.state.loading && !down),
+      playerControlReady: !this.state.loading || down,
+      playerIsPlaying: !!(playing && !down && !this.state.loading),
+      playerIsPaused: !playing || down,
+      playerDisabled: down,
+      playA11y: down ? 'Live stream offline' : (this.state.loading ? 'Connecting to live stream' : ((playing && !down) ? 'Pause live stream' : 'Play live stream')),
+      togglePlay: toggleLive,
+
+      dockPlayerIsLoading: dockPlayerIsLoading,
+      dockPlayerControlReady: !dockPlayerIsLoading,
+      dockPlayerIsPlaying: dockPlayerIsPlaying,
+      dockPlayerIsPaused: dockPlayerIsPaused,
+      dockPlayerDisabled: dockPlayerDisabled,
+      dockPlayA11y: dockPlayA11y,
+      toggleDock: toggleDock,
+      dockPlayerMode: archiveEpisode ? 'archive' : 'live',
+      dockPlayerState: dockPlayerIsLoading ? 'loading' : (dockPlayerDisabled ? 'error' : (dockPlayerIsPlaying ? 'playing' : 'paused')),
+      dockTitle: dockTitle,
+      dockSub: dockSub,
+      dockDetailsDisabled: dockDetailsDisabled,
+      dockOpenA11y: dockOpenA11y,
+      openDockDetails: openDockDetails,
+      showArchiveScrub: !!archiveEpisode,
+      dockDuration: dockDuration,
+      dockPosition: dockPosition,
+      dockElapsed: fmtPlaybackTime(dockPosition),
+      dockDurationText: fmtPlaybackTime(dockDuration),
+      dockElapsedDateTime: 'PT' + Math.floor(dockPosition) + 'S',
+      dockDurationDateTime: 'PT' + Math.floor(dockDuration) + 'S',
+      dockScrubA11y: fmtPlaybackTime(dockPosition) + ' of ' + fmtPlaybackTime(dockDuration),
+      dockScrubDisabled: archiveIsLoading,
+      dockScrubFillStyle: { width: dockProgress + '%' },
+      scrubDock: scrubDock,
+
+      goNow: function () {
+        self.setState({ screen: 'now', tabMotion: tabIndex > 0 ? 'left' : self.state.tabMotion });
+        self.scrollTopSoon();
+      },
+      goArchive: function () {
+        self.setState({ screen: 'archive', archiveDetailId: null, tabMotion: tabIndex > 1 ? 'left' : (tabIndex < 1 ? 'right' : self.state.tabMotion) });
+        self.scrollTopSoon();
+      },
+      goSchedule: function () {
+        self.setState({
+          screen: 'schedule',
+          tabMotion: tabIndex > 2 ? 'left' : (tabIndex < 2 ? 'right' : self.state.tabMotion)
+        });
+        self.scrollScheduleSoon('schedule-day-' + st.day);
+      },
+      tabIndicatorStyle: tabIndicatorStyle,
+      tabIndicatorInnerStyle: tabIndicatorInnerStyle,
+      tabNowStyle: tab(tabIndex === 0),
+      tabArchiveStyle: tab(tabOnArchive),
+      tabSchedStyle: tab(tabOnSchedule),
+      tabStationStyle: tab(tabOnStation),
+      tabNowCurrent: tabIndex === 0 ? 'page' : false,
+      tabArchiveCurrent: tabOnArchive ? 'page' : false,
+      tabSchedCurrent: tabOnSchedule ? 'page' : false,
+      tabStationCurrent: tabOnStation ? 'page' : false
+    };
+  }
+}
+</script>
+</body>
+</html>

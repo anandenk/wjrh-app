@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"><style>body{margin:0;background:#e9e7e1;font-family:'Manrope',sans-serif}a{color:#111}a:hover{color:#00b586}</style></helmet>
+<div id="board" style="width:1920px;background:#e9e7e1;color:#111;padding:64px 72px 72px;box-sizing:border-box;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:4px solid #111;padding-bottom:22px">
+<div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:72px;line-height:.95;letter-spacing:-.03em;text-transform:uppercase">WJRH 104.9<br>Listener app · v2</div><div style="margin-top:14px;font-size:20px;font-weight:500">Every screen, sheet and stream state in the prototype. Two tabs, one persistent player.</div></div>
+<div style="display:flex;gap:28px;font-size:16px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;background:#00e0a4;border:2px solid #111"></span>Now</div>
+<div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;background:#7b61ff;border:2px solid #111"></span>Schedule</div>
+<div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;background:#ff5a1f;border:2px solid #111"></span>About</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:center;gap:16px"><span style="width:22px;height:22px;background:#00e0a4;border:3px solid #111"></span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:34px;text-transform:uppercase;letter-spacing:-.02em">Now</span><span style="font-size:16px;font-weight:500;margin-left:6px">Default tab. Play button pinned at the bottom, one tap to audio.</span></div>
+<div style="display:flex;gap:36px;align-items:flex-start">
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="firstlaunch" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>1 · First launch</b><br>One-time. Names the station and what's on right now; "Listen live" starts audio immediately.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="now" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>2 · Now, idle</b><br>Show card, track card, Coming up, Last hour. Player in the thumb zone.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="playing" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>3 · Now, playing</b><br>Pause glyph, "LIVE · PLAYING", small signal bars animate. Output route button on the right.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="track" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>4 · Track sheet</b><br>Tap any track. Title + artist only, played on, Find this track, Copy title. No screen push.</div></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:center;gap:16px"><span style="width:22px;height:22px;background:#7b61ff;border:3px solid #111"></span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:34px;text-transform:uppercase;letter-spacing:-.02em">Schedule</span><span style="font-size:16px;font-weight:500;margin-left:6px">Mini player persists on every non-Now screen.</span></div>
+<div style="display:flex;gap:36px;align-items:flex-start">
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="schedule" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>5 · Schedule</b><br>Day picker (today marked), past slots dimmed, ON AIR chip, reminder badge with slot time. Times in ET.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="show" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>6 · Show detail</b><br>Host, description, airs, Remind me, last playlist. Live shows also get "Listen now" (acts in place).</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="permission" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>7 · Reminder permission</b><br>First Remind me tap. Explains the single notification before the OS prompt.</div></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:center;gap:16px"><span style="width:22px;height:22px;background:#ff5a1f;border:3px solid #111"></span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:34px;text-transform:uppercase;letter-spacing:-.02em">About</span><span style="font-size:16px;font-weight:500;margin-left:6px">Behind the "i" button. Not a tab.</span></div>
+<div style="display:flex;gap:36px;align-items:flex-start">
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="about" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>8 · About</b><br>Station blurb, Host a show, Request a song, Support, socials. External rows say OPEN ↗.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="join" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>9 · Host a show sheet</b><br>Three steps and an email field. Submits to the station's list; confirmation card replaces the form.</div></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:center;gap:16px"><span style="width:22px;height:22px;background:#111;border:3px solid #111"></span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:34px;text-transform:uppercase;letter-spacing:-.02em">Stream states</span><span style="font-size:16px;font-weight:500;margin-left:6px">Same Now screen under different conditions.</span></div>
+<div style="display:flex;gap:36px;align-items:flex-start">
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="now" stream="buffering" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>10 · Connecting</b><br>Spinner in the play button, "CONNECTING…". Also shown on every press.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="playing" stream="reconnecting" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>11 · Reconnecting</b><br>Stream dropped mid-play. Banner, spinner, live dot stops; retries automatically.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="now" stream="nometa" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>12 · No track info</b><br>Laptop DJ or empty metadata. Track card muted and not tappable; audio still plays.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="now" stream="streamdown" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>13 · Stream down</b><br>Play disabled, banner names the next live show, Remind me sets that reminder.</div></div>
+</div>
+<div style="display:flex;gap:36px;align-items:flex-start">
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="now" stream="offline" clock="{{ 14 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>14 · No network</b><br>Last loaded content stays visible; play disabled; Retry.</div></div>
+<div style="width:402px;display:flex;flex-direction:column;gap:14px"><dc-import name="WJRH App" screen="schedule" clock="{{ 21 }}" embed="{{ true }}" hint-size="402px,874px"></dc-import><div style="font-size:15px;line-height:1.5"><b>15 · Schedule at 9 PM</b><br>Past/live/upcoming derive from the clock, never list position. Same screen as 5, later in the day.</div></div>
+</div>
+</div>
+
+<div style="border-top:4px solid #111;padding-top:18px;font-size:14px;font-weight:500;display:flex;justify-content:space-between"><span>Prototype content is placeholder: show names, DJs, tracks, phone number and automation name are not real. See README "Confirm with the station".</span><span>WJRH · Lafayette College · Hogg Hall · Easton PA</span></div>
+</div>
+</x-dc>
+</body>
+</html>

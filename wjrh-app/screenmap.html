@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WJRH — Screen Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#111; --paper:#e9e7e1; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Manrope', -apple-system, sans-serif; padding: 40px 28px 80px;
+  }
+  header { max-width: 1400px; margin: 0 auto 36px; }
+  h1 {
+    font-family: 'Syne', sans-serif; font-weight: 800; text-transform: uppercase;
+    font-size: clamp(32px, 6vw, 54px); line-height: .95; letter-spacing: -.03em; margin: 0;
+  }
+  h1 span { color: #00b586; }
+  .lede { margin-top: 14px; font-size: 14px; line-height: 1.6; max-width: 62ch; }
+  .lede code { background: #dcd9d1; padding: 1px 5px; font-size: 13px; }
+  .grid {
+    max-width: 1400px; margin: 0 auto; display: grid; gap: 40px 28px;
+    grid-template-columns: repeat(auto-fill, minmax(402px, 1fr));
+  }
+  figure { margin: 0; }
+  figcaption {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; margin-bottom: 10px; border-bottom: 3px solid var(--ink); padding-bottom: 6px;
+  }
+  .name { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .slug { font-size: 11px; font-weight: 500; color: #6b6b66; }
+  .frame {
+    width: 100%; max-width: 402px; height: 780px; border: 3px solid var(--ink);
+    background: #efece4; box-shadow: 10px 10px 0 rgba(17,17,17,.12); display: block;
+  }
+  .note { font-size: 12px; margin-top: 8px; line-height: 1.5; color: #55554f; }
+  @media (max-width: 480px) { body { padding: 24px 16px 60px; } .frame { height: 680px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WJRH<br>Screen map<span>.</span></h1>
+  <p class="lede">
+    Every screen and state of the listener app, live. Each frame is the real app
+    running against the real stream and schedule — not a screenshot — driven by
+    <code>index.html?state=&lt;name&gt;</code>. Open any frame on its own to interact with it.
+    Design tokens, type and spacing all come from <code>styles.css</code>.
+  </p>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<script>
+var SCREENS = [
+  ['First launch',        'firstlaunch', 'Shown once. "Listen live" starts audio immediately.'],
+  ['Now — idle',          'now',         'Default screen before playback starts.'],
+  ['Now — playing',       'playing',     'Signal bars animate; the FM dot pulses.'],
+  ['Now — connecting',    'buffering',   'Spinner in the play button.'],
+  ['Now — no metadata',   'nometa',      'A DJ is streaming from their own laptop; the feed reports nothing.'],
+  ['Now — stream down',   'streamdown',  'Play disabled, banner names the next live show.'],
+  ['Now — offline',       'offline',     'Last loaded content stays; play disabled.'],
+  ['Track sheet',         'track',       'Title, artist and album. Album is required by the webcasting licence.'],
+  ['Schedule',            'schedule',    'Day picker; past shows dimmed, live row highlighted.'],
+  ['Show detail',         'show',        'Host, description, air time, actions.'],
+  ['Show — reminder on',  'reminder',    'Toggled state plus the confirmation line.'],
+  ['Permission sheet',    'permission',  'One-time ask, only on the first "Remind me".'],
+  ['About',               'about',       'Reached via the "i" button; originating tab stays highlighted.'],
+  ['Host a show',         'join',        'Steps plus the interest-list form.'],
+  ['Host a show — done',  'joindone',    'Confirmation. Copy changes once a joinEndpoint is configured.']
+];
+
+var grid = document.getElementById('grid');
+SCREENS.forEach(function (s) {
+  var fig = document.createElement('figure');
+  fig.innerHTML =
+    '<figcaption><span class="name">' + s[0] + '</span><span class="slug">?state=' + s[1] + '</span></figcaption>' +
+    '<iframe class="frame" loading="lazy" title="' + s[0] + '" src="index.html?state=' + s[1] + '"></iframe>' +
+    '<p class="note">' + s[2] + '</p>';
+  grid.appendChild(fig);
+});
+</script>
+</body>
+</html>

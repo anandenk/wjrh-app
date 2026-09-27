@@ -1,0 +1,21 @@
+# Works on both Cloudflare Pages and Netlify.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Code and data are unhashed, so they must revalidate or a redeploy
+# never reaches anyone who has already loaded the site.
+/index.html
+  Cache-Control: no-cache
+/app.js
+  Cache-Control: no-cache
+/styles.css
+  Cache-Control: no-cache
+/schedule.json
+  Cache-Control: no-cache
+/sw.js
+  Cache-Control: no-cache
+
+/icon-*.png
+  Cache-Control: public, max-age=86400
