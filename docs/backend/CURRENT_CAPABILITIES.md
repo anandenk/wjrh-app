@@ -31,7 +31,10 @@ Static app files ─────────> web host / service worker ─> ins
 ```
 
 There is no station application API, database, archive service, persistent play-history
-service, push service, or content-management service represented in this workspace.
+service, push service, or content-management service **in production**. A local
+implementation of the proposed `/v1` layer now exists in `backend/` (see
+[`../../backend/README.md`](../../backend/README.md) and [`decisions/`](decisions/)); it runs
+only against mock upstreams and does not change anything below.
 
 ## Public service verification
 

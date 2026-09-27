@@ -10,6 +10,11 @@
 Read them in that order. The first two establish facts and gaps; the latter two define
 the proposed target and rollout sequence.
 
+5. [`backend/decisions/ADR-001-platform-cloudflare.md`](backend/decisions/ADR-001-platform-cloudflare.md) — hosting choice and cost estimate
+6. [`backend/decisions/ADR-002-archive-storage-licensing.md`](backend/decisions/ADR-002-archive-storage-licensing.md) — archive design and licensing options
+
+The contracts are implemented and testable locally in [`../backend/`](../backend/README.md).
+
 ## Other documentation
 
 - `content/` — station-owned editorial inputs.

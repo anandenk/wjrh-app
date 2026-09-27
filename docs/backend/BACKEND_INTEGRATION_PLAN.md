@@ -1,5 +1,12 @@
 # Backend integration plan
 
+> **Status (2026-09-27):** the Phase 1–3 engineering in this plan (normalized now-playing,
+> automated/validated schedule, health probes, show catalog, recent-spin collector, archive
+> pipeline) is implemented and tested **locally** in [`../../backend/`](../../backend/README.md).
+> Platform choice: [ADR-001](decisions/ADR-001-platform-cloudflare.md). Archive: disabled pending
+> [ADR-002](decisions/ADR-002-archive-storage-licensing.md). The Phase 0 ownership, access and
+> policy work below is still open and still blocks production.
+
 ## Recommended approach
 
 Do not replace the working stream, metadata publisher, or Google Calendar at the start.

@@ -25,6 +25,13 @@ CALENDAR_URL = (
 )
 USER_AGENT = "WJRH-backend-verifier/1.0"
 
+# The fake station in backend/mocks (started by backend/scripts/dev.sh).
+LOCAL_URLS = {
+    "stream": "http://127.0.0.1:8801/",
+    "metadata": "http://127.0.0.1:8802/",
+    "calendar": "http://127.0.0.1:8803/basic.ics",
+}
+
 
 def fetch(url: str, *, method: str = "GET", headers: dict[str, str] | None = None) -> dict[str, Any]:
     merged = {"User-Agent": USER_AGENT}
@@ -92,10 +99,14 @@ def tuple_rows(rows: set[tuple[str, str, str, str, str]]) -> list[dict[str, str]
     ]
 
 
-def audit() -> dict[str, Any]:
+def audit(
+    stream_url: str = STREAM_URL,
+    metadata_url: str = METADATA_URL,
+    calendar_url: str = CALENDAR_URL,
+) -> dict[str, Any]:
     checked_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
-    stream = fetch(STREAM_URL, method="HEAD")
+    stream = fetch(stream_url, method="HEAD")
     stream_result = {
         "ok": stream["ok"],
         "status": stream.get("status"),
@@ -105,7 +116,7 @@ def audit() -> dict[str, Any]:
         "error": stream.get("error"),
     }
 
-    metadata = fetch(METADATA_URL, headers={"Origin": "https://www.wjrh.org"})
+    metadata = fetch(metadata_url, headers={"Origin": "https://www.wjrh.org"})
     metadata_json = None
     metadata_error = metadata.get("error")
     if metadata["ok"]:
@@ -126,7 +137,7 @@ def audit() -> dict[str, Any]:
         "error": metadata_error,
     }
 
-    calendar = fetch(CALENDAR_URL)
+    calendar = fetch(calendar_url)
     calendar_text = calendar["body"].decode("utf-8", "replace") if calendar["ok"] else ""
     calendar_result: dict[str, Any] = {
         "ok": bool(calendar["ok"] and calendar_text.startswith("BEGIN:VCALENDAR")),
@@ -161,6 +172,7 @@ def audit() -> dict[str, Any]:
     overall = all([stream_result["ok"], metadata_result["ok"], calendar_result["ok"]])
     return {
         "checkedAt": checked_at,
+        "targets": {"stream": stream_url, "metadata": metadata_url, "calendar": calendar_url},
         "ok": overall,
         "stream": stream_result,
         "metadata": metadata_result,
@@ -173,6 +185,8 @@ def audit() -> dict[str, Any]:
 
 def render(report: dict[str, Any]) -> str:
     lines = [f"WJRH backend verification — {report['checkedAt']}"]
+    if report["targets"]["stream"] != STREAM_URL:
+        lines.append(f"targets: {report['targets']['stream']} · {report['targets']['metadata']} · {report['targets']['calendar']}")
     stream = report["stream"]
     lines.append(
         f"stream: {'OK' if stream['ok'] else 'FAIL'}; status={stream.get('status')}; "
@@ -223,8 +237,17 @@ def render(report: dict[str, Any]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="emit the full report as JSON")
+    parser.add_argument("--local", action="store_true", help="check the backend/mocks fake station instead of production")
+    parser.add_argument("--stream-url")
+    parser.add_argument("--metadata-url")
+    parser.add_argument("--calendar-url")
     args = parser.parse_args()
-    report = audit()
+    defaults = LOCAL_URLS if args.local else {"stream": STREAM_URL, "metadata": METADATA_URL, "calendar": CALENDAR_URL}
+    report = audit(
+        args.stream_url or defaults["stream"],
+        args.metadata_url or defaults["metadata"],
+        args.calendar_url or defaults["calendar"],
+    )
     if args.json:
         print(json.dumps(report, indent=2))
     else:

@@ -1,0 +1,51 @@
+# Container alternative for the pieces of the local stack that are not the API.
+# The API itself runs on the host with `wrangler dev` (see backend/README.md),
+# which reaches these services on 127.0.0.1.
+#
+#   docker compose -f backend/mocks/docker-compose.yml up -d
+#   S3_BACKEND=minio backend/scripts/dev.sh      # or let dev.sh start MinIO itself
+#
+# Credentials match backend/api/.dev.vars.example. Local only.
+
+services:
+  fake-station:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes: ["./:/app:ro", "../../wjrh-app/schedule.json:/wjrh-app/schedule.json:ro"]
+    command: ["python", "fake_station.py", "--host", "0.0.0.0"]
+    ports: ["8801:8801", "8802:8802", "8803:8803"]
+
+  minio:
+    image: minio/minio:latest
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: wjrhdev
+      MINIO_ROOT_PASSWORD: wjrhdev-secret
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio-data:/data"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      retries: 10
+
+  # Creates the bucket and makes objects publicly readable, like an R2 public bucket.
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 wjrhdev wjrhdev-secret &&
+      mc mb --ignore-existing local/wjrh-archive &&
+      mc anonymous set download local/wjrh-archive"
+
+  recorder:
+    profiles: ["recorder"]
+    image: python:3.12-slim
+    working_dir: /app
+    volumes: ["../recorder:/app:ro"]
+    network_mode: host   # reaches the API on 127.0.0.1:8787 and the stream on :8801
+    command: ["python", "recorder.py", "--shows", "all", "--spool", "/tmp/spool"]
+
+volumes:
+  minio-data:
