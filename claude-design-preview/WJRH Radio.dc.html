@@ -818,7 +818,7 @@
         </sc-for>
       </div>
 
-      <div class="archive-note">Live Google Calendar roster · real album covers used as prototype placeholders · sample broadcast history.</div>
+      <div class="archive-note">{{ archiveNote }}</div>
     </section>
     </sc-if>
 
@@ -879,14 +879,14 @@
         <h1 id="archive-detail-title" class="archive-detail-name">{{ archiveDetail.name }}</h1>
         <div class="archive-detail-host">with {{ archiveDetail.host }}</div>
         <sc-if value="{{ archiveDetail.description }}" hint-placeholder-val="{{ false }}">
-          <div class="archive-detail-description-note">Generated prototype description</div>
+          <div class="archive-detail-description-note">{{ descriptionNote }}</div>
           <p class="archive-detail-description">{{ archiveDetail.description }}</p>
         </sc-if>
       </section>
 
       <section class="archive-broadcasts" aria-labelledby="archive-broadcasts-title">
         <h2 id="archive-broadcasts-title" class="archive-broadcasts-heading">Past broadcasts</h2>
-        <div class="archive-broadcasts-note">Sample dates and recordings · proof of concept</div>
+        <div class="archive-broadcasts-note">{{ broadcastsNote }}</div>
         <sc-if value="{{ archiveDetail.noBroadcasts }}" hint-placeholder-val="{{ false }}">
           <p class="archive-broadcasts-empty">No archived broadcasts are available for this show yet.</p>
         </sc-if>
@@ -1425,6 +1425,152 @@ const EVENTS = [
   { name: 'Sixpress', date: 'February 17, 2018' }
 ];
 
+// ---------------------------------------------------------------- live data
+// Open this page with ?api=<WJRH API base URL> and every screen reads the WJRH
+// API (backend/) instead of the fixtures above: the real Eastern clock, the
+// schedule, now playing, station-wide history, published archive episodes, the
+// station roster, and real audio for both the live stream and archives.
+// Without it, the fixtures render exactly as before (board demo).
+//   Local testing: backend/scripts/dev.sh, then ?api=http://127.0.0.1:8787
+//   ?api=off clears the setting for this tab.
+const API = (function () {
+  let base = '';
+  try {
+    const m = /[?&]api=([^&#]+)/.exec(location.search);
+    if (m) {
+      const v = decodeURIComponent(m[1]);
+      if (v === 'off') sessionStorage.removeItem('wjrh.api');
+      else if (/^https?:\/\//.test(v)) sessionStorage.setItem('wjrh.api', v);
+    }
+    base = sessionStorage.getItem('wjrh.api') || '';
+  } catch (e) { /* storage blocked: fixtures */ }
+  return base.replace(/\/$/, '');
+})();
+
+// Station photographs stand in until shows supply their own artwork; album
+// covers are never used for real data.
+const STATION_ART = [
+  './assets/booth-live.jpg', './assets/home.jpg', './assets/signal-collage.jpg', './assets/history.jpg',
+  './assets/our-team.jpg', './assets/get-involved.jpg', './assets/events.jpg', './assets/about.jpg'
+];
+const LIVE = {
+  streamUrl: '', nowPlaying: null, recent: [], health: null, profiles: {},
+  scheduleAt: null, scheduleStale: false, archivesEnabled: false, error: null, loaded: false
+};
+// One media element for the whole app, outside the render tree so re-renders
+// never interrupt playback. Only used with the API.
+const PLAYER = API && typeof Audio !== 'undefined' ? new Audio() : null;
+if (PLAYER) PLAYER.preload = 'none';
+
+const ET_ZONE = 'America/New_York';
+const WEEK_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+function replaceAll(target, items) { target.length = 0; Array.prototype.push.apply(target, items); }
+function apiGet(path) {
+  return fetch(API + path, { cache: 'no-store' }).then(function (r) {
+    if (!r.ok) throw new Error(path + ' responded ' + r.status);
+    return r.json();
+  });
+}
+function etClock(ms) {
+  const parts = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: ET_ZONE, weekday: 'short', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' })
+    .formatToParts(new Date(ms)).forEach(function (p) { parts[p.type] = p.value; });
+  return { day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(parts.weekday), min: (Number(parts.hour) % 24) * 60 + Number(parts.minute) };
+}
+function fmtClockET(iso) {
+  return new Intl.DateTimeFormat('en-US', { timeZone: ET_ZONE, hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
+}
+function fmtDateET(iso) {
+  return new Intl.DateTimeFormat('en-US', { timeZone: ET_ZONE, month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(iso));
+}
+function fmtLongDate(ymd) {
+  return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date(ymd + 'T12:00:00Z'));
+}
+
+// Schedule, show profiles, roster, and published archives: slow-changing.
+function loadCatalog() {
+  return Promise.all([apiGet('/v1/schedule/weekly'), apiGet('/v1/shows'), apiGet('/v1/station'), apiGet('/v1/archives')])
+    .then(function (res) {
+      const weekly = res[0], station = res[2], index = res[3];
+      const profiles = LIVE.profiles = {};
+      res[1].shows.forEach(function (show) { profiles[show.id] = show; });
+      const shows = [];
+      WEEK_KEYS.forEach(function (key, day) {
+        (weekly.days[key] || []).forEach(function (slot) {
+          const profile = profiles[slot.showId] || null;
+          let dur = slot.endMin - slot.startMin;
+          if (dur <= 0) dur += 1440;
+          shows.push({
+            day: day, start: slot.startMin, dur: dur, name: slot.show, dj: slot.dj,
+            genre: profile && profile.genres.length ? profile.genres.join(', ') : slot.genre,
+            blurb: (profile && profile.description) || '', bio: (profile && profile.hostBio) || '',
+            slug: slot.id, showId: slot.showId
+          });
+        });
+      });
+      replaceAll(SHOWS, shows);
+      LIVE.scheduleAt = weekly.generatedAt;
+      LIVE.streamUrl = (station.listen && station.listen.streamUrl) || '';
+      replaceAll(TEAM, station.team.map(function (p) { return { name: p.name, role: p.role, href: 'mailto:' + p.email }; }));
+      replaceAll(EVENTS, station.events.map(function (e) { return { name: e.name, date: fmtLongDate(e.date) }; }));
+      LIVE.archivesEnabled = !!index.enabled;
+      return Promise.all(index.shows.map(function (entry) {
+        return apiGet('/v1/shows/' + encodeURIComponent(entry.showId) + '/archives')
+          .then(function (d) { return { entry: entry, episodes: d.episodes }; });
+      }));
+    })
+    .then(function (archives) {
+      const archiveShows = archives.map(function (a, i) {
+        const slot = SHOWS.find(function (s) { return s.showId === a.entry.showId; });
+        const art = a.entry.artwork ? a.entry.artwork.url : STATION_ART[i % STATION_ART.length];
+        const artAlt = a.entry.artwork ? a.entry.artwork.alt : 'WJRH station photograph; show artwork not supplied yet';
+        const profile = LIVE.profiles[a.entry.showId];
+        const host = slot ? slot.dj : (profile ? profile.hostNames.join(' and ') : '');
+        const show = { id: a.entry.showId, name: slot ? slot.name : a.entry.name, host: host, art: art, artAlt: artAlt, episodes: [] };
+        show.episodes = a.episodes.map(function (ep, n) {
+          return {
+            id: ep.id, name: show.name, host: show.host, art: art, artAlt: artAlt, slot: n + 1,
+            date: fmtDateET(ep.recordedAt), durationSeconds: ep.durationSeconds, audioUrl: ep.audioUrl, isPlaceholder: false
+          };
+        });
+        return show;
+      });
+      replaceAll(ARCHIVE_SHOWS, archiveShows);
+      replaceAll(ARCHIVE_EPISODES, [].concat.apply([], archiveShows.map(function (show) { return show.episodes; })));
+      LIVE.loaded = true;
+      LIVE.error = null;
+    });
+}
+
+// Now playing and history: polled while the page is visible.
+function loadNow() {
+  return Promise.all([
+    apiGet('/v1/now-playing').then(function (d) { LIVE.nowPlaying = d; }).catch(function () { LIVE.nowPlaying = null; }),
+    apiGet('/v1/recent?limit=12').then(function (d) { LIVE.recent = d.items; }).catch(function () {})
+  ]);
+}
+
+// Station-wide history in the shape of LOG_LIVE, with a divider where one show
+// hands over to the next.
+function liveLog(automationName) {
+  const nameFor = function (showId) {
+    if (!showId) return automationName;
+    const slot = SHOWS.find(function (s) { return s.showId === showId; });
+    return slot ? slot.name : showId;
+  };
+  const rows = [];
+  LIVE.recent.forEach(function (item, i) {
+    rows.push({ t: 'track', title: item.title || 'Title not posted', artist: item.artist || '', at: fmtClockET(item.startedAt) });
+    const older = LIVE.recent[i + 1];
+    if (older && older.showId !== item.showId) {
+      const startIso = item.occurrenceId ? item.occurrenceId.split('_')[0] : item.startedAt;
+      rows.push({ t: 'break', label: item.showId ? nameFor(item.showId) + ' started' : automationName + ' rotation', at: fmtClockET(startIso) });
+    }
+  });
+  return rows;
+}
+
 function fmtTime(m) {
   const h24 = Math.floor(m / 60) % 24, mm = m % 60;
   const h = h24 % 12 === 0 ? 12 : h24 % 12;
@@ -1467,7 +1613,9 @@ class Component extends DCLogic {
   componentDidMount() {
     this.applyPalette();
     const self = this;
+    this.startApi();
     this.archiveClock = window.setInterval(function () {
+      if (API) return; // real playback reports its own position
       if (!self.state.archiveId || !self.state.archivePlaying || self.state.archiveLoading) return;
       const episode = ARCHIVE_EPISODES.find(function (item) { return item.id === self.state.archiveId; });
       if (!episode) return;
@@ -1484,11 +1632,95 @@ class Component extends DCLogic {
     window.addEventListener('popstate', this.onPopState);
     this.installSwipeBack();
   }
-  componentDidUpdate() { this.applyPalette(); this.syncHistory(); }
+  componentDidUpdate() { this.applyPalette(); this.syncHistory(); this.syncAudio(); }
   componentWillUnmount() {
     if (this.archiveClock) window.clearInterval(this.archiveClock);
+    (this.apiTimers || []).forEach(function (t) { window.clearInterval(t); });
+    if (this.stopAudioEvents) this.stopAudioEvents();
     window.removeEventListener('popstate', this.onPopState);
     if (this.removeSwipeBack) this.removeSwipeBack();
+  }
+
+  // ---- WJRH API mode (see "live data" above) ----
+  startApi() {
+    if (!API || this.apiTimers) return;
+    const self = this;
+    replaceAll(SHOWS, []); replaceAll(ARCHIVE_SHOWS, []); replaceAll(ARCHIVE_EPISODES, []);
+    replaceAll(TEAM, []); replaceAll(EVENTS, []);
+    const bump = function () { self.setState({ apiVersion: (self.state.apiVersion || 0) + 1, nowMs: Date.now() }); };
+    const catalog = function () {
+      return loadCatalog().then(bump).catch(function (err) { LIVE.error = String((err && err.message) || err); bump(); });
+    };
+    const now = function () { if (!document.hidden) loadNow().then(bump); };
+    const health = function () { apiGet('/v1/health').then(function (h) { LIVE.health = h; bump(); }).catch(function () {}); };
+    catalog().then(now);
+    health();
+    this.apiTimers = [
+      window.setInterval(now, 15000),
+      window.setInterval(health, 60000),
+      window.setInterval(catalog, 300000),
+      window.setInterval(bump, 30000) // keep the Eastern clock moving
+    ];
+
+    const onPlaying = function () {
+      if (self.audioMode === 'live') self.setState({ playing: true, loading: false });
+      if (self.audioMode === 'archive') self.setState({ archivePlaying: true, archiveLoading: null });
+    };
+    const onTime = function () {
+      if (self.audioMode === 'archive') self.setState({ archivePosition: PLAYER.currentTime });
+    };
+    const onEnded = function () {
+      if (self.audioMode === 'archive') self.setState({ archivePlaying: false, archiveLoading: null });
+    };
+    const onError = function () {
+      if (!self.audioWant) return;
+      if (self.audioMode === 'live') self.setState({ playing: false, loading: false });
+      else self.setState({ archivePlaying: false, archiveLoading: null });
+    };
+    PLAYER.addEventListener('playing', onPlaying);
+    PLAYER.addEventListener('timeupdate', onTime);
+    PLAYER.addEventListener('ended', onEnded);
+    PLAYER.addEventListener('error', onError);
+    this.stopAudioEvents = function () {
+      PLAYER.removeEventListener('playing', onPlaying);
+      PLAYER.removeEventListener('timeupdate', onTime);
+      PLAYER.removeEventListener('ended', onEnded);
+      PLAYER.removeEventListener('error', onError);
+      PLAYER.pause();
+    };
+  }
+  // Component state stays the source of truth; this makes the media element match it.
+  syncAudio() {
+    if (!PLAYER) return;
+    const s = this.state;
+    const episode = s.archiveId ? ARCHIVE_EPISODES.find(function (e) { return e.id === s.archiveId; }) || null : null;
+    let want = null, src = '';
+    if (episode && (s.archivePlaying || s.archiveLoading === episode.id)) { want = 'archive:' + episode.id; src = episode.audioUrl; }
+    else if (!episode && (s.loading || s.playing)) { want = 'live'; src = LIVE.streamUrl; }
+    if (want !== this.audioWant) {
+      this.audioWant = want;
+      this.audioMode = want ? (want === 'live' ? 'live' : 'archive') : null;
+      if (!want || !src) {
+        PLAYER.pause();
+        PLAYER.removeAttribute('src');
+        PLAYER.load(); // drops the stream connection
+        if (want && !src) this.setState({ playing: false, loading: false, archivePlaying: false, archiveLoading: null });
+        return;
+      }
+      // The live stream is never cached or resumed: always a fresh connection.
+      PLAYER.src = want === 'live' ? src + (src.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now() : src;
+      if (want !== 'live') PLAYER.currentTime = Number(s.archivePosition) || 0;
+      const self = this;
+      PLAYER.play().catch(function () {
+        if (self.audioWant !== want) return;
+        self.setState({ playing: false, loading: false, archivePlaying: false, archiveLoading: null });
+      });
+      return;
+    }
+    // Seek when the slider or ±30 moved the position away from the media element.
+    if (this.audioMode === 'archive' && Math.abs(PLAYER.currentTime - (Number(s.archivePosition) || 0)) > 1.5) {
+      PLAYER.currentTime = Number(s.archivePosition) || 0;
+    }
   }
 
   // Show pages and Station sub-pages sit one level above the tabs. Each gets a
@@ -1513,8 +1745,9 @@ class Component extends DCLogic {
     if (s.screen === 'archive-detail') {
       const destination = s.archiveDetailFrom === 'schedule' ? 'schedule' : (s.archiveDetailFrom === 'now' ? 'now' : 'archive');
       const key = STATES[this.props.broadcast] ? this.props.broadcast : 'live';
+      const today = API ? etClock(Date.now()).day : STATES[key].day;
       this.setState({ screen: destination, archiveDetailId: null, tabMotion: 'left' });
-      if (destination === 'schedule') this.scrollScheduleSoon('schedule-day-' + STATES[key].day);
+      if (destination === 'schedule') this.scrollScheduleSoon('schedule-day-' + today);
       else this.scrollTopSoon();
     } else if (s.screen === 'station' && s.infoPage !== 'hub') {
       this.setState({ infoPage: 'hub' });
@@ -1644,7 +1877,10 @@ class Component extends DCLogic {
   renderVals() {
     const self = this;
     const key = STATES[this.props.broadcast] ? this.props.broadcast : 'live';
-    const st = STATES[key];
+    const clock = API ? etClock(this.state.nowMs || Date.now()) : null;
+    const st = API
+      ? { day: clock.day, min: clock.min, playing: false, down: !!(LIVE.health && LIVE.health.services.stream.status === 'down') }
+      : STATES[key];
     const frozen = !!this.props.reducedMotion || (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     const automationName = this.props.automationName || 'Hoggbot';
     const playing = this.state.playing === null ? st.playing : this.state.playing;
@@ -1676,14 +1912,25 @@ class Component extends DCLogic {
     const minsLeft = onAir ? onAir.start + onAir.dur - st.min : 0;
     const elapsed = onAir ? st.min - onAir.start : 0;
 
-    const log = key === 'automation' ? LOG_AUTO : LOG_LIVE;
-    const first = log.find(function (r) { return r.t === 'track'; });
-    const unknown = !first.artist;
-    const track = {
-      title: down ? 'Signal Broadcast' : first.title,
-      artist: down ? 'Reconnecting' : (unknown ? 'Live from a DJ computer' : first.artist),
-      album: unknown ? 'Artist metadata is not available from this source' : 'Album not posted'
-    };
+    const log = API ? liveLog(automationName) : (key === 'automation' ? LOG_AUTO : LOG_LIVE);
+    let unknown, track;
+    if (API) {
+      const t = LIVE.nowPlaying ? LIVE.nowPlaying.track : null;
+      unknown = !t || !t.artist;
+      track = {
+        title: down ? 'Signal Broadcast' : (t ? (t.title || 'Title not posted') : (LIVE.nowPlaying ? 'Live from the booth' : 'Connecting…')),
+        artist: down ? 'Reconnecting' : (t ? (t.artist || 'Artist not posted') : (LIVE.nowPlaying ? 'Track info not posted yet' : '')),
+        album: t && t.album ? t.album : 'Album not posted'
+      };
+    } else {
+      const first = log.find(function (r) { return r.t === 'track'; });
+      unknown = !first.artist;
+      track = {
+        title: down ? 'Signal Broadcast' : first.title,
+        artist: down ? 'Reconnecting' : (unknown ? 'Live from a DJ computer' : first.artist),
+        album: unknown ? 'Artist metadata is not available from this source' : 'Album not posted'
+      };
+    }
     const trackBlockStyle = {
       marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '3px',
       opacity: (unknown || down) ? 0.55 : 1, transition: 'opacity 160ms ' + EASE
@@ -1722,6 +1969,7 @@ class Component extends DCLogic {
         archivePosition: self.state.archiveId === episode.id ? self.state.archivePosition : 0,
         playing: false, loading: false
       });
+      if (API) return; // the media element reports when playback really starts
       window.setTimeout(function () {
         if (self.state.archiveId === episode.id && self.state.archiveLoading === episode.id) {
           self.setState({ archivePlaying: true, archiveLoading: null });
@@ -1910,6 +2158,7 @@ class Component extends DCLogic {
         playing: false, loading: true,
         archiveId: null, archivePlaying: false, archiveLoading: null
       });
+      if (API) return; // the media element reports when playback really starts
       window.setTimeout(function () {
         if (self.state.loading && !self.state.archiveId) self.setState({ playing: true, loading: false });
       }, 720);
@@ -2000,7 +2249,17 @@ class Component extends DCLogic {
       archiveDetailBack: function () { self.goBack(); },
 
       scheduleItems: scheduleItems,
-      freshness: 'Schedule synced from WJRH Google Calendar · Sep 22',
+      freshness: !API
+        ? 'Schedule synced from WJRH Google Calendar · Sep 22'
+        : (LIVE.error ? 'Could not reach the WJRH API (' + LIVE.error + ')'
+          : (LIVE.scheduleAt ? 'Schedule synced from WJRH Google Calendar · ' + fmtDateET(LIVE.scheduleAt) : 'Loading schedule…')),
+      archiveNote: !API
+        ? 'Live Google Calendar roster · real album covers used as prototype placeholders · sample broadcast history.'
+        : (!LIVE.loaded ? 'Loading the archive…'
+          : (!LIVE.archivesEnabled ? 'The archive is switched off on this server.'
+            : (ARCHIVE_SHOWS.length ? 'Published broadcasts · station photos stand in until shows supply artwork.' : 'No broadcasts have been published yet.'))),
+      broadcastsNote: API ? 'Published recordings · newest first' : 'Sample dates and recordings · proof of concept',
+      descriptionNote: API ? 'From the station' : 'Generated prototype description',
 
       goStation: function () {
         self.setState({

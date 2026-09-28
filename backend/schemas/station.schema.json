@@ -7,7 +7,8 @@
     "updatedAt",
     "approved",
     "team",
-    "events"
+    "events",
+    "listen"
   ],
   "properties": {
     "updatedAt": {
@@ -41,6 +42,18 @@
             "type": "string",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           }
+        }
+      }
+    },
+    "listen": {
+      "type": "object",
+      "required": [
+        "streamUrl"
+      ],
+      "properties": {
+        "streamUrl": {
+          "type": "string",
+          "pattern": "^https?://"
         }
       }
     }

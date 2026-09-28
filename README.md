@@ -13,6 +13,7 @@ roles and should not be merged or treated as interchangeable.
 - [`docs/content/STATION_CONTENT_BRIEF.md`](docs/content/STATION_CONTENT_BRIEF.md) — station-owned copy still needed for shows and hosts.
 - [`docs/backend/decisions/`](docs/backend/decisions/) — platform (Cloudflare) and archive/licensing decision records for the board.
 - [`backend/README.md`](backend/README.md) — the `/v1` API implemented locally against a fake station (`backend/scripts/dev.sh`).
+- [`backend/TESTING.md`](backend/TESTING.md) — step-by-step: run the design app on the local API and test it.
 
 Run the repeatable public-service check with:
 
@@ -30,7 +31,7 @@ the public Google Calendar, and drift between that calendar and
 |---|---|---|
 | `wjrh-app/` | Production-oriented static PWA connected to the real stream, metadata feed and generated schedule | Current implementation baseline |
 | `backend/` | `/v1` application API (Cloudflare Worker), fake-station mocks, archive recorder, tests | Local only — not deployed |
-| `claude-design-preview/WJRH Radio.dc.html` | Editable frontend design prototype | Current design source |
+| `claude-design-preview/WJRH Radio.dc.html` | Editable frontend design prototype; demo fixtures by default, live WJRH API with `?api=` | Current design source |
 | `wjrh-design-preview-cloudflare/` | Static sharing copy of the design prototype | Current board/demo deployment source |
 | `wjrh-app-deploy.zip` | Rebuilt deployment package for the production-oriented PWA | Generated artifact |
 | `wjrh-design-preview-cloudflare.zip` | Upload-ready package for the visual prototype | Generated artifact |

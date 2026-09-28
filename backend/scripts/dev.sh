@@ -4,7 +4,8 @@
 #   fake station  stream :8801  now-playing :8802  calendar :8803
 #   S3 storage    :9000  (moto by default; S3_BACKEND=minio uses Docker)
 #   API           :8787  (wrangler dev, local D1)
-#   PWA           :8765  → open http://127.0.0.1:8765/?api=http://127.0.0.1:8787
+#   design app    :8766  → the claude-design-preview prototype on the API (URL printed below)
+#   older PWA     :8765  → wjrh-app/ on the API
 #   dev tools     :8790  → archive test bench
 #
 # Options:  --with-recorder   also run the archive recorder for every show
@@ -19,7 +20,7 @@ mkdir -p "$LOGS"
 WITH_RECORDER=0
 [[ "${1:-}" == "--with-recorder" ]] && WITH_RECORDER=1
 
-for port in 8801 8802 8803 9000 8787 8765 8790; do
+for port in 8801 8802 8803 9000 8787 8765 8766 8790; do
   if (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null; then
     echo "!! port $port is already in use. Is another dev.sh still running? Find it with: lsof -i :$port" >&2
     exit 1
@@ -81,7 +82,9 @@ for cron in '*/15+*+*+*+*' '*/5+*+*+*+*' '*+*+*+*+*'; do
 done
 cd "$ROOT"
 
-echo "== PWA and dev tools"
+echo "== design app, PWA and dev tools"
+# The design prototype loads ../wjrh-app/fonts, so serve the repository root.
+python3 -m http.server 8766 --bind 127.0.0.1 --directory "$ROOT" >"$LOGS/design.log" 2>&1 & PIDS+=($!)
 python3 -m http.server 8765 --bind 127.0.0.1 --directory "$ROOT/wjrh-app" >"$LOGS/pwa.log" 2>&1 & PIDS+=($!)
 python3 -m http.server 8790 --bind 127.0.0.1 --directory "$BACKEND/devtools" >"$LOGS/devtools.log" 2>&1 & PIDS+=($!)
 
@@ -93,10 +96,12 @@ fi
 cat <<INFO
 
 WJRH local stack is up.
-  PWA on the API     http://127.0.0.1:8765/?api=http://127.0.0.1:8787   (?api=off to go back)
-  API                http://127.0.0.1:8787/v1/health
-  Archive test bench http://127.0.0.1:8790/archive-player.html
-  Logs               $LOGS
+  Design app on the API  http://127.0.0.1:8766/claude-design-preview/WJRH%20Radio.dc.html?api=http://127.0.0.1:8787
+                         (?api=off goes back to the built-in demo data)
+  Older PWA on the API   http://127.0.0.1:8765/?api=http://127.0.0.1:8787
+  API                    http://127.0.0.1:8787/v1/health
+  Archive test bench     http://127.0.0.1:8790/archive-player.html
+  Logs                   $LOGS
 
 This script ticks the cron jobs every 1/5/15 minutes. Trigger one immediately with:
   curl 'http://127.0.0.1:8787/__scheduled?cron=*+*+*+*+*'      now-playing collector

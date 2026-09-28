@@ -216,6 +216,7 @@ describe('shows, station, CORS', () => {
   it('serves the station roster', async () => {
     const { body } = await getJson('/v1/station', 'station');
     expect(body.approved).toBe(false);
+    expect(body.listen.streamUrl).toBe(env.STREAM_URL);
   });
 
   it('allows only configured origins', async () => {

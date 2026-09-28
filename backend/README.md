@@ -144,7 +144,29 @@ curl -sD - https://nowplaying.wjrh.org      # compare with mocks/fake_station.py
 
 `python3 tools/verify_backend.py --local` runs the production verifier against the mocks.
 
-## Pointing the PWA at the API
+## Pointing the design app at the API
+
+The design prototype `claude-design-preview/WJRH Radio.dc.html` reads the API when opened with
+`?api=<API base URL>`. `dev.sh` serves it on :8766 and prints the full URL. The value is
+remembered per tab; `?api=off` clears it. The Cloudflare board copy
+`wjrh-design-preview-cloudflare/index.html` is the same file.
+
+- **Without `?api=`:** every screen renders the built-in fixtures, exactly as before (the board
+  demo).
+- **With it:** the fixtures are replaced wholesale.
+  - The Eastern clock decides what's on air.
+  - Data sources:
+    - `/v1/schedule/weekly` and `/v1/shows` give the roster and descriptions;
+    - `/v1/now-playing` and `/v1/recent` give Now and Recently played;
+    - `/v1/archives` and `/v1/shows/{id}/archives` give the Archive;
+    - `/v1/station` gives the team, events, and the live stream URL;
+    - `/v1/health` gives the offline state.
+  - Playback goes through one real `<audio>` element: live stream or archive, seek, ±30.
+    Component state stays the source of truth (`syncAudio()`).
+  - Generated blurbs and album-cover placeholders never appear. Show pages use station photos
+    until artwork is supplied.
+
+## Pointing the older PWA at the API
 
 `wjrh-app/app.js` has a `CONFIG.apiBase` that is **empty by default**. When it is empty, the app behaves
 exactly as before; that is checked with `wjrh-app/tools/verify-ui.cjs`.

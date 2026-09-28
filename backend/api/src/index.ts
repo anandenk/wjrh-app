@@ -279,7 +279,8 @@ app.get('/v1/recent', async (c) => {
 
 app.get('/v1/station', (c) => {
   const { $comment: _c, ...body } = station as typeof station & { $comment?: string };
-  return jsonCached(c, body, 'public, max-age=300');
+  // Where listeners connect for live audio. It never goes through this API.
+  return jsonCached(c, { ...body, listen: { streamUrl: c.env.STREAM_URL } }, 'public, max-age=300');
 });
 
 app.post('/v1/join', async (c) => {

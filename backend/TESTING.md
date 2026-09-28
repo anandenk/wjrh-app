@@ -58,8 +58,9 @@ Leave it running. **Ctrl-C** stops everything.
 | 8803 | Fake Google Calendar (the current WJRH schedule) |
 | 9000 | S3 storage for archive audio (stand-in for Cloudflare R2) |
 | 8787 | **The API** |
-| 8765 | **The listener app** |
-| 8790 | **Archive test bench** |
+| 8766 | **The design app** (`claude-design-preview/`) |
+| 8765 | The older `wjrh-app/` PWA |
+| 8790 | Archive test bench |
 
 If it says `port … is already in use`, an earlier run is still going. `lsof -i :<port>` shows you
 what it is.
@@ -85,15 +86,28 @@ Open these in a browser:
 - http://127.0.0.1:8787/v1/recent: station-wide history.
 - `/v1/shows` and `/v1/station`.
 
-### 5b. The listener app running on the API
+### 5b. The design app running on the API
 
-Open **http://127.0.0.1:8765/?api=http://127.0.0.1:8787** and choose **Just look around**.
+Open **http://127.0.0.1:8766/claude-design-preview/WJRH%20Radio.dc.html?api=http://127.0.0.1:8787**.
+(It loads React from unpkg.com, so it needs internet.)
 
-- **Now Playing** shows fictional tracks. The app polls every 15 s, and the track changes every 90 s.
-- **Last heard** is labelled **"Station-wide · last hour"**. The same history appears on any device.
-- Open **http://127.0.0.1:8765/?api=off** to switch back to the original, direct sources.
-  - The label becomes "On this device · last hour".
-  - Locally those sources may be unreachable, so expect missing-metadata states. That is fine.
+- **Now**
+  - The show on air follows the real Eastern clock and the schedule. "AUTOMATED" appears between
+    shows.
+  - **Now playing** is the fake feed's current track. It changes every 90 s, and the app polls
+    every 15 s.
+  - **Recently played** is station-wide history from the API.
+  - **Play** connects to the fake stream (a test tone), and stop disconnects it.
+- **Schedule** is this week's real calendar. The footer says when it was last synced.
+- **Archive** lists only published recordings, so it's empty until you do 5d. Show pages use the
+  station's own photos until shows supply artwork.
+- **Station → Team / Events** come from `backend/content/station.json`.
+- Show descriptions appear only once the station writes them (see 5f). The generated prototype
+  blurbs are demo-only.
+- **?api=off** switches the tab back to the built-in demo data: the board-review version, unchanged.
+
+The older PWA also runs on the API at http://127.0.0.1:8765/?api=http://127.0.0.1:8787, with the
+same `?api=off` switch.
 
 ### 5c. Break the station on purpose
 
@@ -142,12 +156,17 @@ other mocks.
    - About 2 minutes later it logs
      `uploaded … as episode … (1933312 bytes, 121s, 0 gaps) — awaiting staff review`.
    - Then press Ctrl-C.
-3. Open **http://127.0.0.1:8790/archive-player.html** and choose **Load queue**. The episode shows
-   `PENDING_REVIEW`. Nothing is public yet. Choose **Mark published**.
-4. Choose **Load archive**, then **Amber on Audio**, then **Load**, then **Play**.
-   - Try **+30s**, **−30s** and the slider.
-   - "Range probe: HTTP 206 (seekable)" confirms the storage supports seeking, as R2 will.
-5. Choose **Mark unpublished**, then **Load archive** again. It shows "No published episodes yet".
+3. Open **http://127.0.0.1:8790/archive-player.html** (the staff test bench) and choose
+   **Load queue**. The episode shows `PENDING_REVIEW`. Nothing is public yet. Choose
+   **Mark published**.
+4. In the design app, reload and open **Archive → Amber on Audio**. Press play on the broadcast.
+   - The ±30 buttons and the slider seek the real recording.
+   - The player dock follows you to other tabs.
+   - Pressing live play on **Now** stops the archive.
+   - The test bench's **Load archive → Load → Play** shows "Range probe: HTTP 206 (seekable)". That
+     confirms the storage supports seeking, as R2 will.
+5. In the test bench choose **Mark unpublished**, then reload the design app. The Archive tab says
+   "No broadcasts have been published yet".
    The full history (who registered, reviewed, published and unpublished it) is kept:
    ```bash
    curl -H 'Authorization: Bearer dev-admin-token' 'http://127.0.0.1:8787/v1/admin/audit'
@@ -156,9 +175,13 @@ other mocks.
 
 ### 5e. The interest form
 
-1. In the app, tap the **i** button (About), then **Host a show**.
-2. Enter an email and submit. You should see **SENT TO THE STATION / Interest received**.
-3. The dev provider just stores it:
+The design sends people to GroupMe and email rather than a form, so `/v1/join` is only used by the
+older PWA today. To try it:
+
+1. Open http://127.0.0.1:8765/?api=http://127.0.0.1:8787.
+2. Tap the **i** button (About), then **Host a show**.
+3. Submit an email. You should see **SENT TO THE STATION / Interest received**.
+4. The dev provider just stores it:
 
 ```bash
 cd backend/api
@@ -174,8 +197,9 @@ cd ../..
    - `"description"`: one or two sentences, at most 200 characters;
    - `"hostBio"`: one sentence, at most 140 characters.
 3. Save. The API reloads by itself within a few seconds.
-4. In the app, go to **Schedule**, then **Friday**, then **Supercut**. The blurb appears under the
-   title and the bio appears under **Hosted by**.
+4. Reload the design app and open **Schedule → Supercut** (Friday). The description appears on its
+   show page, labelled "From the station".
+   - The design has no host-bio slot yet. The older PWA shows both the blurb and the bio.
 
 This is how the answers to `docs/content/STATION_CONTENT_BRIEF.md` get into the app. Revert the file
 afterwards with `git checkout backend/content/shows.json` if it was only a test.
