@@ -1,7 +1,7 @@
 # Current capabilities
 
 Verified against the public services and local source on **2026-09-25 ET**
-(2026-09-26 UTC). Run `python3 tools/verify_backend.py` to refresh the checks.
+(2026-09-26 UTC). Run `python3 tools/check_station_services.py` to refresh the checks.
 
 ## Scope and confidence
 
@@ -11,7 +11,7 @@ This document describes what can be established from:
 - the public now-playing endpoint;
 - the public Google Calendar ICS feed;
 - the schedule snapshot tools in `tools/`; and
-- the frontend design in `claude-design-preview/`.
+- the frontend design in `frontend/`.
 
 This workspace does **not** contain source code, infrastructure configuration, logs,
 credentials, or deployment access for the stream server, metadata publisher,
@@ -25,7 +25,7 @@ DJ / automation
   ├─ audio ───────────────> Shoutcast / ProStream ─────> listeners' players
   └─ track metadata ──────> S3 + CloudFront JSON ──────> clients polling for artist/title
 
-Public Google Calendar ───> tools/fetch_schedule.py ───> tools/schedule.json (run by hand)
+Public Google Calendar ───> tools/fetch_schedule.py ───> tools/schedule-snapshot.json (run by hand)
 ```
 
 There is no station application API, database, archive service, persistent play-history
@@ -37,7 +37,7 @@ service, push service, or content-management service represented in this workspa
 |---|---|---|---|
 | Live audio | `200 OK`, `audio/mpeg`, Shoutcast ICY, ProStream, 128 kbps, HTTPS | Continuous live listening through a plain `<audio>` element | No observed stream CORS header; do not require CORS or use Web Audio without infrastructure changes |
 | Now playing | `200 OK`, CORS `*`, JSON body | Browser-readable artist and title when the publisher supplies them | Response content type is `binary/octet-stream`; no album, artwork, played-at timestamp, show ID, history, or health status |
-| Public schedule | Valid ICS, 29 `VEVENT` blocks, 26 weekly rules | Calendar-owned show names, hosts, times, durations and free-text descriptions | The app does not read ICS directly; a script must regenerate and redeploy `schedule.json` |
+| Public schedule | Valid ICS, 29 `VEVENT` blocks, 26 weekly rules | Calendar-owned show names, hosts, times, durations and free-text descriptions | The app does not read ICS directly; a script must regenerate and redeploy `tools/schedule-snapshot.json` |
 
 The first verification request returned null artist/title values; a repeat request a few
 minutes later returned both populated. That confirms the endpoint is live and also
@@ -46,7 +46,7 @@ already treats null/`Null` values as missing metadata.
 
 ## Schedule snapshot status
 
-The committed `tools/schedule.json` was generated on
+The committed `tools/schedule-snapshot.json` was generated on
 `2026-09-18T23:04:03-04:00`.
 
 | Measure | Committed snapshot | Current live calendar after normalization |
@@ -67,7 +67,7 @@ This demonstrates that schedule refresh is functional but manual and currently s
 
 ## The frontend design
 
-`claude-design-preview/WJRH Radio.dc.html` (deployed as `wjrh-design-preview-cloudflare/`)
+`frontend/index.html` (also what deploys to Cloudflare Pages)
 runs entirely on built-in demo data. It demonstrates, but does not implement against
 production services:
 
@@ -83,7 +83,7 @@ production services:
 The prototype code explicitly marks archive dates, recordings, descriptions, recent
 tracks and album covers as fixtures or placeholders. They must not be presented as
 production data. What would replace each fixture is mapped in
-[`API_CONTRACTS.md`](API_CONTRACTS.md).
+[`api.md`](api.md).
 
 An earlier listener PWA (`wjrh-app/`) was connected to the real stream, feed and schedule
 snapshot. It was removed from the repository to keep the focus on the current design; it

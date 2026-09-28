@@ -1,6 +1,6 @@
 # Frontend-to-backend gap analysis
 
-This compares the frontend design (`claude-design-preview/`) with verified WJRH services.
+This compares the frontend design (`frontend/`) with verified WJRH services.
 It is a scope control document: a polished screen is not considered supported until its
 data and actions come from a durable production source.
 

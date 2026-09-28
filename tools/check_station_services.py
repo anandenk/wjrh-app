@@ -137,7 +137,7 @@ def audit() -> dict[str, Any]:
         "error": calendar.get("error"),
     }
 
-    local_schedule = json.loads((TOOLS / "schedule.json").read_text(encoding="utf-8"))
+    local_schedule = json.loads((TOOLS / "schedule-snapshot.json").read_text(encoding="utf-8"))
     local_days = local_schedule.get("days", {})
     local_result = {
         "generatedAt": local_schedule.get("generatedAt"),

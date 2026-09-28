@@ -1,9 +1,9 @@
-# ADR-002: Keep Archive provider-agnostic and off until licensing is decided
+# Decision 002: Keep Archive provider-agnostic and off until licensing is decided
 
 - **Status:** Proposed. The launch decision belongs to the board.
 - **Date:** 2026-09-28
-- **Related:** [ADR-001](ADR-001-platform-cloudflare.md) and
-  [`../BACKEND_INTEGRATION_PLAN.md`](../BACKEND_INTEGRATION_PLAN.md) (Phase 3).
+- **Related:** [Decision 001](001-hosting-on-cloudflare.md) and
+  [`../rollout-plan.md`](../rollout-plan.md) (Phase 3).
 
 ## Context
 
@@ -24,7 +24,7 @@ Almost every WJRH show is one or two hours long, so serving recorded music shows
 own storage is **probably not covered**. Musical-work rights (ASCAP, BMI, SESAC, GMR) are a separate
 question. This is our reading, not legal advice, and the station and college must confirm it.
 
-The existing rules in [`../CURRENT_CAPABILITIES.md`](../CURRENT_CAPABILITIES.md) ("Licensing rules for any frontend") still apply:
+The existing rules in [`../current-systems.md`](../current-systems.md) ("Licensing rules for any frontend") still apply:
 - no advance playlists;
 - no per-track interactivity.
 

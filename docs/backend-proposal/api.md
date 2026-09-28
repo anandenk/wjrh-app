@@ -2,7 +2,7 @@
 
 These contracts are a planning baseline, not an existing API. Confirm the host platform,
 owners and authentication model before implementation. The proposed platform is in
-[`decisions/ADR-001-platform-cloudflare.md`](decisions/ADR-001-platform-cloudflare.md).
+[`decisions/001-hosting-on-cloudflare.md`](decisions/001-hosting-on-cloudflare.md).
 
 A working prototype of these contracts was built against a mock station, then removed from the
 working tree until the board approves. It's recoverable from branch `claude/busy-bell-qvk1c0` at
@@ -10,7 +10,7 @@ commit `e423e98`. The notes marked **Learned from the prototype** below come fro
 
 ## What each screen of the design reads
 
-| Design screen (`claude-design-preview/`) | Data today | Endpoint |
+| Design screen (`frontend/`) | Data today | Endpoint |
 |---|---|---|
 | **Now**: on-air show, LIVE / AUTOMATED state, now playing | Fixtures and a fixed demo clock | `/v1/now-playing` (plus the ET clock and `/v1/schedule/weekly`) |
 | **Now**: Recently played | Fixture list | `/v1/recent` |
@@ -141,7 +141,7 @@ specials, semester breaks and one-off changes correctly.
 }
 ```
 
-The existing weekly `schedule.json` can remain as a generated fallback while this API is
+The existing weekly `tools/schedule-snapshot.json` can remain as a generated fallback while this API is
 introduced.
 
 **Learned from the prototype**
@@ -159,10 +159,10 @@ introduced.
   - Report the failure through `/v1/health` (`services.schedule.lastError`).
   - Overlaps and empty weeks are warnings, not rejections.
 - **Add `GET /v1/schedule/weekly?week=YYYY-MM-DD`.**
-  - It returns one real week in the exact `tools/schedule.json` shape, plus `showId` and
+  - It returns one real week in the exact `tools/schedule-snapshot.json` shape, plus `showId` and
     `occurrenceId` per slot.
   - Existing frontends can switch source without a rewrite. Built from the current calendar, it
-    reproduced the committed `schedule.json` exactly.
+    reproduced the committed `tools/schedule-snapshot.json` exactly.
   - Its `generatedAt` should mean "last confirmed current" (the last successful check), so a
     frontend can flag stale schedules honestly.
 - **Map show names to IDs with the same slug rule as `fetch_schedule.py`.** Keep an `aliases` list per

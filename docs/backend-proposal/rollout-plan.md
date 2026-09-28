@@ -118,7 +118,7 @@ This phase is the safest first implementation work because it does not require A
 
 ### 2. Add station-owned show content
 
-- Complete `docs/content/STATION_CONTENT_BRIEF.md`.
+- Complete `docs/station-content-brief.md`.
 - Choose the simplest maintainable source:
   - reviewed JSON in source control;
   - a controlled spreadsheet with a validation/export job; or
@@ -243,7 +243,7 @@ Do not introduce accounts unless another approved requirement genuinely needs th
 
 ## First backend working session agenda
 
-1. Walk through `CURRENT_CAPABILITIES.md` and correct any ownership assumptions.
+1. Walk through `current-systems.md` and correct any ownership assumptions.
 2. Assign owners for the three existing sources.
 3. Decide where the small application layer and scheduled jobs can run.
 4. Choose the Phase 1 milestone: automated schedule plus health checks.

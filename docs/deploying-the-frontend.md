@@ -1,10 +1,9 @@
-# WJRH board prototype — Cloudflare Pages handoff
+# Deploying the frontend to Cloudflare Pages
 
 ## Deployable artifact
 
-- Upload `wjrh-design-preview-cloudflare.zip` (a zip of the `wjrh-design-preview-cloudflare/` folder) with Cloudflare Pages Direct Upload.
-- `index.html` is an exact copy of `claude-design-preview/WJRH Radio.dc.html`; refresh it with `cp` after editing the design.
-- `index.html` is at the archive root, so the deployment opens at the project URL without a path suffix.
+- Upload the `frontend/` folder (or a zip of it) with Cloudflare Pages Direct Upload. It is both the design and the deployable site.
+- `index.html` is at the folder root, so the deployment opens at the project URL without a path suffix.
 - The bundle is static and has no build step.
 - `_headers` prevents search indexing and adds conservative browser security headers.
 
@@ -13,7 +12,7 @@
 1. Open **Workers & Pages** in the Cloudflare dashboard.
 2. Choose **Create application** → **Get started** → **Drag and drop your files**.
 3. Use a clearly provisional project name such as `wjrh-board-prototype`.
-4. Upload `wjrh-design-preview-cloudflare.zip` and deploy it.
+4. Upload the `frontend/` folder and deploy it.
 5. Open the generated `pages.dev` URL on both desktop and a phone before sharing it.
 
 ## What is real in this build

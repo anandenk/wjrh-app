@@ -1,22 +1,22 @@
-# ADR-001: Host the WJRH application layer on Cloudflare
+# Decision 001: Host the WJRH application layer on Cloudflare
 
 - **Status:** Proposed. Waiting on board approval; nothing is deployed.
 - **Date:** 2026-09-28
-- **Decides:** where the `/v1` API ([`../API_CONTRACTS.md`](../API_CONTRACTS.md)), its scheduled jobs,
+- **Decides:** where the `/v1` API ([`../api.md`](../api.md)), its scheduled jobs,
   its database and any archive audio would live.
 - **Does not decide:** whether Archive launches. That is covered by
-  [ADR-002](ADR-002-archive-storage-licensing.md).
+  [Decision 002](002-archive-and-licensing.md).
 
 ## Context
 
-The frontend design (`claude-design-preview/WJRH Radio.dc.html`) shows features no current service
-provides. The gaps are listed in [`../FRONTEND_BACKEND_GAP_ANALYSIS.md`](../FRONTEND_BACKEND_GAP_ANALYSIS.md):
+The frontend design (`frontend/index.html`) shows features no current service
+provides. The gaps are listed in [`../gaps.md`](../gaps.md):
 - station-wide recently played;
 - show pages;
 - a live on-air state;
 - an archive.
 
-[`../BACKEND_INTEGRATION_PLAN.md`](../BACKEND_INTEGRATION_PLAN.md) recommends adding a small layer
+[`../rollout-plan.md`](../rollout-plan.md) recommends adding a small layer
 beside the existing sources, not replacing them. The existing sources are the Shoutcast stream,
 the S3/CloudFront now-playing JSON, and the public Google Calendar.
 

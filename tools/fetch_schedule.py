@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Snapshot WJRH's public Google Calendar into tools/schedule.json (a flat weekly grid).
+Snapshot WJRH's public Google Calendar into tools/schedule-snapshot.json (a flat weekly grid).
 
 This is today's schedule pipeline: the station edits the calendar, and someone runs
 
     python3 tools/fetch_schedule.py
 
-The proposed backend (docs/backend/API_CONTRACTS.md) replaces this manual step with an
+The proposed backend (docs/backend-proposal/api.md) replaces this manual step with an
 automatic refresh that also handles cancelled and moved shows.
 """
 
@@ -220,7 +220,7 @@ def main():
             raw = resp.read().decode("utf-8", "replace")
     except Exception as exc:
         print(f"  FAILED: {exc}", file=sys.stderr)
-        print("  schedule.json left unchanged.", file=sys.stderr)
+        print("  schedule-snapshot.json left unchanged.", file=sys.stderr)
         return 1
 
     events = parse_events(unfold(raw))
@@ -232,7 +232,7 @@ def main():
         "days": days,
     }
 
-    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schedule.json")
+    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schedule-snapshot.json")
     with open(dest, "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=2, ensure_ascii=False)
         fh.write("\n")
