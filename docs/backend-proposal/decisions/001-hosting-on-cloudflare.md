@@ -90,12 +90,11 @@ so that's about 1.7 GB of new audio a week.
 
 ## Prior work
 
-A working local prototype of this proposal was built and then removed from the working tree while
-the board decides. It included:
+A working local implementation of this proposal is in [`../../../backend/`](../../../backend/). It
+includes:
 - the API;
-- a mock station;
-- the recorder;
-- 47 automated tests.
+- a mock station, including a fake Mixcloud;
+- the recorder, which archives to our own storage or to Mixcloud;
+- 50 automated tests and an end-to-end check.
 
-It is preserved in the history of branch `claude/busy-bell-qvk1c0` at commit `e423e98`. To look at it:
-`git checkout e423e98 -- backend`.
+It runs entirely on a laptop with `wrangler dev`, so none of it costs anything until it is deployed.

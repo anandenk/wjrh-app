@@ -1,7 +1,7 @@
 # WJRH listener app
 
-The frontend design for the WJRH 104.9 FM listener app, and the written proposal for the
-backend it needs. The backend is a proposal only: nothing is built or connected until the
+The frontend design for the WJRH 104.9 FM listener app, the proposal for the backend it needs,
+and that backend running locally. Nothing is deployed or connected to WJRH's services until the
 board approves it.
 
 ## What's here
@@ -9,6 +9,7 @@ board approves it.
 | Path | What it is |
 |---|---|
 | `frontend/` | The app design (`index.html`), running on built-in demo data. Also what deploys to Cloudflare Pages. |
+| `backend/` | The proposed `/v1` API (a Cloudflare Worker), the archive recorder, and a fake station to run them against. Local only; see [`backend/TESTING.md`](backend/TESTING.md). |
 | `docs/backend-proposal/` | What exists today, the gaps, the proposed API, the rollout plan, and decisions awaiting the board. |
 | `docs/station-content-brief.md` | Show genres, blurbs and host bios the station needs to supply. |
 | `docs/deploying-the-frontend.md` | How to deploy `frontend/` to Cloudflare Pages. |
@@ -29,6 +30,15 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory frontend
 ```
 
 Open <http://127.0.0.1:8765/>. It loads React from unpkg.com, so it needs internet access.
+
+## Run the backend locally
+
+Free: no Cloudflare or Mixcloud account needed. Needs Node 20+ and Python 3.10+.
+
+```bash
+cd backend/api && npm ci && npm test      # 50 tests in Cloudflare's runtime
+backend/scripts/dev.sh                    # fake station + fake Mixcloud + API on :8787
+```
 
 ## Check the real services
 

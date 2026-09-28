@@ -1,0 +1,68 @@
+# WJRH application API — Cloudflare Worker.
+#
+# NOT DEPLOYED. Top-level values describe the intended production wiring against
+# the real WJRH upstreams; `[env.dev]` points everything at backend/mocks.
+# See docs/backend-proposal/decisions/001-hosting-on-cloudflare.md.
+
+name = "wjrh-api"
+main = "src/index.ts"
+compatibility_date = "2026-08-15"
+
+[triggers]
+# Must match the dispatch table in src/index.ts.
+crons = ["* * * * *", "*/5 * * * *", "*/15 * * * *", "17 8 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wjrh"
+database_id = "00000000-0000-0000-0000-000000000000" # placeholder until provisioned
+migrations_dir = "migrations"
+
+[vars]
+STREAM_URL = "https://internetstreamer.lafayette.edu/"
+METADATA_URL = "https://nowplaying.wjrh.org"
+CALENDAR_URL = "https://calendar.google.com/calendar/ical/c_7a588b3138c9250476aaac7dc81d5002c7e689fd8cd4cef1cc56737e872720ee%40group.calendar.google.com/public/basic.ics"
+CORS_ORIGINS = "https://www.wjrh.org"
+MEDIA_BASE_URL = "https://media.wjrh.org"
+S3_ENDPOINT = ""            # R2: https://<account-id>.r2.cloudflarestorage.com
+S3_BUCKET = "wjrh-archive"
+S3_REGION = "auto"
+ARCHIVES_ENABLED = "false"  # stays off until licensing is resolved (decision 002)
+MIXCLOUD_API_BASE = "https://api.mixcloud.com"
+MIXCLOUD_WIDGET_URL = "https://player-widget.mixcloud.com/widget/iframe/"
+ARCHIVE_RETENTION_DAYS = "14"
+RECENT_RETENTION_DAYS = "30"
+JOIN_PROVIDER = "disabled"  # "log" in dev; real provider undecided
+NOW_PLAYING_CACHE_SECONDS = "10"
+METADATA_STALE_MINUTES = "45"
+SCHEDULE_STALE_MINUTES = "90"
+# Secrets (wrangler secret put / .dev.vars): ADMIN_TOKEN, S3_ACCESS_KEY_ID,
+# S3_SECRET_ACCESS_KEY, JOIN_SALT
+
+[env.dev]
+name = "wjrh-api-dev"
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "wjrh"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[env.dev.vars]
+STREAM_URL = "http://127.0.0.1:8801/"
+METADATA_URL = "http://127.0.0.1:8802/"
+CALENDAR_URL = "http://127.0.0.1:8803/basic.ics"
+CORS_ORIGINS = "*"
+MEDIA_BASE_URL = "http://127.0.0.1:9000/wjrh-archive"
+S3_ENDPOINT = "http://127.0.0.1:9000"
+S3_BUCKET = "wjrh-archive"
+S3_REGION = "us-east-1"
+ARCHIVES_ENABLED = "true"
+MIXCLOUD_API_BASE = "http://127.0.0.1:8804"            # fake Mixcloud in mocks/fake_station.py
+MIXCLOUD_WIDGET_URL = "http://127.0.0.1:8804/widget/iframe/"
+ARCHIVE_RETENTION_DAYS = "14"
+RECENT_RETENTION_DAYS = "30"
+JOIN_PROVIDER = "log"
+NOW_PLAYING_CACHE_SECONDS = "5"
+METADATA_STALE_MINUTES = "45"
+SCHEDULE_STALE_MINUTES = "90"

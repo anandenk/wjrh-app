@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.wjrh.org/schemas/v1/health.json",
+  "title": "/v1 health",
+  "type": "object",
+  "required": [
+    "status",
+    "checkedAt",
+    "services"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "ok",
+        "degraded",
+        "down"
+      ]
+    },
+    "checkedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "services": {
+      "type": "object",
+      "required": [
+        "stream",
+        "metadata",
+        "schedule",
+        "archives"
+      ],
+      "properties": {
+        "stream": {
+          "type": "object",
+          "required": [
+            "status",
+            "checkedAt",
+            "latencyMs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "degraded",
+                "down",
+                "disabled"
+              ]
+            },
+            "checkedAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "latencyMs": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "required": [
+            "status",
+            "checkedAt",
+            "freshAt"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "degraded",
+                "down",
+                "disabled"
+              ]
+            },
+            "checkedAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "freshAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "schedule": {
+          "type": "object",
+          "required": [
+            "status",
+            "generatedAt",
+            "unmappedShows"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "degraded",
+                "down",
+                "disabled"
+              ]
+            },
+            "generatedAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "unmappedShows": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "archives": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "degraded",
+                "down",
+                "disabled"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

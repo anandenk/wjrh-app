@@ -4,9 +4,10 @@ These contracts are a planning baseline, not an existing API. Confirm the host p
 owners and authentication model before implementation. The proposed platform is in
 [`decisions/001-hosting-on-cloudflare.md`](decisions/001-hosting-on-cloudflare.md).
 
-A working prototype of these contracts was built against a mock station, then removed from the
-working tree until the board approves. It's recoverable from branch `claude/busy-bell-qvk1c0` at
-commit `e423e98`. The notes marked **Learned from the prototype** below come from that work.
+A working implementation of these contracts runs locally in [`../../backend/`](../../backend/),
+against a fake station. The notes marked **Learned from the prototype** below come from that work.
+Archive episodes can also live on Mixcloud; see "Archives on Mixcloud" in
+[`../../backend/README.md`](../../backend/README.md).
 
 ## What each screen of the design reads
 

@@ -5,3 +5,10 @@ __pycache__/
 
 # Generated deployment bundles — rebuild by zipping the source folder
 *.zip
+
+# Backend local development
+node_modules/
+.wrangler/
+.dev.vars
+backend/.dev-state/
+

@@ -1,0 +1,28 @@
+{
+  "$comment": "Station roster and events formerly hardcoded in the design prototype (TEAM, EVENTS). Must be confirmed by the station each semester before any public use.",
+  "updatedAt": "2026-09-27T00:00:00-04:00",
+  "approved": false,
+  "team": [],
+  "events": [
+    {
+      "name": "Record Painting with WJRH",
+      "date": "2025-10-16"
+    },
+    {
+      "name": "Zine Making with Arts Society",
+      "date": "2025-10-15"
+    },
+    {
+      "name": "Mosie with j soloman and Star Moles",
+      "date": "2022-05-06"
+    },
+    {
+      "name": "Isa Reyes and Vasey Hall",
+      "date": "2018-10-12"
+    },
+    {
+      "name": "Sixpress",
+      "date": "2018-02-17"
+    }
+  ]
+}

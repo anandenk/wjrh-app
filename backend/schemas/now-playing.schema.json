@@ -1,0 +1,192 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.wjrh.org/schemas/v1/now-playing.json",
+  "title": "/v1 now-playing",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asOf",
+    "sourceUpdatedAt",
+    "stale",
+    "live",
+    "automation",
+    "track",
+    "show",
+    "nextShow"
+  ],
+  "properties": {
+    "asOf": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "sourceUpdatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "live": {
+      "type": "boolean"
+    },
+    "automation": {
+      "type": "boolean"
+    },
+    "track": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "artist",
+            "album",
+            "artworkUrl"
+          ],
+          "properties": {
+            "title": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "artist": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "album": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "artworkUrl": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "not": {
+            "properties": {
+              "title": {
+                "type": "null"
+              },
+              "artist": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "show": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "occurrenceId",
+            "name",
+            "hostNames",
+            "startsAt",
+            "endsAt",
+            "hasProfile"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "occurrenceId": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "hostNames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "startsAt": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+            },
+            "endsAt": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+            },
+            "hasProfile": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "nextShow": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "occurrenceId",
+            "name",
+            "hostNames",
+            "startsAt",
+            "endsAt",
+            "hasProfile"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "occurrenceId": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "hostNames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "startsAt": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+            },
+            "endsAt": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+            },
+            "hasProfile": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

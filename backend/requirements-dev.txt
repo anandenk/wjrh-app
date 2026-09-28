@@ -1,0 +1,5 @@
+# Optional Python tools for the local stack (installed by scripts/dev.sh into
+# backend/.dev-state/venv). The mocks and the recorder themselves need only the
+# standard library.
+moto[server]>=5.0,<6   # S3 emulator for archive storage when Docker/MinIO is not used
+mutagen>=1.47,<2       # exact MP3 durations in the recorder (falls back to a bitrate estimate)

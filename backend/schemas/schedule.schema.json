@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.wjrh.org/schemas/v1/schedule.json",
+  "title": "/v1 schedule",
+  "type": "object",
+  "required": [
+    "timezone",
+    "generatedAt",
+    "stale",
+    "source",
+    "occurrences"
+  ],
+  "properties": {
+    "timezone": {
+      "const": "America/New_York"
+    },
+    "generatedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "checkedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "source": {
+      "type": "string"
+    },
+    "from": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "to": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "occurrences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "showId",
+          "title",
+          "hostNames",
+          "startsAt",
+          "endsAt",
+          "cancelled",
+          "recurring",
+          "hasProfile"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "showId": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "hostNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "startsAt": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+          },
+          "endsAt": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+          },
+          "cancelled": {
+            "type": "boolean"
+          },
+          "recurring": {
+            "type": "boolean"
+          },
+          "hasProfile": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

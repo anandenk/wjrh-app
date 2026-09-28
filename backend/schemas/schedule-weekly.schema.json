@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.wjrh.org/schemas/v1/schedule-weekly.json",
+  "title": "/v1 schedule-weekly",
+  "$comment": "Legacy tools/schedule-snapshot.json shape plus showId/occurrenceId/blurb.",
+  "type": "object",
+  "required": [
+    "tz",
+    "generatedAt",
+    "source",
+    "days"
+  ],
+  "properties": {
+    "tz": {
+      "const": "America/New_York"
+    },
+    "generatedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "source": {
+      "type": "string"
+    },
+    "days": {
+      "type": "object",
+      "required": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "startsAt",
+            "endsAt",
+            "startMin",
+            "endMin",
+            "show",
+            "dj",
+            "genre",
+            "description",
+            "host"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "startsAt": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}$"
+            },
+            "endsAt": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}$"
+            },
+            "startMin": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1439
+            },
+            "endMin": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1439
+            },
+            "show": {
+              "type": "string"
+            },
+            "dj": {
+              "type": "string"
+            },
+            "genre": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "blurb": {
+              "type": "string"
+            },
+            "host": {
+              "type": "object",
+              "required": [
+                "name",
+                "initials",
+                "bio"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

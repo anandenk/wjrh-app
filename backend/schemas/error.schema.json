@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.wjrh.org/schemas/v1/error.json",
+  "title": "/v1 error",
+  "type": "object",
+  "required": [
+    "error"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "requestId"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]+$"
+        },
+        "message": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

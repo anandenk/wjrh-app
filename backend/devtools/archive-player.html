@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WJRH archive test bench</title>
+<style>
+  :root {
+    --paper: #f4efe6; --ink: #1d1a17; --muted: #6b635a; --red: #a3161a; --rule: #d6cdbf; --card: #fffaf2;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #171513; --ink: #eee7dc; --muted: #a39a8e; --red: #ff6b5e; --rule: #3a342e; --card: #201d1a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.45 system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 28px 0 8px; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+  .note { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input[type=text], input[type=password] { flex: 1 1 220px; min-width: 0; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--card); color: var(--ink); font: inherit; }
+  button { padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid var(--ink); background: var(--card); color: var(--ink); font: inherit; cursor: pointer; }
+  button.primary { background: var(--red); border-color: var(--red); color: #fff; }
+  button:disabled { opacity: .45; cursor: default; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li { border: 1px solid var(--rule); background: var(--card); border-radius: 8px; padding: 10px 12px; margin: 6px 0; }
+  li.sel { outline: 2px solid var(--red); }
+  .meta { color: var(--muted); font-size: 13px; }
+  .player { border: 1px solid var(--rule); background: var(--card); border-radius: 10px; padding: 14px; }
+  input[type=range] { width: 100%; accent-color: var(--red); }
+  .time { font-variant-numeric: tabular-nums; }
+  pre { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 10px; overflow: auto; font-size: 12px; max-height: 220px; }
+  .pill { display: inline-block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--rule); }
+</style>
+</head>
+<body>
+<main>
+  <h1>WJRH archive test bench</h1>
+  <p class="note">Development tool for the local mock backend. It plays archived episodes through a real
+    <code>&lt;audio&gt;</code> element (proving byte-range seeking) and drives the staff review workflow.
+    Not part of the listener app.</p>
+
+  <div class="row">
+    <input id="api" type="text" aria-label="API base URL" value="http://127.0.0.1:8787">
+    <button id="load">Load archive</button>
+  </div>
+
+  <h2>Player</h2>
+  <div class="player" aria-live="polite">
+    <div id="now" class="meta">Nothing loaded.</div>
+    <audio id="audio" preload="metadata"></audio>
+    <div class="row" style="margin-top:10px">
+      <button id="back" disabled aria-label="Back 30 seconds">−30s</button>
+      <button id="play" class="primary" disabled>Play</button>
+      <button id="fwd" disabled aria-label="Forward 30 seconds">+30s</button>
+      <span class="time" id="clock">0:00 / 0:00</span>
+    </div>
+    <input id="seek" type="range" min="0" max="0" step="1" value="0" disabled aria-label="Seek">
+    <div class="meta" id="rangeInfo"></div>
+  </div>
+
+  <h2>Published shows</h2>
+  <ul id="shows"><li class="meta">Load the archive to list shows.</li></ul>
+  <h2>Episodes</h2>
+  <ul id="episodes"><li class="meta">Pick a show.</li></ul>
+
+  <h2>Staff review queue</h2>
+  <p class="note">Uses the admin API with the dev token from <code>backend/api/.dev.vars</code>.</p>
+  <div class="row">
+    <input id="token" type="password" aria-label="Admin token" value="dev-admin-token">
+    <button id="queue">Load queue</button>
+  </div>
+  <ul id="review"></ul>
+  <pre id="log" aria-label="Log"></pre>
+</main>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var audio = $('audio');
+  var current = null;
+
+  function api() { return $('api').value.replace(/\/$/, ''); }
+  function log(msg) { $('log').textContent = new Date().toLocaleTimeString() + '  ' + msg + '\n' + $('log').textContent; }
+  function fmt(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function getJSON(path, opts) {
+    return fetch(api() + path, opts).then(function (r) {
+      return r.text().then(function (t) {
+        var body = t ? JSON.parse(t) : {};
+        if (!r.ok) throw new Error((body.error && body.error.code) || r.status);
+        return body;
+      });
+    });
+  }
+
+  function loadShows() {
+    getJSON('/v1/archives').then(function (d) {
+      if (!d.enabled) { $('shows').innerHTML = '<li class="meta">Archives are disabled on this API.</li>'; return; }
+      if (!d.shows.length) { $('shows').innerHTML = '<li class="meta">No published episodes yet.</li>'; return; }
+      $('shows').innerHTML = d.shows.map(function (s) {
+        return '<li><button data-show="' + esc(s.showId) + '">' + esc(s.name) + '</button> <span class="meta">' +
+          s.episodeCount + ' episode(s) · latest ' + esc(s.latestRecordedAt) + '</span></li>';
+      }).join('');
+    }).catch(function (e) { log('archives: ' + e.message); });
+  }
+
+  function loadEpisodes(showId) {
+    getJSON('/v1/shows/' + encodeURIComponent(showId) + '/archives').then(function (d) {
+      $('episodes').innerHTML = d.episodes.map(function (ep, i) {
+        return '<li><button data-ep="' + i + '">Load</button> <strong>' + esc(ep.title) + '</strong> <span class="meta">' +
+          esc(ep.recordedAt) + ' · ' + fmt(ep.durationSeconds) + '</span></li>';
+      }).join('') || '<li class="meta">No episodes.</li>';
+      $('episodes').onclick = function (ev) {
+        var b = ev.target.closest('[data-ep]');
+        if (b) loadEpisode(d.episodes[+b.dataset.ep]);
+      };
+    }).catch(function (e) { log('episodes: ' + e.message); });
+  }
+
+  function loadEpisode(ep) {
+    current = ep;
+    audio.src = ep.audioUrl;
+    $('now').textContent = ep.title + ' — recorded ' + ep.recordedAt;
+    ['back', 'play', 'fwd', 'seek'].forEach(function (id) { $(id).disabled = false; });
+    // Show what the media host says about range support.
+    fetch(ep.audioUrl, { headers: { Range: 'bytes=0-1' } }).then(function (r) {
+      $('rangeInfo').textContent = 'Range probe: HTTP ' + r.status + (r.status === 206 ? ' (seekable)' : ' (NOT seekable)') +
+        (r.headers.get('content-range') ? ' · ' + r.headers.get('content-range') : '');
+    }).catch(function () { $('rangeInfo').textContent = 'Range probe blocked by CORS; the <audio> element does not need CORS.'; });
+    log('loaded ' + ep.id);
+  }
+
+  audio.addEventListener('loadedmetadata', function () { $('seek').max = Math.floor(audio.duration || current.durationSeconds || 0); });
+  audio.addEventListener('timeupdate', function () {
+    $('seek').value = Math.floor(audio.currentTime);
+    $('clock').textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration || (current && current.durationSeconds));
+  });
+  audio.addEventListener('play', function () { $('play').textContent = 'Pause'; });
+  audio.addEventListener('pause', function () { $('play').textContent = 'Play'; });
+  audio.addEventListener('error', function () { log('audio error ' + (audio.error && audio.error.code)); });
+  $('play').onclick = function () { audio.paused ? audio.play() : audio.pause(); };
+  $('back').onclick = function () { audio.currentTime = Math.max(0, audio.currentTime - 30); };
+  $('fwd').onclick = function () { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 30); };
+  $('seek').oninput = function () { audio.currentTime = +this.value; };
+
+  $('load').onclick = loadShows;
+  $('shows').onclick = function (ev) {
+    var b = ev.target.closest('[data-show]');
+    if (b) loadEpisodes(b.dataset.show);
+  };
+
+  function admin(method, path, body) {
+    return getJSON(path, {
+      method: method,
+      headers: { Authorization: 'Bearer ' + $('token').value, 'Content-Type': 'application/json', 'X-Actor': 'test-bench' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  function loadQueue() {
+    admin('GET', '/v1/admin/archives').then(function (d) {
+      $('review').innerHTML = d.episodes.map(function (ep) {
+        var actions = { pending_review: ['published', 'unpublished'], published: ['unpublished'], unpublished: ['published'] }[ep.status] || [];
+        return '<li><span class="pill">' + esc(ep.status) + '</span> <strong>' + esc(ep.title) + '</strong> <span class="meta">' +
+          esc(ep.recordedAt) + ' · ' + fmt(ep.durationSeconds) + ' · ' + (ep.bytes || 0) + ' bytes</span><div class="row" style="margin-top:6px">' +
+          actions.map(function (a) { return '<button data-id="' + ep.id + '" data-to="' + a + '">Mark ' + a + '</button>'; }).join('') +
+          '<button data-id="' + ep.id + '" data-del="1">Delete</button></div></li>';
+      }).join('') || '<li class="meta">No episodes.</li>';
+    }).catch(function (e) { log('queue: ' + e.message); });
+  }
+  $('queue').onclick = loadQueue;
+  $('review').onclick = function (ev) {
+    var b = ev.target.closest('button[data-id]');
+    if (!b) return;
+    var p = b.dataset.del ? admin('DELETE', '/v1/admin/archives/' + b.dataset.id) : admin('PATCH', '/v1/admin/archives/' + b.dataset.id, { status: b.dataset.to });
+    p.then(function () { log((b.dataset.del ? 'deleted ' : b.dataset.to + ' ') + b.dataset.id); loadQueue(); loadShows(); })
+     .catch(function (e) { log('review: ' + e.message); });
+  };
+})();
+</script>
+</body>
+</html>

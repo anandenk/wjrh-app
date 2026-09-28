@@ -1,0 +1,5 @@
+# Copied to .dev.vars by backend/scripts/dev.sh. Local-only values; never real secrets.
+ADMIN_TOKEN=dev-admin-token
+S3_ACCESS_KEY_ID=wjrhdev
+S3_SECRET_ACCESS_KEY=wjrhdev-secret
+JOIN_SALT=dev-salt
