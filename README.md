@@ -9,8 +9,10 @@ board approves it.
 | Path | What it is |
 |---|---|
 | `frontend/` | The app design (`index.html`), running on built-in demo data. Also what deploys to Cloudflare Pages. |
+| `apps/mobile/` | The native listener app (Expo / React Native). Not started; the plan is in [`docs/mobile-app/plan.md`](docs/mobile-app/plan.md). |
 | `backend/` | The proposed `/v1` API (a Cloudflare Worker), the archive recorder, and a fake station to run them against. Local only; see [`backend/TESTING.md`](backend/TESTING.md). |
 | `docs/backend-proposal/` | What exists today, the gaps, the proposed API, the rollout plan, and decisions awaiting the board. |
+| `docs/mobile-app/` | The plan for the Expo app: stack, screen-to-endpoint map, rules it must keep, build order. |
 | `docs/station-content-brief.md` | Show genres, blurbs and host bios the station needs to supply. |
 | `docs/deploying-the-frontend.md` | How to deploy `frontend/` to Cloudflare Pages. |
 | `tools/` | Read-only checks of the real stream, feed and calendar, and the current schedule snapshot. |
