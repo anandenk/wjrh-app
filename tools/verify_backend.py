@@ -15,7 +15,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "wjrh-app"
+TOOLS = ROOT / "tools"
 STREAM_URL = "https://internetstreamer.lafayette.edu/"
 METADATA_URL = "https://nowplaying.wjrh.org"
 CALENDAR_URL = (
@@ -45,7 +45,7 @@ def fetch(url: str, *, method: str = "GET", headers: dict[str, str] | None = Non
 
 
 def load_schedule_parser():
-    path = APP / "tools" / "fetch_schedule.py"
+    path = TOOLS / "fetch_schedule.py"
     spec = importlib.util.spec_from_file_location("wjrh_fetch_schedule", path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Could not load {path}")
@@ -137,7 +137,7 @@ def audit() -> dict[str, Any]:
         "error": calendar.get("error"),
     }
 
-    local_schedule = json.loads((APP / "schedule.json").read_text(encoding="utf-8"))
+    local_schedule = json.loads((TOOLS / "schedule.json").read_text(encoding="utf-8"))
     local_days = local_schedule.get("days", {})
     local_result = {
         "generatedAt": local_schedule.get("generatedAt"),

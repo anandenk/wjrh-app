@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 """
-Regenerate schedule.json from WJRH's public Google Calendar.
+Snapshot WJRH's public Google Calendar into tools/schedule.json (a flat weekly grid).
 
-The station edits the calendar; this turns it into the flat weekly grid the app
-reads. Run it whenever the schedule changes (start of each semester, at minimum),
-then redeploy:
+This is today's schedule pipeline: the station edits the calendar, and someone runs
 
     python3 tools/fetch_schedule.py
 
-Nothing else in the app depends on Google. If the calendar ever goes away,
-schedule.json can be hand-edited and everything keeps working.
+The proposed backend (docs/backend/API_CONTRACTS.md) replaces this manual step with an
+automatic refresh that also handles cancelled and moved shows.
 """
 
 import html as html_mod
 import json
+import os
 import re
 import sys
 import urllib.parse
@@ -233,7 +232,7 @@ def main():
         "days": days,
     }
 
-    dest = __file__.rsplit("/", 2)[0] + "/schedule.json"
+    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schedule.json")
     with open(dest, "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=2, ensure_ascii=False)
         fh.write("\n")

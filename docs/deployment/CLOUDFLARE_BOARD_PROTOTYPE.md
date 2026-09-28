@@ -2,7 +2,8 @@
 
 ## Deployable artifact
 
-- Upload `wjrh-design-preview-cloudflare.zip` with Cloudflare Pages Direct Upload.
+- Upload `wjrh-design-preview-cloudflare.zip` (a zip of the `wjrh-design-preview-cloudflare/` folder) with Cloudflare Pages Direct Upload.
+- `index.html` is an exact copy of `claude-design-preview/WJRH Radio.dc.html`; refresh it with `cp` after editing the design.
 - `index.html` is at the archive root, so the deployment opens at the project URL without a path suffix.
 - The bundle is static and has no build step.
 - `_headers` prevents search indexing and adds conservative browser security headers.

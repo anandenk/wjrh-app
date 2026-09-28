@@ -108,8 +108,8 @@ Rules:
 **Learned from the prototype**
 - **Upstream shape.** The feed is `{"nowplaying": {"ARTIST", "TITLE"}}`, served as
   `binary/octet-stream`. Values may be URL-encoded (`+` for spaces), JSON `null`, or the literal
-  string `"Null"` when a DJ streams from a laptop. Normalize the same way the PWA's `cleanMeta`
-  does.
+  string `"Null"` when a DJ streams from a laptop. Replace `+` with a space, URL-decode, and
+  treat `null`, `Null`, `unknown` and `-` as missing.
 - **`sourceUpdatedAt`.** Take it from the feed's HTTP `Last-Modified` header. S3 sets it on every
   publish.
 - **Useful additions:**
@@ -159,12 +159,12 @@ introduced.
   - Report the failure through `/v1/health` (`services.schedule.lastError`).
   - Overlaps and empty weeks are warnings, not rejections.
 - **Add `GET /v1/schedule/weekly?week=YYYY-MM-DD`.**
-  - It returns one real week in the exact `wjrh-app/schedule.json` shape, plus `showId` and
+  - It returns one real week in the exact `tools/schedule.json` shape, plus `showId` and
     `occurrenceId` per slot.
   - Existing frontends can switch source without a rewrite. Built from the current calendar, it
     reproduced the committed `schedule.json` exactly.
-  - Its `generatedAt` should mean "last confirmed current" (the last successful check), because the
-    PWA flags anything older than 14 days as stale.
+  - Its `generatedAt` should mean "last confirmed current" (the last successful check), so a
+    frontend can flag stale schedules honestly.
 - **Map show names to IDs with the same slug rule as `fetch_schedule.py`.** Keep an `aliases` list per
   profile for renamed shows. Report names with no profile in `/v1/health`
   (`services.schedule.unmappedShows`) rather than creating profiles automatically.

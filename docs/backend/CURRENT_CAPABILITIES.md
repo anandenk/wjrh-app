@@ -10,8 +10,8 @@ This document describes what can be established from:
 - the public WJRH stream;
 - the public now-playing endpoint;
 - the public Google Calendar ICS feed;
-- the production-oriented static PWA in `wjrh-app/`; and
-- the visual prototype in `claude-design-preview/`.
+- the schedule snapshot tools in `tools/`; and
+- the frontend design in `claude-design-preview/`.
 
 This workspace does **not** contain source code, infrastructure configuration, logs,
 credentials, or deployment access for the stream server, metadata publisher,
@@ -22,12 +22,10 @@ be discovered with their current owners before implementation begins.
 
 ```text
 DJ / automation
-  ├─ audio ───────────────> Shoutcast / ProStream ─────> listener audio element
-  └─ track metadata ──────> S3 + CloudFront JSON ──────> browser polling every 15 s
+  ├─ audio ───────────────> Shoutcast / ProStream ─────> listeners' players
+  └─ track metadata ──────> S3 + CloudFront JSON ──────> clients polling for artist/title
 
-Public Google Calendar ───> fetch_schedule.py ─────────> static schedule.json
-
-Static app files ─────────> web host / service worker ─> installed or browser PWA
+Public Google Calendar ───> tools/fetch_schedule.py ───> tools/schedule.json (run by hand)
 ```
 
 There is no station application API, database, archive service, persistent play-history
@@ -48,7 +46,7 @@ already treats null/`Null` values as missing metadata.
 
 ## Schedule snapshot status
 
-The committed `wjrh-app/schedule.json` was generated on
+The committed `tools/schedule.json` was generated on
 `2026-09-18T23:04:03-04:00`.
 
 | Measure | Committed snapshot | Current live calendar after normalization |
@@ -67,42 +65,10 @@ Detected schedule drift:
 
 This demonstrates that schedule refresh is functional but manual and currently stale.
 
-## What the production-oriented PWA can do
+## The frontend design
 
-The implementation in `wjrh-app/` currently supports:
-
-- play and pause of the live MP3 stream;
-- buffering, reconnecting, stream-down and offline states;
-- polling now-playing metadata every 15 seconds while active;
-- title and artist display, with an album field ready if the feed adds one;
-- a three-hour, device-local track log built from metadata observed while the app is
-  open;
-- a weekly schedule loaded from static `schedule.json`;
-- current-show and next-show calculations in `America/New_York`;
-- show detail when editorial fields exist;
-- device-local saved shows and browser notifications while the app remains open;
-- Media Session metadata and play/pause/stop handlers;
-- an installable PWA manifest and service-worker shell caching;
-- an offline schedule fallback from the service-worker cache;
-- a host-interest form that validates and stores an email locally, with a manual
-  email fallback because no submission endpoint is configured; and
-- direct station telephone, website, Instagram, and giving links.
-
-## What the production-oriented PWA cannot do
-
-- It cannot provide a station-wide or cross-device listening history.
-- It cannot display album names reliably because the feed does not provide them.
-- It cannot provide real album or show artwork from metadata.
-- It cannot show per-show playlists from previous broadcasts.
-- It cannot send scheduled reminders after the web app has been closed.
-- It cannot subscribe a listener to an interest list without a configured endpoint.
-- It cannot list, stream, seek, publish, or remove archived broadcasts.
-- It cannot let station staff edit show profiles independently of code/calendar text.
-- It has no monitoring, administrative UI, authentication, analytics, or audit log.
-
-## What exists only in the visual prototype
-
-`claude-design-preview/WJRH Radio.dc.html` demonstrates, but does not implement against
+`claude-design-preview/WJRH Radio.dc.html` (deployed as `wjrh-design-preview-cloudflare/`)
+runs entirely on built-in demo data. It demonstrates, but does not implement against
 production services:
 
 - an Archive tab with one page per show;
@@ -110,13 +76,18 @@ production services:
 - on-demand play/pause, 30-second skip, seeking and persistent archive progress;
 - album-cover artwork used as show/episode imagery;
 - generated show descriptions;
-- a fabricated recent-track log and playback state;
+- a fabricated recent-track log and simulated playback, including the live play button;
 - a fixed demonstration clock and broadcast state; and
 - expanded Station pages and imagery.
 
 The prototype code explicitly marks archive dates, recordings, descriptions, recent
 tracks and album covers as fixtures or placeholders. They must not be presented as
-production data.
+production data. What would replace each fixture is mapped in
+[`API_CONTRACTS.md`](API_CONTRACTS.md).
+
+An earlier listener PWA (`wjrh-app/`) was connected to the real stream, feed and schedule
+snapshot. It was removed from the repository to keep the focus on the current design; it
+remains in git history (commit `c526e18`).
 
 ## Data ownership today
 
@@ -124,14 +95,26 @@ production data.
 |---|---|---|
 | Audio | Lafayette-hosted Shoutcast/ProStream | Encoder and stream operations |
 | Artist/title | Existing metadata publisher to S3/CloudFront | Encoder/automation metadata workflow |
-| Schedule | Public Google Calendar | Run `wjrh-app/tools/fetch_schedule.py`, review diff, redeploy |
+| Schedule | Public Google Calendar | Run `tools/fetch_schedule.py` and review the diff |
 | Genre/description | Calendar description text | Same schedule refresh; data quality is inconsistent |
 | Host bios | None | New editorial source required |
-| Recent spins | Each listener device | New server-side collector required |
+| Recent spins | None | New server-side collector required |
 | Archive episodes | None | New recording, storage, metadata and publishing workflow required |
 | Show artwork | None | Station-approved asset source required |
-| Reminders | Each listener device while app is open | Push or native notification service required for reliable delivery |
-| Host-interest submissions | Local storage plus manual email | Submission integration required |
+| Reminders | None | Push or native notification service required |
+| Host-interest submissions | GroupMe and email links | Submission integration only if a form is wanted |
+
+## Licensing rules for any frontend
+
+The stream runs under the Section 114 statutory webcasting licence. Any app built on it
+must:
+
+- **never show an advance playlist**. Upcoming *shows* are fine; upcoming songs, artists
+  or albums are not;
+- **display title, artist and album** while a track plays. The feed has no album today;
+  that gap has to be fixed at the encoder;
+- **stay non-interactive**: no queue, no song picking, no per-track replay, and nothing
+  that helps a listener record the stream.
 
 ## Immediate operational risks
 

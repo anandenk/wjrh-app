@@ -1,64 +1,53 @@
-# WJRH listener app workspace
+# WJRH listener app
 
-This workspace contains the current production web app, the editable design prototype,
-deployment bundles, and backend-readiness documentation. These artifacts have different
-roles and should not be merged or treated as interchangeable.
+The frontend design for the WJRH 104.9 FM listener app, and the written proposal for the
+backend it needs. The backend is a proposal only: nothing is built or connected until the
+board approves it.
+
+## What's here
+
+| Path | What it is |
+|---|---|
+| `claude-design-preview/` | The frontend design (`WJRH Radio.dc.html`). Runs on built-in demo data. |
+| `wjrh-design-preview-cloudflare/` | The copy deployed to Cloudflare Pages. `index.html` is identical to the design file. |
+| `docs/backend/` | What exists today, the gaps, the proposed `/v1` API, the rollout plan, and proposals awaiting the board. |
+| `docs/content/STATION_CONTENT_BRIEF.md` | Show genres, blurbs and host bios the station needs to supply. |
+| `docs/deployment/CLOUDFLARE_BOARD_PROTOTYPE.md` | How the design is deployed to Cloudflare Pages. |
+| `tools/` | Read-only checks of the real stream, feed and calendar, and the current schedule snapshot. |
 
 ## Start here
 
-- [`docs/backend/CURRENT_CAPABILITIES.md`](docs/backend/CURRENT_CAPABILITIES.md) — verified production services and client capabilities.
-- [`docs/backend/FRONTEND_BACKEND_GAP_ANALYSIS.md`](docs/backend/FRONTEND_BACKEND_GAP_ANALYSIS.md) — what the proposed frontend expects versus what exists today.
-- [`docs/backend/BACKEND_INTEGRATION_PLAN.md`](docs/backend/BACKEND_INTEGRATION_PLAN.md) — phased implementation plan and ownership questions.
-- [`docs/backend/API_CONTRACTS.md`](docs/backend/API_CONTRACTS.md) — proposed versioned interfaces for backend work.
-- [`docs/content/STATION_CONTENT_BRIEF.md`](docs/content/STATION_CONTENT_BRIEF.md) — station-owned copy still needed for shows and hosts.
-- [`docs/backend/decisions/`](docs/backend/decisions/) — proposals awaiting board approval: Cloudflare hosting and cost, and archive licensing options.
+1. [`docs/backend/CURRENT_CAPABILITIES.md`](docs/backend/CURRENT_CAPABILITIES.md): what the station runs today
+2. [`docs/backend/FRONTEND_BACKEND_GAP_ANALYSIS.md`](docs/backend/FRONTEND_BACKEND_GAP_ANALYSIS.md): what the design needs that doesn't exist
+3. [`docs/backend/API_CONTRACTS.md`](docs/backend/API_CONTRACTS.md): the proposed API, screen by screen
+4. [`docs/backend/decisions/`](docs/backend/decisions/): hosting and cost (ADR-001), archive and licensing (ADR-002)
 
-Run the repeatable public-service check with:
+## Preview the design
 
 ```bash
-python3 tools/verify_backend.py
+python3 -m http.server 8765 --bind 127.0.0.1 --directory claude-design-preview
 ```
 
-The check is read-only. It verifies the stream headers, now-playing JSON and CORS,
-the public Google Calendar, and drift between that calendar and
-`wjrh-app/schedule.json`.
+Open <http://127.0.0.1:8765/WJRH%20Radio.dc.html>. It loads React from unpkg.com, so it
+needs internet access.
 
-## Active artifacts
+After editing the design, refresh the Cloudflare copy:
 
-| Path | Role | Status |
-|---|---|---|
-| `wjrh-app/` | Production-oriented static PWA connected to the real stream, metadata feed and generated schedule | Current implementation baseline |
-| `claude-design-preview/WJRH Radio.dc.html` | Editable frontend design prototype | Current design source |
-| `wjrh-design-preview-cloudflare/` | Static sharing copy of the design prototype | Current board/demo deployment source |
-| `wjrh-app-deploy.zip` | Rebuilt deployment package for the production-oriented PWA | Generated artifact |
-| `wjrh-design-preview-cloudflare.zip` | Upload-ready package for the visual prototype | Generated artifact |
+```bash
+cp "claude-design-preview/WJRH Radio.dc.html" wjrh-design-preview-cloudflare/index.html
+```
 
-## Supporting folders
+## Check the real services
 
-- `docs/backend/` — capability audit, gap analysis, API contracts and integration plan.
-- `docs/content/` — material the station must approve or supply.
-- `docs/design/` — prior frontend maps, redesign research and design prompts.
-- `docs/deployment/` — deployment instructions.
-- `docs/archive/` — superseded written handoffs retained for context.
-- `_archive/` — non-current code and deployment artifacts retained without cluttering active sources.
-- `tools/` — workspace-level read-only verification utilities.
+```bash
+python3 tools/verify_backend.py      # stream, now-playing feed, calendar, schedule drift
+python3 tools/fetch_schedule.py      # refresh tools/schedule.json from the calendar
+```
 
-## Important boundaries
+Both are read-only against WJRH's services.
 
-- The design prototype contains simulated tracks, artwork, archive recordings and
-  playback state. It is not evidence that those backend capabilities exist.
-- `wjrh-app/` is the only implementation currently wired to WJRH production services.
-- No source code or deployment configuration for the stream server, metadata publisher,
-  S3/CloudFront distribution, or an application API is present in this workspace.
-- Do not expose advance song playlists or interactive per-track playback. Archive work
-  requires a station licensing review before implementation.
+## Boundaries
 
-## Archived material
-
-- `_archive/legacy-root-prototype/` contains the older root-level prototype and its
-  runtime helpers; its relative files were moved together so it remains inspectable.
-- `_archive/wjrh-app-legacy-design-system/` contains the unsynchronized standalone
-  design-system export formerly stored inside `wjrh-app/ds/`.
-- `_archive/deploy-bundles/` contains superseded ZIP files, including the prior PWA
-  bundle that differed from current source and omitted the local font.
-
+- Everything the design shows (tracks, archive episodes, descriptions, covers) is demo data.
+- Never publish an advance song playlist or add per-track playback. The licensing rules
+  are in `docs/backend/CURRENT_CAPABILITIES.md`.

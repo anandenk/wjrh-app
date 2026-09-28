@@ -235,7 +235,7 @@ Do not introduce accounts unless another approved requirement genuinely needs th
 
 - Contract tests for the API response.
 - Upstream failure, stale-data and malformed-data tests.
-- Mobile browser and installed-PWA tests.
+- Mobile browser tests.
 - Accessibility check for every new state.
 - Observability check: an operator can detect and diagnose failure.
 - Rollback plan that restores the last known-good frontend and data.

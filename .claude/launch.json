@@ -2,13 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "wjrh-app",
+      "name": "wjrh-design",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "wjrh-app"],
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "claude-design-preview"],
       "port": 8765
     },
     {
-      "name": "wjrh-latest",
+      "name": "wjrh-design-cloudflare",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8766", "--directory", "wjrh-design-preview-cloudflare"],
       "port": 8766

@@ -24,7 +24,7 @@ Almost every WJRH show is one or two hours long, so serving recorded music shows
 own storage is **probably not covered**. Musical-work rights (ASCAP, BMI, SESAC, GMR) are a separate
 question. This is our reading, not legal advice, and the station and college must confirm it.
 
-The existing rules in `wjrh-app/README.md` still apply:
+The existing rules in [`../CURRENT_CAPABILITIES.md`](../CURRENT_CAPABILITIES.md) ("Licensing rules for any frontend") still apply:
 - no advance playlists;
 - no per-track interactivity.
 

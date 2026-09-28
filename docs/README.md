@@ -1,24 +1,18 @@
 # Documentation map
 
-## Backend readiness
+## Backend proposal
 
-1. [`backend/CURRENT_CAPABILITIES.md`](backend/CURRENT_CAPABILITIES.md)
-2. [`backend/FRONTEND_BACKEND_GAP_ANALYSIS.md`](backend/FRONTEND_BACKEND_GAP_ANALYSIS.md)
-3. [`backend/API_CONTRACTS.md`](backend/API_CONTRACTS.md)
-4. [`backend/BACKEND_INTEGRATION_PLAN.md`](backend/BACKEND_INTEGRATION_PLAN.md)
+1. [`backend/CURRENT_CAPABILITIES.md`](backend/CURRENT_CAPABILITIES.md): what exists today, and the licensing rules
+2. [`backend/FRONTEND_BACKEND_GAP_ANALYSIS.md`](backend/FRONTEND_BACKEND_GAP_ANALYSIS.md): what the design needs that doesn't exist
+3. [`backend/API_CONTRACTS.md`](backend/API_CONTRACTS.md): the proposed `/v1` API, mapped to the design's screens
+4. [`backend/BACKEND_INTEGRATION_PLAN.md`](backend/BACKEND_INTEGRATION_PLAN.md): rollout phases
 
-Read them in that order. The first two establish facts and gaps; the latter two define
-the proposed target and rollout sequence.
-
-Proposals awaiting board approval:
+Awaiting board approval:
 
 5. [`backend/decisions/ADR-001-platform-cloudflare.md`](backend/decisions/ADR-001-platform-cloudflare.md): hosting on Cloudflare, with a cost estimate
 6. [`backend/decisions/ADR-002-archive-storage-licensing.md`](backend/decisions/ADR-002-archive-storage-licensing.md): archive design and licensing options
 
-## Other documentation
+## Other
 
-- `content/` — station-owned editorial inputs.
-- `design/` — frontend behavior maps and prior design exploration.
-- `deployment/` — packaging and hosting notes.
-- `archive/` — superseded documents retained for reference only.
-
+- [`content/STATION_CONTENT_BRIEF.md`](content/STATION_CONTENT_BRIEF.md): station-supplied show content
+- [`deployment/CLOUDFLARE_BOARD_PROTOTYPE.md`](deployment/CLOUDFLARE_BOARD_PROTOTYPE.md): deploying the design to Cloudflare Pages
