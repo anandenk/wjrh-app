@@ -131,7 +131,9 @@ which case the web origin must be added to `CORS_ORIGINS`.
 5. **Schedule and show pages**, plus local reminder notifications.
 6. **Station tab.**
 7. **Archive tab:** behind a flag until the board decides; Mixcloud WebView first.
-8. Design polish from `frontend/` (fonts, the orb, imagery), accessibility pass, store assets.
+8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and
+   station photos in `frontend/assets/`, an accessibility pass, store assets. Skip the `recent-cover-*`
+   images: they are placeholder album art, and the feed has no artwork.
 
 ## Open questions
 
