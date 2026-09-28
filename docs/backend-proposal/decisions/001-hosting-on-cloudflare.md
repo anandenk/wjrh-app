@@ -79,7 +79,7 @@ so that's about 1.7 GB of new audio a week.
 | R2 storage, full-semester retention | ≈25 GB, so ≈15 GB billable at $0.015/GB | ≈$0.23 |
 | R2 downloads | Free | $0.00 |
 | Cloud server for the recorder (archive only) | Smallest Linux VPS | ≈$4–6 |
-| **Total** | | **≈ $5–10 / month; ≈ $10–15 with archive** |
+| **Total** | | **≈ $5–10 / month**, plus the archive if approved: ≈ $5 more (whole-day blocks) or ≈ $16–20 more (Mixcloud); see [Decision 002](002-archive-and-licensing.md) |
 
 ## What production would need
 
