@@ -1453,8 +1453,11 @@ const STATION_ART = [
   './assets/booth-live.jpg', './assets/home.jpg', './assets/signal-collage.jpg', './assets/history.jpg',
   './assets/our-team.jpg', './assets/get-involved.jpg', './assets/events.jpg', './assets/about.jpg'
 ];
+// Live audio never depends on the API: this is the station's stream, used until
+// /v1/station says otherwise (locally, the fake station's stream).
+const DEFAULT_STREAM_URL = 'https://internetstreamer.lafayette.edu/';
 const LIVE = {
-  streamUrl: '', nowPlaying: null, recent: [], health: null, profiles: {},
+  streamUrl: DEFAULT_STREAM_URL, nowPlaying: null, recent: [], health: null, profiles: {},
   scheduleAt: null, scheduleStale: false, archivesEnabled: false, error: null, loaded: false
 };
 // One media element for the whole app, outside the render tree so re-renders
@@ -1511,7 +1514,7 @@ function loadCatalog() {
       });
       replaceAll(SHOWS, shows);
       LIVE.scheduleAt = weekly.generatedAt;
-      LIVE.streamUrl = (station.listen && station.listen.streamUrl) || '';
+      LIVE.streamUrl = (station.listen && station.listen.streamUrl) || DEFAULT_STREAM_URL;
       replaceAll(TEAM, station.team.map(function (p) { return { name: p.name, role: p.role, href: 'mailto:' + p.email }; }));
       replaceAll(EVENTS, station.events.map(function (e) { return { name: e.name, date: fmtLongDate(e.date) }; }));
       LIVE.archivesEnabled = !!index.enabled;
@@ -1546,7 +1549,8 @@ function loadCatalog() {
 // Now playing and history: polled while the page is visible.
 function loadNow() {
   return Promise.all([
-    apiGet('/v1/now-playing').then(function (d) { LIVE.nowPlaying = d; }).catch(function () { LIVE.nowPlaying = null; }),
+    // On failure keep the last answer; the API itself marks stale data.
+    apiGet('/v1/now-playing').then(function (d) { LIVE.nowPlaying = d; }).catch(function () {}),
     apiGet('/v1/recent?limit=12').then(function (d) { LIVE.recent = d.items; }).catch(function () {})
   ]);
 }
