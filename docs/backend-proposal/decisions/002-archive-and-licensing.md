@@ -34,7 +34,7 @@ Design the archive so the storage provider can change later, and ship it **switc
 the board picks a path.
 
 ```
-recorder (always-on box)          API (Worker + D1)                storage (S3 API)
+recorder (small cloud server)     API (Worker + D1)                storage (S3 API)
 ────────────────────────          ─────────────────                ────────────────
 watches /v1/schedule
 records each opted-in show
@@ -47,6 +47,8 @@ daily: episodes older than the retention window are deleted (default 14 days)
 ```
 
 Safeguards:
+- **Nothing at the station.** The recorder runs on a cloud server and records the public
+  stream, the same audio listeners hear (128 kbps MP3). No booth hardware and no on-site setup.
 - **Opt-in by show.** The recorder records only shows on an approved list. There is no default.
 - **Nothing is public without a staff decision.**
 - **Immediate takedown.** Unpublishing takes effect at once, and deleting removes the file. Both are
@@ -73,5 +75,7 @@ shows. Don't turn on **C** for music without written sign-off.
 1. Who at the station or college can approve a licensing position in writing?
 2. Retention: 14 days, a semester, or per show?
 3. Who reviews and publishes episodes, and how soon after a broadcast?
-4. Where would the recorder run, and who owns it? It needs a UPS.
+4. Which cloud provider hosts the recorder, and which station account pays for it? Ask Lafayette IT
+   too whether the stream server already has a built-in archive feature, which would replace the
+   recorder.
 5. How do hosts request a takedown?

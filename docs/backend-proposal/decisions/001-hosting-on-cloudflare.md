@@ -44,8 +44,10 @@ Constraints:
 - **Two things stay off Cloudflare.**
   - **Live audio** keeps flowing straight from `internetstreamer.lafayette.edu` to listeners. The
     API never proxies audio.
-  - **The archive recorder**, if approved, needs an always-on machine (booth PC, Raspberry Pi or a
-    Lafayette VM), because it holds the stream open for hours.
+  - **The archive recorder**, if approved, runs on a small always-on cloud server (for example
+    Hetzner or DigitalOcean, about $5/month). Workers can't hold a stream open for a whole show.
+    The recorder only needs the public stream URL, so **nothing is installed or maintained at the
+    station**. Everything is set up and managed remotely.
 - **Editorial content lives in reviewed JSON in git.** That covers show descriptions, host bios, the
   team roster and events. The Google Calendar stays the source for *when* shows air.
 
@@ -76,8 +78,8 @@ so that's about 1.7 GB of new audio a week.
 | R2 storage, 2-week retention | ≈3.4 GB, within the 10 GB free tier | $0.00 |
 | R2 storage, full-semester retention | ≈25 GB, so ≈15 GB billable at $0.015/GB | ≈$0.23 |
 | R2 downloads | Free | $0.00 |
-| Recorder machine (archive only) | An existing booth PC or a Lafayette VM | $0 (a Pi is ≈$60–80 once) |
-| **Total** | | **≈ $5–10 / month** |
+| Cloud server for the recorder (archive only) | Smallest Linux VPS | ≈$4–6 |
+| **Total** | | **≈ $5–10 / month; ≈ $10–15 with archive** |
 
 ## What production would need
 
