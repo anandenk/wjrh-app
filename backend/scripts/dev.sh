@@ -19,13 +19,26 @@ mkdir -p "$LOGS"
 WITH_RECORDER=0
 [[ "${1:-}" == "--with-recorder" ]] && WITH_RECORDER=1
 
+for port in 8801 8802 8803 9000 8787 8765 8790; do
+  if (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null; then
+    echo "!! port $port is already in use. Is another dev.sh still running? Find it with: lsof -i :$port" >&2
+    exit 1
+  fi
+done
+
+# Each background service gets its own process group, so stopping it also stops
+# its children (npx → wrangler → workerd would otherwise outlive the script).
+set -m
 PIDS=()
 cleanup() {
+  trap - EXIT INT TERM
   echo; echo "stopping…"
-  for pid in "${PIDS[@]}"; do kill "$pid" 2>/dev/null || true; done
+  for pid in "${PIDS[@]}" ${TICK_PID:-}; do kill -TERM -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true; done
   if [[ "${S3_BACKEND:-moto}" == "minio" ]]; then docker compose -f "$BACKEND/mocks/docker-compose.yml" stop minio >/dev/null 2>&1 || true; fi
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT TERM
+
 
 wait_for() { # url, name
   for _ in $(seq 1 60); do curl -fsS -o /dev/null "$1" 2>/dev/null && return 0; sleep 1; done
@@ -96,7 +109,7 @@ INFO
 # Tick the cron jobs roughly like production would.
 tick=0
 while true; do
-  sleep 60
+  sleep 60 & TICK_PID=$!; wait $TICK_PID   # backgrounded so Ctrl-C is handled immediately
   tick=$((tick + 1))
   curl -fsS -o /dev/null 'http://127.0.0.1:8787/__scheduled?cron=*+*+*+*+*' || true
   (( tick % 5 == 0 ))  && curl -fsS -o /dev/null 'http://127.0.0.1:8787/__scheduled?cron=*/5+*+*+*+*' || true

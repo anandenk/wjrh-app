@@ -31,6 +31,8 @@ budget or archive licensing.
 
 ## Quick start
 
+**Step-by-step walkthrough, including breaking things on purpose:** [`TESTING.md`](TESTING.md).
+
 You need Node 20+ and Python 3.10+. Docker is optional.
 
 ```bash
