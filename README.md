@@ -11,6 +11,7 @@ roles and should not be merged or treated as interchangeable.
 - [`docs/backend/BACKEND_INTEGRATION_PLAN.md`](docs/backend/BACKEND_INTEGRATION_PLAN.md) — phased implementation plan and ownership questions.
 - [`docs/backend/API_CONTRACTS.md`](docs/backend/API_CONTRACTS.md) — proposed versioned interfaces for backend work.
 - [`docs/content/STATION_CONTENT_BRIEF.md`](docs/content/STATION_CONTENT_BRIEF.md) — station-owned copy still needed for shows and hosts.
+- [`docs/backend/decisions/`](docs/backend/decisions/) — proposals awaiting board approval: Cloudflare hosting and cost, and archive licensing options.
 
 Run the repeatable public-service check with:
 

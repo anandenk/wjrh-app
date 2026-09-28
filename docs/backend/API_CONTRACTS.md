@@ -1,7 +1,28 @@
 # Proposed backend API contracts
 
 These contracts are a planning baseline, not an existing API. Confirm the host platform,
-owners and authentication model before implementation.
+owners and authentication model before implementation. The proposed platform is in
+[`decisions/ADR-001-platform-cloudflare.md`](decisions/ADR-001-platform-cloudflare.md).
+
+A working prototype of these contracts was built against a mock station, then removed from the
+working tree until the board approves. It's recoverable from branch `claude/busy-bell-qvk1c0` at
+commit `e423e98`. The notes marked **Learned from the prototype** below come from that work.
+
+## What each screen of the design reads
+
+| Design screen (`claude-design-preview/`) | Data today | Endpoint |
+|---|---|---|
+| **Now**: on-air show, LIVE / AUTOMATED state, now playing | Fixtures and a fixed demo clock | `/v1/now-playing` (plus the ET clock and `/v1/schedule/weekly`) |
+| **Now**: Recently played | Fixture list | `/v1/recent` |
+| **Now**: play button | Simulated | The existing stream, directly (URL from `/v1/station`) |
+| **Schedule** | Hard-coded copy of the calendar | `/v1/schedule/weekly` (or `/v1/schedule` for dated views) |
+| **Show page**: description, host | Generated placeholder copy | `/v1/shows` |
+| **Archive**: grid, past broadcasts, player | Placeholder dates, album covers, fake timer | `/v1/archives`, `/v1/shows/{showId}/archives`, and audio straight from storage |
+| **Station**: Team, Events | Hard-coded lists | `/v1/station` |
+| Offline / "Signal Broadcast" state | Editor switch | `/v1/health` (`services.stream.status`) |
+
+With the service unreachable, the frontend must still play the live stream. Keep a built-in fallback
+stream URL, and keep showing the last data it received.
 
 ## Conventions
 
@@ -45,6 +66,12 @@ unrelated requests.
 This endpoint must not claim the stream is healthy based only on an HTTP status. The
 probe should verify that audio bytes are arriving.
 
+**Learned from the prototype**
+- **The stream probe.** Read about 8 KB within a few seconds, then disconnect. A `200` with no bytes
+  is `down`.
+- **Store probe results and serve them.** A listener request should never wait on the upstreams.
+- **Schedule details.** Add `services.schedule.lastError`, `warnings` and `unmappedShows`.
+
 ## `GET /v1/now-playing`
 
 Normalizes the existing metadata JSON and joins it to the current schedule occurrence.
@@ -78,6 +105,20 @@ Rules:
   duplicated frontend heuristics.
 - Album/artwork enrichment must have a documented source and rights basis.
 
+**Learned from the prototype**
+- **Upstream shape.** The feed is `{"nowplaying": {"ARTIST", "TITLE"}}`, served as
+  `binary/octet-stream`. Values may be URL-encoded (`+` for spaces), JSON `null`, or the literal
+  string `"Null"` when a DJ streams from a laptop. Normalize the same way the PWA's `cleanMeta`
+  does.
+- **`sourceUpdatedAt`.** Take it from the feed's HTTP `Last-Modified` header. S3 sets it on every
+  publish.
+- **Useful additions:**
+  - `stale` (boolean). True when the feed is unreachable, in which case serve the last good track, or
+    when `sourceUpdatedAt` is older than a threshold (45 min).
+  - `show.occurrenceId`, `show.startsAt`, `show.endsAt`.
+  - `nextShow` (same shape as `show`), for "next live show".
+- **Errors.** Return a `503` error envelope only if the feed has never been reachable.
+
 ## `GET /v1/schedule?from=YYYY-MM-DD&to=YYYY-MM-DD`
 
 Returns dated occurrences rather than only a weekly template. That handles cancellations,
@@ -102,6 +143,31 @@ specials, semester breaks and one-off changes correctly.
 
 The existing weekly `schedule.json` can remain as a generated fallback while this API is
 introduced.
+
+**Learned from the prototype**
+- **Useful occurrence fields.** Beyond the example above: `title`, `hostNames`, `recurring`, and
+  `hasProfile` (whether `/v1/shows` has an entry).
+- **Occurrences that are cancelled or moved.**
+  - Expand weekly `RRULE`s with `EXDATE`, `UNTIL`, `COUNT` and `INTERVAL`.
+  - Apply `RECURRENCE-ID` overrides. A moved instance takes its new time; a `STATUS:CANCELLED`
+    instance becomes `cancelled: true`.
+  - Keep ET wall-clock times across daylight saving.
+  - The current `fetch_schedule.py` flattens all of this into a permanent weekly grid.
+- **Last known good.**
+  - Reject a calendar response that is not a complete `VCALENDAR` or has no events, and keep serving
+    the previous snapshot.
+  - Report the failure through `/v1/health` (`services.schedule.lastError`).
+  - Overlaps and empty weeks are warnings, not rejections.
+- **Add `GET /v1/schedule/weekly?week=YYYY-MM-DD`.**
+  - It returns one real week in the exact `wjrh-app/schedule.json` shape, plus `showId` and
+    `occurrenceId` per slot.
+  - Existing frontends can switch source without a rewrite. Built from the current calendar, it
+    reproduced the committed `schedule.json` exactly.
+  - Its `generatedAt` should mean "last confirmed current" (the last successful check), because the
+    PWA flags anything older than 14 days as stale.
+- **Map show names to IDs with the same slug rule as `fetch_schedule.py`.** Keep an `aliases` list per
+  profile for renamed shows. Report names with no profile in `/v1/health`
+  (`services.schedule.unmappedShows`) rather than creating profiles automatically.
 
 ## `GET /v1/shows`
 
@@ -168,6 +234,16 @@ Collector rules:
 - Do not infer an exact start time more precise than the polling interval.
 - Define retention before launch.
 
+**Learned from the prototype**
+- **Collector timing.** Cron's minimum interval is one minute. Listener requests to `/v1/now-playing`
+  can also feed the collector.
+- **Concurrent writers.** Guard against them with a compare-and-set on the current track, so each
+  change is recorded once.
+- **Short metadata gaps.** A gap inside one track (one `Null` poll, then the same track) should reopen
+  the previous entry instead of creating a second play. A 5-minute window works.
+- **`startedAt`.** Use the feed's `Last-Modified` when it's plausible (within 10 minutes);
+  otherwise use the observation time.
+
 ## `GET /v1/shows/{showId}/archives`
 
 Only return published episodes that listeners are allowed to play.
@@ -195,6 +271,38 @@ Only return published episodes that listeners are allowed to play.
 The media URL should point to object storage/CDN rather than proxying large audio files
 through the application API. The media host must support range requests for seeking.
 
+**Learned from the prototype**
+- Include `"enabled": false` in the response while archives are switched off, so the frontend can
+  explain an empty Archive tab.
+- Add `GET /v1/archives`, the index the Archive grid needs:
+
+```json
+{
+  "asOf": "2026-09-30T21:00:00-04:00",
+  "enabled": true,
+  "shows": [
+    { "showId": "amber-on-audio", "name": "Amber on Audio", "episodeCount": 3,
+      "latestRecordedAt": "2026-09-30T17:00:00-04:00", "artwork": null }
+  ]
+}
+```
+
+## `GET /v1/station`
+
+Station content the design currently hard-codes: the team roster, events, and where to listen.
+
+```json
+{
+  "updatedAt": "2026-09-27T00:00:00-04:00",
+  "approved": false,
+  "team": [],
+  "events": [{ "name": "Record Painting with WJRH", "date": "2025-10-16" }],
+  "listen": { "streamUrl": "https://internetstreamer.lafayette.edu/" }
+}
+```
+
+`approved` stays `false` until the station confirms the roster each semester.
+
 ## Archive management endpoints
 
 These are authenticated staff operations and should not be exposed to the public client:
@@ -205,6 +313,16 @@ These are authenticated staff operations and should not be exposed to the public
 
 Authentication, roles and audit logging must be selected before implementing these
 operations. At minimum, record who changed publication state and when.
+
+**Learned from the prototype**
+- **Episode lifecycle:** `uploading → pending_review → published ⇄ unpublished`. Reject any other
+  transition with `409`.
+- **Registering an episode.** `POST` returns the episode plus a one-time presigned `PUT` URL, so
+  audio goes straight to storage and never through the API.
+- **Moving to `pending_review`.** First confirm the object exists and has an `audio/*` type.
+- **Publishing** requires `durationSeconds`.
+- **`GET /v1/admin/audit?entityId=`** returns the trail.
+- **Retention** deletes both the object and the record, and logs the expiry.
 
 ## `POST /v1/join`
 

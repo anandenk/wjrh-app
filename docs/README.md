@@ -10,6 +10,11 @@
 Read them in that order. The first two establish facts and gaps; the latter two define
 the proposed target and rollout sequence.
 
+Proposals awaiting board approval:
+
+5. [`backend/decisions/ADR-001-platform-cloudflare.md`](backend/decisions/ADR-001-platform-cloudflare.md): hosting on Cloudflare, with a cost estimate
+6. [`backend/decisions/ADR-002-archive-storage-licensing.md`](backend/decisions/ADR-002-archive-storage-licensing.md): archive design and licensing options
+
 ## Other documentation
 
 - `content/` — station-owned editorial inputs.
