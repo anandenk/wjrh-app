@@ -1,6 +1,6 @@
 {
   "tz": "America/New_York",
-  "generatedAt": "2026-09-18T23:04:03-04:00",
+  "generatedAt": "2026-09-28T20:11:31-04:00",
   "source": "Google Calendar (public ICS)",
   "days": {
     "mon": [
@@ -246,7 +246,7 @@
       },
       {
         "id": "thu-1600-soupburger",
-        "uid": "40j5dfcehid3dn5f7iioajdfj6@google.com",
+        "uid": "40j5dfcehid3dn5f7iioajdfj6_R20260924T200000@google.com",
         "startsAt": "16:00",
         "endsAt": "17:00",
         "startMin": 960,
@@ -337,24 +337,6 @@
         "recurring": true
       },
       {
-        "id": "fri-1700-api-on-air",
-        "uid": "5jcj30do06vr4plu4j4i44f48p@google.com",
-        "startsAt": "17:00",
-        "endsAt": "18:00",
-        "startMin": 1020,
-        "endMin": 1080,
-        "show": "API on Air",
-        "dj": "Cassie",
-        "genre": "Pop, indie pop, hawaiian, asian and pacific islander…",
-        "description": "Pop, indie pop, hawaiian, asian and pacific islander artists",
-        "host": {
-          "name": "Cassie",
-          "initials": "C",
-          "bio": ""
-        },
-        "recurring": true
-      },
-      {
         "id": "fri-1800-off-the-record",
         "uid": "70pdmlgeca01pbumagbjtoa5mt@google.com",
         "startsAt": "18:00",
@@ -376,9 +358,9 @@
         "id": "fri-1900-the-bit",
         "uid": "5cbabvt01ca7ulvrn6ic5rs9l2@google.com",
         "startsAt": "19:00",
-        "endsAt": "20:00",
+        "endsAt": "21:00",
         "startMin": 1140,
-        "endMin": 1200,
+        "endMin": 1260,
         "show": "The Bit",
         "dj": "Tom",
         "genre": "Eclectic, alternative, metal, jazz, soul, R and B…",

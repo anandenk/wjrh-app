@@ -66,3 +66,33 @@ JOIN_PROVIDER = "log"
 NOW_PLAYING_CACHE_SECONDS = "5"
 METADATA_STALE_MINUTES = "45"
 SCHEDULE_STALE_MINUTES = "90"
+
+# Local API against the REAL station (stream, now-playing feed, calendar), read-only.
+# Archives stay off, as in production. Run with backend/scripts/dev-real.sh.
+[env.real]
+name = "wjrh-api-real"
+
+[[env.real.d1_databases]]
+binding = "DB"
+database_name = "wjrh"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[env.real.vars]
+STREAM_URL = "https://internetstreamer.lafayette.edu/"
+METADATA_URL = "https://nowplaying.wjrh.org"
+CALENDAR_URL = "https://calendar.google.com/calendar/ical/c_7a588b3138c9250476aaac7dc81d5002c7e689fd8cd4cef1cc56737e872720ee%40group.calendar.google.com/public/basic.ics"
+CORS_ORIGINS = "*"
+MEDIA_BASE_URL = ""
+S3_ENDPOINT = ""
+S3_BUCKET = "wjrh-archive"
+S3_REGION = "auto"
+ARCHIVES_ENABLED = "false"
+MIXCLOUD_API_BASE = "https://api.mixcloud.com"
+MIXCLOUD_WIDGET_URL = "https://player-widget.mixcloud.com/widget/iframe/"
+ARCHIVE_RETENTION_DAYS = "14"
+RECENT_RETENTION_DAYS = "30"
+JOIN_PROVIDER = "log"
+NOW_PLAYING_CACHE_SECONDS = "10"
+METADATA_STALE_MINUTES = "45"
+SCHEDULE_STALE_MINUTES = "90"

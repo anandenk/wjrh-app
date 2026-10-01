@@ -22,15 +22,16 @@ The old `~/Downloads/design_handoff_wjrh_app` folder is superseded; everything i
 ```bash
 cd backend/api && npm ci && npm test   # 50 tests in Cloudflare's runtime; npm run typecheck
 backend/scripts/dev.sh                 # fake station + fake Mixcloud + API on http://127.0.0.1:8787
+backend/scripts/dev-real.sh            # API on http://127.0.0.1:8797 against the REAL station (read-only)
 python3 backend/scripts/e2e.py --quick # end-to-end check against the running stack
 python3 tools/check_station_services.py  # read-only check of the real stream, feed and calendar
 ```
 
 ## Where we are
 
-Groundwork is done. The next step is phase 0 in the plan: run the API locally against the **real**
-stream, feed and calendar (not the fakes) and fix anything the fakes got wrong. Then the audio test
-(try `expo-audio` first, `react-native-track-player` only if it fails).
+Phase 0 is done: the API works against the real stream, feed and calendar with no code changes
+(`docs/mobile-app/phase0-findings.md`). The next step is the audio test: try `expo-audio` first,
+`react-native-track-player` only if it fails.
 
 ## Rules
 
