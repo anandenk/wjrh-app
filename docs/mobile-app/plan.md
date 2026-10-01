@@ -45,7 +45,7 @@ then `apps/mobile` and `backend/api` keep separate `package.json` files, as `bac
 | Navigation | Expo Router (tabs: Now, Schedule, Archive, Station; stack for show pages) | File-based routes match the design's screens |
 | Server data | TanStack Query | Polling, caching, retry, stale state and offline persistence in one place |
 | Types | Generated from `backend/schemas/*.json` (`json-schema-to-typescript`) | The contract tests already validate the API against these; the app reads the same contract |
-| Live audio | `react-native-track-player` (fallback option: `expo-audio`) | Background playback, lock screen / Control Center / Android media notification, remote controls |
+| Live audio | `expo-audio` (passed the simulator spike; fallback option: `react-native-track-player`) | Background playback, lock screen / Control Center / Android media notification, remote controls |
 | Mixcloud archives | `react-native-webview` hosting Mixcloud's widget | Decision 002: audio must stay inside Mixcloud's player |
 | Self-hosted archives (option 2, if chosen) | Same audio player as live, with seek | `audioUrl` supports HTTP Range |
 | Config | `app.config.ts` + `EXPO_PUBLIC_API_BASE` per build profile | One place to point at local, staging or production |
@@ -123,7 +123,7 @@ which case the web origin must be added to `CORS_ORIGINS`.
 
 ## Build order (when building starts)
 
-1. **Audio spike:** pick the live-audio library (see Stack).
+1. **Audio spike:** pick the live-audio library (see Stack). Simulator part done, see [`audio-spike.md`](audio-spike.md); iPhone and Android checks remain.
 2. **Scaffold:** `create-expo-app` in `apps/mobile`, Expo Router tabs, EAS profiles, env config.
 3. **Contract layer:** generated types, a typed `fetch` client with the error envelope, query hooks,
    and fixtures from the fake station for offline UI work.

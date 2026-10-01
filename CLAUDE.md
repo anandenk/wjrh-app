@@ -30,8 +30,12 @@ python3 tools/check_station_services.py  # read-only check of the real stream, f
 ## Where we are
 
 Phase 0 is done: the API works against the real stream, feed and calendar with no code changes
-(`docs/mobile-app/phase0-findings.md`). The next step is the audio test: try `expo-audio` first,
-`react-native-track-player` only if it fails.
+(`docs/mobile-app/phase0-findings.md`). The audio spike (`apps/audio-spike/`, throwaway) passed on
+the iOS simulator with `expo-audio`: live stream, background playback, lock-screen registration
+(`docs/mobile-app/audio-spike.md`). Still to do on a real iPhone: lock-screen look, interruptions,
+headphones, long background run. After that, scaffold the real app in `apps/mobile`.
+Use `react-native-track-player` only if the iPhone tests fail. Xcode 27 has no Simulator app: use
+DeviceHub (see the doc).
 
 ## Rules
 
