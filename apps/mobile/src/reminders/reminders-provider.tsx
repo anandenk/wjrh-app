@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 
-import { DEV_REMINDER_SHOW, DEV_ROUTE } from '@/config';
+import { DEV_ROUTE } from '@/config';
 
 import { configureNotificationHandler, getReminderShowIds, syncReminders } from './notifications';
 
@@ -23,26 +23,6 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
     resync();
     const sub = AppState.addEventListener('change', (s) => s === 'active' && resync());
     return () => sub.remove();
-  }, []);
-
-  // Dev-only: schedule a reminder without the permission prompt and log the result (see config.ts).
-  useEffect(() => {
-    if (!DEV_REMINDER_SHOW) return;
-    Notifications.getPermissionsAsync().then((p) =>
-      console.log(`[reminders] permission granted=${p.granted} canAskAgain=${p.canAskAgain} status=${p.status}`),
-    );
-    syncReminders(new Set([DEV_REMINDER_SHOW]))
-      .then(() => getReminderShowIds().then(() => Notifications.getAllScheduledNotificationsAsync()))
-      .then((all) => {
-        const times = all
-          .map((n) => (n.trigger as { value?: number; date?: number } | null))
-          .map((t) => (t?.value ?? t?.date ?? 0))
-          .sort((a, b) => a - b)
-          .slice(0, 3)
-          .map((ms) => new Date(ms).toISOString());
-        console.log(`[reminders] scheduled=${all.length} first=${times.join(' | ')}`);
-      })
-      .catch((e) => console.log(`[reminders] failed: ${String(e)}`));
   }, []);
 
   // Dev-only: jump to a route (see config.ts).

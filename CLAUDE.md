@@ -14,14 +14,14 @@ what is and is not verified, decisions waiting on people, how to run everything,
 | `docs/mobile-app/plan.md` | The app plan: stack, screen → endpoint map, rules, build order |
 | `docs/mobile-app/iphone-test-checklist.md` | Everything still untested because it needs a real phone, with the build steps and a results log |
 | `apps/mobile/` | The Expo / React Native app (SDK 57, Expo Router). Now, Schedule (+ show pages, reminders) and Station tabs are built; Archive is a hidden placeholder. Its README has the layout and env vars |
-| `apps/audio-spike/` | Throwaway audio test, kept for repeating the audio checks on a phone ([`docs/mobile-app/audio-spike.md`](docs/mobile-app/audio-spike.md)) |
+| `docs/mobile-app/audio-spike.md` | Why `expo-audio` was chosen (the spike app itself was removed; tag `archive/audio-spike`) |
 | `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, not deployed |
 | `backend/schemas/` | Source of truth for API response shapes; the app's types are generated from these |
 | `docs/backend-proposal/` | API contracts (`api.md`) and decisions: 001 Cloudflare hosting, 002 archives (Mixcloud) |
 | `frontend/` | The current visual design (`index.html`). Use it as the design reference, not older copies |
 
 The old `~/Downloads/design_handoff_wjrh_app` folder is superseded; everything in it is in git history
-(commit `c526e18`). The design wired to the API is kept at tag `archive/api-wired-design`.
+(commit `c526e18`). The design wired to the API is kept at tag `archive/api-wired-design`; the removed audio spike at `archive/audio-spike`.
 
 ## Commands
 
@@ -71,8 +71,8 @@ plan step 7 (Archive tab, behind a flag until the station decides) and step 8 (d
 
 - Xcode 27 has **no Simulator.app**: open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app`.
 - iOS 27 needs the UIScene setting already in `app.config.ts`; Metro must **not** run with `CI=1`.
-- The simulator cannot be tapped from automation, so dev-only env hooks (`EXPO_PUBLIC_AUTOPLAY`, `_DEV_ROUTE`,
-  `_DEV_REMINDER`) drive it. Audio tests are run with the Mac **muted** (the owner is often in class).
+- The simulator cannot be tapped from automation, so dev-only env hooks (`EXPO_PUBLIC_AUTOPLAY`, `_DEV_ROUTE`)
+  drive it. Audio tests are run with the Mac **muted** (the owner is often in class).
 - `tools/schedule-snapshot.json` tracks the real calendar; the backend parity test uses
   `backend/mocks/fixtures/schedule-snapshot.json`. Don't mix them up.
 

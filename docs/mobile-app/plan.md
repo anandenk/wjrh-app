@@ -31,7 +31,6 @@ two exceptions that go direct:
 | Path | What |
 |---|---|
 | `apps/mobile/` | The Expo app (see its README). |
-| `apps/audio-spike/` | Throwaway audio test; results in [`audio-spike.md`](audio-spike.md). |
 | `backend/` | The `/v1` Worker, schemas, mocks, recorder (unchanged). |
 | `backend/schemas/` | **Source of truth for the app's types.** The app generates TypeScript from these rather than hand-writing response shapes. |
 | `frontend/` | The browser design. Visual reference and Cloudflare Pages preview. |

@@ -10,7 +10,6 @@ board approves it.
 |---|---|
 | `frontend/` | The app design (`index.html`), running on built-in demo data. Also what deploys to Cloudflare Pages. |
 | `apps/mobile/` | The native listener app (Expo / React Native, SDK 57). Now, Schedule (with show pages and reminders) and Station tabs are built and run on the iOS simulator; Archive is a hidden placeholder. See its [README](apps/mobile/README.md). |
-| `apps/audio-spike/` | Throwaway audio test, kept for repeating the audio checks on a real phone. |
 | `backend/` | The proposed `/v1` API (a Cloudflare Worker), the archive recorder, and a fake station to run them against. Local only; see [`backend/TESTING.md`](backend/TESTING.md). |
 | `docs/backend-proposal/` | What exists today, the gaps, the proposed API, the rollout plan, and decisions awaiting the board. |
 | `docs/mobile-app/` | The Expo app: [`status.md`](docs/mobile-app/status.md) (current state, next steps, how to run, gotchas: **start here**), [`plan.md`](docs/mobile-app/plan.md) (stack, screen-to-endpoint map, rules, build order), [`iphone-test-checklist.md`](docs/mobile-app/iphone-test-checklist.md) (what still needs a real phone), the audio spike and phase 0 findings. |

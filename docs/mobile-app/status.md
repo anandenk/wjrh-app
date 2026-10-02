@@ -2,7 +2,7 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last updated **2026-10-02** (after PR #16, `main` at the Station tab).
+Last updated **2026-10-02** (after PR #17 and a cleanup pass).
 
 - Plan, stack and rules: [`plan.md`](plan.md). Project rules and commands: [`../../CLAUDE.md`](../../CLAUDE.md).
 - App code and its own guide: [`../../apps/mobile/README.md`](../../apps/mobile/README.md).
@@ -25,7 +25,8 @@ on a physical phone or on Android yet**, and nothing is deployed (the API is loc
 | 7 | **Archive** tab | **Not started.** Hidden behind `FEATURES.archive = false` until the station decides (Decision 002); Mixcloud WebView first | |
 | 8 | Design polish: fonts, logo, photos, light/dark, accessibility pass, icon/splash, store assets | **Not started.** Current styling is placeholder-level on the design's palette | |
 
-`apps/audio-spike/` is a throwaway app kept only so the audio checks can be repeated on a phone.
+The throwaway audio-spike app was removed once the real app covered it; it is kept at the git tag `archive/audio-spike`
+(`git checkout archive/audio-spike -- apps/audio-spike` restores it).
 
 ## What is verified, and what is not
 
@@ -69,7 +70,11 @@ show's start, and tapping it; Mail/Phone/Safari opening from Station links.
    live and archive audio are mutually exclusive: starting one stops the other).
 4. **Step 8, design polish** (WJRH Display = Barlow Condensed ExtraBold, logo and station photos from
    `frontend/assets/`, skip `recent-cover-*` which are placeholders, accessibility pass, icon/splash, store assets).
-5. Hardening ideas, not started: persist the last good API answers across app restarts (needs an async-storage
+5. **Known gap, worth fixing early:** the live player has no watchdog for a stall that raises no error (the network
+   dropping mid-stream). It retries on error events only, so it could sit on "Connecting…" forever. Add a timeout
+   (not audible for ~15 s while playback is wanted: reconnect, with backoff) in `src/audio/use-live-player.ts`; verify
+   by killing the fake stream mid-play on the simulator, and with checks E1 to E3 on a phone.
+6. Hardening ideas, not started: persist the last good API answers across app restarts (needs an async-storage
    persister for TanStack Query); an offline indicator; Android run; `eas init` and a first EAS build; ESLint
    (the `lint` script exists but no config has been set up or run).
 
@@ -109,7 +114,6 @@ xcrun simctl io booted screenshot /path/shot.png
 | `EXPO_PUBLIC_USE_FIXTURES=1` | Serve `src/api/fixtures` instead of calling the API |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Presses Play 4 s after launch |
 | `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigates to each route 8 s apart after launch |
-| `EXPO_PUBLIC_DEV_REMINDER=<showId>` | **Dev only.** Tries to schedule a reminder at launch and logs the result |
 
 The dev-only hooks exist because the simulator cannot be tapped from automation (see below). They are ignored in
 release builds (`__DEV__` is false).
@@ -121,7 +125,7 @@ Audio from the simulator comes out of the Mac. Before any run that can play audi
 `osascript -e 'get volume settings'` (expect `output muted:true`) and confirm the output device is the built-in
 speakers. Verify playback from state instead: the player logs `[live] state=… fallback=…` into Metro's output.
 The last session ended with the Mac muted at volume 0; the previous volume was not recorded, so the owner
-unmutes it themselves. The spike has its own `SILENT` flag (player volume 0); the real app plays at full volume.
+unmutes it themselves. The real app plays at full volume.
 
 ## Gotchas learned the hard way
 
@@ -141,6 +145,8 @@ unmutes it themselves. The spike has its own `SILENT` flag (player volume 0); th
 - **`expo-audio` does not recover from a failed load on its own.** It reports `error` and sits "buffering"; the
   app's own fallback/retry (`src/audio/use-live-player.ts`) handles it. It also needs `expo-asset` installed
   (peer dependency; `expo-doctor` catches it).
+- **The stream takes about 7 s to start** and its `currentOffsetFromLive` is always `null`; it also answers at *any* URL
+  path, so test failure handling with an unreachable host, not a wrong path (`audio-spike.md`, earlier run).
 - **Resuming a paused live stream would play from an old buffer** (a rewind, which the licensing rules forbid), so
   every Play and every resume from outside the app reconnects at the live edge.
 - **Typed routes:** after adding a route file, run Metro once so `.expo/types` regenerates, or `tsc` reports the new

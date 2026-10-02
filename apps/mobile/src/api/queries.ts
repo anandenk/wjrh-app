@@ -10,7 +10,6 @@ import {
   getHealth,
   getNowPlaying,
   getRecent,
-  getSchedule,
   getShowArchives,
   getShows,
   getStation,
@@ -27,7 +26,6 @@ export const queryKeys = {
   station: ['station'] as const,
   shows: ['shows'] as const,
   weekly: (week?: string) => ['schedule', 'weekly', week ?? 'current'] as const,
-  schedule: (from: string, to: string) => ['schedule', from, to] as const,
   archives: ['archives'] as const,
   showArchives: (showId: string) => ['shows', showId, 'archives'] as const,
 };
@@ -78,14 +76,6 @@ export const useWeeklySchedule = (week?: string) =>
   useQuery({
     queryKey: queryKeys.weekly(week),
     queryFn: ({ signal }) => getWeeklySchedule(week, signal),
-    staleTime: 5 * MINUTE,
-    placeholderData: keepPreviousData,
-  });
-
-export const useSchedule = (from: string, to: string) =>
-  useQuery({
-    queryKey: queryKeys.schedule(from, to),
-    queryFn: ({ signal }) => getSchedule(from, to, signal),
     staleTime: 5 * MINUTE,
     placeholderData: keepPreviousData,
   });

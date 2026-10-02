@@ -52,7 +52,6 @@ APP_VARIANT=development npx expo run:ios   # builds a development app, installs 
 | `WJRH_BUNDLE_ID` | Overrides the placeholder bundle id / package `org.wjrh.app` (for signing with a personal Apple ID) |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Press Play 4 s after launch |
 | `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigate to each route, 8 s apart, after launch (the simulator can't be tapped from automation, and a deep link from outside shows an iOS "Open in…?" dialog) |
-| `EXPO_PUBLIC_DEV_REMINDER=<showId>` | **Dev only.** Try to schedule a reminder at launch and log the result |
 
 The dev-only hooks are inert in release builds (`__DEV__` is false).
 

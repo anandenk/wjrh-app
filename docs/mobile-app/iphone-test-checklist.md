@@ -45,7 +45,8 @@ npx expo run:ios --device "<phone name>" --configuration Release
 (`APP_VARIANT=development` is still needed so iOS allows plain HTTP to your Mac; a real release talks HTTPS to a
 deployed API.) The API address is fixed at build time.
 
-**To isolate an audio problem** you can also run the throwaway spike: [`apps/audio-spike/README.md`](../../apps/audio-spike/README.md).
+**To isolate an audio problem** from the rest of the app you can restore the removed spike: `git checkout archive/audio-spike -- apps/audio-spike`
+(set `SILENT = false` in its `App.tsx` for audible audio; it is a throwaway, see [`audio-spike.md`](audio-spike.md)).
 
 ## Checks
 
@@ -56,7 +57,7 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 - [ ] A2. Now shows the current show/track from the API (same as the real station's now-playing).
 
 ### B. Live audio
-- [ ] B1. Tap **Play live**: audio starts within about 5 s; the button goes "Connecting…" then "Pause".
+- [ ] B1. Tap **Play live**: audio starts within about 7 s (normal for this stream); the button goes "Connecting…" then "Pause".
 - [ ] B2. Pause: silence immediately. Play again: you hear what is on air **now**, not where you paused (compare with
       the stream on another device). This is the "no rewinding" rule.
 - [ ] B3. Switch to another app for 5 minutes: audio keeps playing.
@@ -86,7 +87,8 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 
 ### E. Network
 - [ ] E1. Airplane mode while playing: button says "Reconnecting…". Turn it off: audio comes back within about 20 s
-      **without tapping anything**.
+      **without tapping anything**. *(Likely failure: if the stall produces no error event the player never retries; see the
+      watchdog note in [`audio-spike.md`](audio-spike.md). Record what happens.)*
 - [ ] E2. Turn Wi-Fi off mid-play (cellular on): audio recovers.
 - [ ] E3. Launch with no network: Now shows a notice; Play says "Reconnecting…"; once online it plays.
 - [ ] E4. Stop the API on the Mac (Ctrl-C in `dev-real.sh`) while the stream is fine: Play still works, and Now says
