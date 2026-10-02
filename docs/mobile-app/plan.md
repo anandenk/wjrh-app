@@ -131,7 +131,7 @@ which case the web origin must be added to `CORS_ORIGINS`.
    Built and verified on the simulator; iPhone checks remain (see `apps/mobile/README.md`).
 5. **Schedule and show pages**, plus local reminder notifications. Built and verified on the simulator;
    reminder permission and delivery need an iPhone (see `apps/mobile/README.md`).
-6. **Station tab.**
+6. **Station tab.** Built and verified on the simulator (`apps/mobile/README.md`).
 7. **Archive tab:** behind a flag until the board decides; Mixcloud WebView first.
 8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and
    station photos in `frontend/assets/`, an accessibility pass, store assets. Skip the `recent-cover-*`

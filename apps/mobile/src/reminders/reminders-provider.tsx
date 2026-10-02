@@ -48,8 +48,11 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
   // Dev-only: jump to a route (see config.ts).
   useEffect(() => {
     if (!DEV_ROUTE) return;
-    const t = setTimeout(() => router.navigate(DEV_ROUTE as never), 3000);
-    return () => clearTimeout(t);
+    // A comma-separated list steps through the routes, 8 s apart, so one launch can show several screens.
+    const timers = DEV_ROUTE.split(',').map((route, i) =>
+      setTimeout(() => router.navigate(route as never), 3000 + i * 8000),
+    );
+    return () => timers.forEach(clearTimeout);
   }, [router]);
 
   // Tapping a reminder opens that show's page.

@@ -219,9 +219,14 @@ export interface Shows {
 export interface Station {
   updatedAt: string;
   approved: boolean;
-  team: {}[];
+  team: {
+    name: string;
+    role: string;
+    email: string;
+  }[];
   events: {
     date: string;
+    name: string;
   }[];
   listen: {
     streamUrl: string;

@@ -28,7 +28,8 @@ export const DEV_AUTOPLAY =
 export const DEV_REMINDER_SHOW: string | undefined =
   typeof __DEV__ !== 'undefined' && __DEV__ ? process.env.EXPO_PUBLIC_DEV_REMINDER || undefined : undefined;
 
-// Dev-only test hook: navigate to this route shortly after launch (EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut),
+// Dev-only test hook: navigate to this route (or a comma-separated list, 8 s apart) after launch
+// (EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut),
 // because a deep link from outside the app shows an iOS "Open in…?" dialog that can't be tapped in automated runs.
 export const DEV_ROUTE: string | undefined =
   typeof __DEV__ !== 'undefined' && __DEV__ ? process.env.EXPO_PUBLIC_DEV_ROUTE || undefined : undefined;

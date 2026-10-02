@@ -7,7 +7,7 @@ explain things plainly and briefly, and check before assuming.
 
 | Path | What |
 |---|---|
-| `apps/mobile/` | The Expo / React Native app. Scaffold, API layer, Now tab (live player), Schedule tab + show pages + show reminders. Station and Archive are still placeholders. Runs on the iOS simulator. |
+| `apps/mobile/` | The Expo / React Native app. Scaffold, API layer, Now tab (live player), Schedule tab + show pages + show reminders, Station tab. Archive is a hidden placeholder (off until the station decides). Runs on the iOS simulator. |
 | `apps/audio-spike/` | Throwaway audio test; results in `docs/mobile-app/audio-spike.md`. |
 | `docs/mobile-app/plan.md` | The app plan: stack, screen → endpoint map, rules, build order. Read this first. |
 | `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, not deployed. |
@@ -29,7 +29,7 @@ python3 tools/check_station_services.py  # read-only check of the real stream, f
 cd apps/mobile && npm run typecheck && npm run check:contract   # app types; fixtures vs backend/schemas
 cd apps/mobile && npm run smoke:api    # real API client vs the running dev.sh stack
 cd apps/mobile && npm run gen:types    # regenerate src/api/types.ts after backend/schemas changes
-cd apps/mobile && npm test             # unit tests: Now-screen logic, schedule/station-time logic, reminder planner
+cd apps/mobile && npm test             # unit tests: Now/Schedule/Station logic, reminder planner
 ```
 
 ## Where we are
@@ -44,8 +44,9 @@ with `expo-audio` (own fallback to the built-in stream URL, reconnects at the li
 now-playing, recent, health notices. Still to do on a real iPhone: the checks in
 `docs/mobile-app/audio-spike.md` plus lock-screen resume (see `apps/mobile/README.md`). The Schedule
 tab, show pages and local show reminders (plan step 5) are built and verified on the simulator; the
-reminder permission prompt and notification delivery still need a real iPhone. Next: plan step 6, the
-Station tab.
+reminder permission prompt and notification delivery still need a real iPhone. The Station tab (plan
+step 6) is built and verified on the simulator. Next: plan step 7, the Archive tab (behind a flag until
+the station decides; Mixcloud WebView first), or the iPhone checks, which need your phone.
 Use `react-native-track-player` only if the iPhone tests fail. Xcode 27 has no Simulator app: use
 DeviceHub (see the doc).
 

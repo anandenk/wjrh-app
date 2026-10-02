@@ -26,6 +26,7 @@
     "../src/reminders/plan.ts",
     "../src/screens/now/now-state.ts",
     "../src/screens/schedule/schedule-state.ts",
+    "../src/screens/station/station-state.ts",
     "../src/utils/format-time.ts",
     "globals.d.ts",
     "smoke-api.ts"

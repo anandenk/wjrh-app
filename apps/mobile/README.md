@@ -1,7 +1,7 @@
 # WJRH mobile app (Expo)
 
 The native iOS and Android listener app. **Scaffold, API layer, Now tab, Schedule tab with show pages and
-reminders.** Station and Archive are still placeholders.
+reminders, and the Station tab.** Archive is a hidden placeholder.
 
 The stack, the screen-to-endpoint map, the licensing rules and the build order are in
 [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md). Audio spike results (library choice) are
@@ -69,9 +69,30 @@ notification permission prompt being accepted, a reminder arriving at the show's
 simulator iOS refuses to schedule without permission and the prompt can't be tapped from automation, so only the
 planning logic (unit-tested) and the permission state (`undetermined`, so a prompt would appear) were checked.
 
-Dev test hooks (dev builds only): `EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut` jumps to a route after launch
+Dev test hooks (dev builds only): `EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut` (or a comma-separated list, 8 s apart) jumps to a route after launch
 (a deep link from outside shows an iOS "Open in…?" dialog that can't be tapped in automated runs);
 `EXPO_PUBLIC_DEV_REMINDER=<showId>` tries to schedule a reminder at launch and logs the result.
+
+## Station tab
+
+| Path | What |
+|---|---|
+| `src/app/station/` | A stack: `index` (the hub) and `[page]` (one page) |
+| `src/content/station.ts` | The static copy (About, History, Get involved, Support, Contact), from the design |
+| `src/screens/station/` | Hub, page renderer, and the API-backed Team and Events pages. `station-state.ts` is the pure logic |
+
+- **Team respects `approved`.** `/v1/station` keeps `approved: false` until the station confirms the roster each
+  semester. The roster has students' names and emails, so while it is `false` the Team page shows "Team list
+  coming soon" and no names. (Easy to loosen: `teamView` in `station-state.ts`.) **Decision for the station to
+  confirm:** whether events should also wait for approval; today they always show.
+- **Events** are split into Upcoming and Event archive by station-time date, with a link to wjrh.org/events.
+- **Static copy** was verified against wjrh.org on 21 Sep 2026 (`frontend/assets/station-content-sources.md`).
+  Recheck before launch: board-meeting time, GroupMe invite, donation link. No photos yet (plan step 8).
+- Links (email, phone, map, donation, socials, FCC file) open outside the app; failures are ignored quietly.
+
+Verified on the iOS 27 simulator: the hub, Events (upcoming empty state + sorted archive), Contact, Team with the
+roster not approved (hidden) and approved (list with email links). Not verified: that tapping a link actually
+opens Mail / Phone / Safari (simulator limits), which is on the iPhone checklist.
 
 ## API layer (`src/api/`)
 
