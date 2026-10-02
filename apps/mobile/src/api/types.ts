@@ -128,9 +128,18 @@ export interface ScheduleWeekly {
       genre: string;
       description: string;
       blurb?: string;
-      host: {};
+      host: {
+        name: string;
+        initials: string;
+        bio: string;
+      };
+      recurring: boolean;
+      showId: string;
+      occurrenceId: string;
     }[];
   };
+  contentChangedAt: string;
+  weekOf: string;
 }
 
 // schedule.schema.json

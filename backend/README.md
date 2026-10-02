@@ -71,8 +71,10 @@ What the tests cover:
 - Every endpoint is validated against the JSON Schemas in [`schemas/`](schemas/).
 - Calendar recurrence edge cases: EXDATE, RECURRENCE-ID moves and cancellations, UNTIL, COUNT,
   INTERVAL, and the end of daylight saving time.
-- `/v1/schedule/weekly` must reproduce today's `tools/schedule-snapshot.json` **byte for byte**. That makes
-  it a drop-in replacement for `fetch_schedule.py`.
+- `/v1/schedule/weekly` must reproduce the legacy snapshot format **byte for byte** (checked against
+  `mocks/fixtures/schedule-snapshot.json`, the frozen snapshot that matches the fixture calendar). That makes
+  it a drop-in replacement for `fetch_schedule.py`. `tools/schedule-snapshot.json` is separate: it tracks the
+  real calendar and is only used for the drift check in `tools/check_station_services.py`.
 - Metadata:
   - `Null` or URL-encoded values;
   - feed outages served as stale;
@@ -137,8 +139,8 @@ The jobs are:
 
 **About the fixtures.** The sandbox that built this could not reach Google Calendar or
 `nowplaying.wjrh.org`.
-- `mocks/fixtures/calendar-snapshot.ics` is therefore **reconstructed** from the committed
-  `tools/schedule-snapshot.json`. It round-trips exactly through `fetch_schedule.py`.
+- `mocks/fixtures/calendar-snapshot.ics` is therefore **reconstructed** from a committed snapshot, kept
+  frozen as `mocks/fixtures/schedule-snapshot.json`. It round-trips exactly through `fetch_schedule.py`.
 - The now-playing payload shape (`{"nowplaying": {"ARTIST", "TITLE"}}`, served as
   `binary/octet-stream`) comes from the original PWA code and `tools/check_station_services.py`.
 - The fake Mixcloud follows Mixcloud's documented API shapes as known here. Check them against the

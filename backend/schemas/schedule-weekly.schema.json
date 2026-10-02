@@ -8,7 +8,9 @@
     "tz",
     "generatedAt",
     "source",
-    "days"
+    "days",
+    "contentChangedAt",
+    "weekOf"
   ],
   "properties": {
     "tz": {
@@ -46,7 +48,10 @@
             "dj",
             "genre",
             "description",
-            "host"
+            "host",
+            "recurring",
+            "showId",
+            "occurrenceId"
           ],
           "properties": {
             "id": {
@@ -87,15 +92,44 @@
             },
             "host": {
               "type": "object",
+              "additionalProperties": false,
               "required": [
                 "name",
                 "initials",
                 "bio"
-              ]
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "initials": {
+                  "type": "string"
+                },
+                "bio": {
+                  "type": "string"
+                }
+              }
+            },
+            "recurring": {
+              "type": "boolean"
+            },
+            "showId": {
+              "type": "string"
+            },
+            "occurrenceId": {
+              "type": "string"
             }
           }
         }
       }
+    },
+    "contentChangedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
+    },
+    "weekOf": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
     }
   }
 }

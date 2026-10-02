@@ -6,7 +6,9 @@ export default defineConfig(async () => {
   const migrations = await readD1Migrations('./migrations');
   // Fixtures are read in Node and handed to the Workers runtime as bindings.
   const fixtureIcs = await readFile('../mocks/fixtures/calendar-snapshot.ics', 'utf8');
-  const legacySchedule = await readFile('../../tools/schedule-snapshot.json', 'utf8');
+  // The legacy snapshot that matches the fixture calendar above (NOT tools/schedule-snapshot.json, which
+  // tracks the real calendar and changes whenever the station does).
+  const legacySchedule = await readFile('../mocks/fixtures/schedule-snapshot.json', 'utf8');
   return {
     plugins: [
       cloudflareTest({
