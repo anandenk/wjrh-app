@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@tanstack/react-query": "^5.104.0",
     "expo": "~57.0.26",
     "expo-build-properties": "~57.0.22",
     "expo-constants": "~57.0.20",
@@ -23,15 +24,23 @@
     "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
+    "@types/node": "^26.6.4",
     "@types/react": "~19.2.2",
+    "ajv": "^8.20.0",
+    "json-schema-to-typescript": "^16.0.0",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
     "ios": "expo run:ios",
     "android": "expo run:android",
-    "typecheck": "tsc --noEmit",
-    "lint": "expo lint"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p scripts",
+    "lint": "expo lint",
+    "gen:types": "node scripts/gen-types.mjs",
+    "check:contract": "node scripts/check-contract.mjs",
+    "smoke:api": "tsx scripts/smoke-api.ts",
+    "smoke:fixtures": "EXPO_PUBLIC_USE_FIXTURES=1 tsx scripts/smoke-api.ts"
   },
   "private": true
 }

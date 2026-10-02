@@ -1,0 +1,503 @@
+{
+  "tz": "America/New_York",
+  "generatedAt": "2026-10-02T01:19:10-04:00",
+  "contentChangedAt": "2026-10-02T01:19:10-04:00",
+  "source": "Google Calendar (public ICS) via WJRH API",
+  "weekOf": "2026-09-28",
+  "days": {
+    "mon": [
+      {
+        "id": "mon-1200-the-rodeo",
+        "uid": "3djk09ejb5p2qd9cc815ok7lk1@google.com",
+        "startsAt": "12:00",
+        "endsAt": "13:00",
+        "startMin": 720,
+        "endMin": 780,
+        "show": "The Rodeo",
+        "dj": "Josie and Rosetta",
+        "genre": "Folk and anti-folk",
+        "description": "Folk and anti-folk",
+        "host": {
+          "name": "Josie and Rosetta",
+          "initials": "JR",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "the-rodeo",
+        "occurrenceId": "2026-09-28T12:00:00-04:00_the-rodeo"
+      },
+      {
+        "id": "mon-1400-sarah-smiles",
+        "uid": "4ru52n4bqic7esesd42tu6l7ja@google.com",
+        "startsAt": "14:00",
+        "endsAt": "15:00",
+        "startMin": 840,
+        "endMin": 900,
+        "show": "Sarah Smiles",
+        "dj": "Sarah",
+        "genre": "Music/Popculture (movies, shows, etc.)",
+        "description": "Music/Popculture (movies, shows, etc.)",
+        "host": {
+          "name": "Sarah",
+          "initials": "S",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "sarah-smiles",
+        "occurrenceId": "2026-09-28T14:00:00-04:00_sarah-smiles"
+      },
+      {
+        "id": "mon-1500-the-spinoff-with-orry",
+        "uid": "4l790v93ot76m5n2cn80nu2vo5@google.com",
+        "startsAt": "15:00",
+        "endsAt": "16:00",
+        "startMin": 900,
+        "endMin": 960,
+        "show": "The Spinoff with Orry",
+        "dj": "Orry",
+        "genre": "HipHop, soul, jazz, rock, ect.",
+        "description": "HipHop, soul, jazz, rock, ect.",
+        "host": {
+          "name": "Orry",
+          "initials": "O",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "the-spinoff-with-orry",
+        "occurrenceId": "2026-09-28T15:00:00-04:00_the-spinoff-with-orry"
+      },
+      {
+        "id": "mon-1600-mayo-s-mix",
+        "uid": "31712rjaeq1l96dn205pbroetc@google.com",
+        "startsAt": "16:00",
+        "endsAt": "17:00",
+        "startMin": 960,
+        "endMin": 1020,
+        "show": "Mayo's Mix",
+        "dj": "Mayloni Belcher",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Mayloni Belcher",
+          "initials": "MB",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "mayo-s-mix",
+        "occurrenceId": "2026-09-28T16:00:00-04:00_mayo-s-mix"
+      },
+      {
+        "id": "mon-1900-barthalomew-the-aquarium",
+        "uid": "1btbggb9vm2cq0bv207jchunj4@google.com",
+        "startsAt": "19:00",
+        "endsAt": "20:00",
+        "startMin": 1140,
+        "endMin": 1200,
+        "show": "Barthalomew & The Aquarium",
+        "dj": "Ben",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Ben",
+          "initials": "B",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "barthalomew-the-aquarium",
+        "occurrenceId": "2026-09-28T19:00:00-04:00_barthalomew-the-aquarium"
+      }
+    ],
+    "tue": [
+      {
+        "id": "tue-1700-giuseppe",
+        "uid": "3hn7i2ej4mhcdmmd4a8kg5tsqt@google.com",
+        "startsAt": "17:00",
+        "endsAt": "18:00",
+        "startMin": 1020,
+        "endMin": 1080,
+        "show": "Giuseppe",
+        "dj": "Cameron and Mats",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Cameron and Mats",
+          "initials": "CM",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "giuseppe",
+        "occurrenceId": "2026-09-29T17:00:00-04:00_giuseppe"
+      },
+      {
+        "id": "tue-1800-naive-melody",
+        "uid": "4ei9e2bjt9alf4k25oqt15a0b3@google.com",
+        "startsAt": "18:00",
+        "endsAt": "19:00",
+        "startMin": 1080,
+        "endMin": 1140,
+        "show": "Naive Melody",
+        "dj": "Koby",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Koby",
+          "initials": "K",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "naive-melody",
+        "occurrenceId": "2026-09-29T18:00:00-04:00_naive-melody"
+      }
+    ],
+    "wed": [
+      {
+        "id": "wed-1300-fatou-talks",
+        "uid": "0csba0neivadqtks84gjdaduoe@google.com",
+        "startsAt": "13:00",
+        "endsAt": "14:00",
+        "startMin": 780,
+        "endMin": 840,
+        "show": "Fatou Talks",
+        "dj": "Fatoumata",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Fatoumata",
+          "initials": "F",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "fatou-talks",
+        "occurrenceId": "2026-09-30T13:00:00-04:00_fatou-talks"
+      },
+      {
+        "id": "wed-1900-basement-jams",
+        "uid": "756m26m20remp6djsitn9cs2nj@google.com",
+        "startsAt": "19:00",
+        "endsAt": "20:00",
+        "startMin": 1140,
+        "endMin": 1200,
+        "show": "Basement Jams",
+        "dj": "Darby",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Darby",
+          "initials": "D",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "basement-jams",
+        "occurrenceId": "2026-09-30T19:00:00-04:00_basement-jams"
+      }
+    ],
+    "thu": [
+      {
+        "id": "thu-1000-fern-s-folk-fun",
+        "uid": "2fd8d9ae6l1lve3rsjjjmbad8c@google.com",
+        "startsAt": "10:00",
+        "endsAt": "11:00",
+        "startMin": 600,
+        "endMin": 660,
+        "show": "Fern's Folk Fun",
+        "dj": "Fern",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Fern",
+          "initials": "F",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "fern-s-folk-fun",
+        "occurrenceId": "2026-10-01T10:00:00-04:00_fern-s-folk-fun"
+      },
+      {
+        "id": "thu-1300-c-squared",
+        "uid": "6i8cfuigob1bmbq71f0v01er13@google.com",
+        "startsAt": "13:00",
+        "endsAt": "14:00",
+        "startMin": 780,
+        "endMin": 840,
+        "show": "C SQUARED",
+        "dj": "Cora and Cassie",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Cora and Cassie",
+          "initials": "CC",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "c-squared",
+        "occurrenceId": "2026-10-01T13:00:00-04:00_c-squared"
+      },
+      {
+        "id": "thu-1600-soupburger",
+        "uid": "40j5dfcehid3dn5f7iioajdfj6_R20260924T200000@google.com",
+        "startsAt": "16:00",
+        "endsAt": "17:00",
+        "startMin": 960,
+        "endMin": 1020,
+        "show": "SoupBurger!!",
+        "dj": "Sonia Pattie and Lawson Campbell",
+        "genre": "everything",
+        "description": "everything",
+        "host": {
+          "name": "Sonia Pattie and Lawson Campbell",
+          "initials": "SL",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "soupburger",
+        "occurrenceId": "2026-10-01T16:00:00-04:00_soupburger"
+      },
+      {
+        "id": "thu-1700-api-on-air",
+        "uid": "4gmtmf1b8kdmnan7fre6aqjmps@google.com",
+        "startsAt": "17:00",
+        "endsAt": "18:00",
+        "startMin": 1020,
+        "endMin": 1080,
+        "show": "API on Air",
+        "dj": "Cassie",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Cassie",
+          "initials": "C",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "api-on-air",
+        "occurrenceId": "2026-10-01T17:00:00-04:00_api-on-air"
+      },
+      {
+        "id": "thu-1930-playlist-of-the-month",
+        "uid": "42j9je5fk76r1cf5lcsrd3bkbi@google.com",
+        "startsAt": "19:30",
+        "endsAt": "20:30",
+        "startMin": 1170,
+        "endMin": 1230,
+        "show": "Playlist of the Month",
+        "dj": "Ella Selnick",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Ella Selnick",
+          "initials": "ES",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "playlist-of-the-month",
+        "occurrenceId": "2026-10-01T19:30:00-04:00_playlist-of-the-month"
+      }
+    ],
+    "fri": [
+      {
+        "id": "fri-1600-supercut",
+        "uid": "5v796ehkb06hq9tdhbj0kl139s@google.com",
+        "startsAt": "16:00",
+        "endsAt": "17:00",
+        "startMin": 960,
+        "endMin": 1020,
+        "show": "Supercut",
+        "dj": "Reese",
+        "genre": "Indie, alternative, oldies",
+        "description": "Indie, alternative, oldies",
+        "host": {
+          "name": "Reese",
+          "initials": "R",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "supercut",
+        "occurrenceId": "2026-10-02T16:00:00-04:00_supercut"
+      },
+      {
+        "id": "fri-1800-off-the-record",
+        "uid": "70pdmlgeca01pbumagbjtoa5mt@google.com",
+        "startsAt": "18:00",
+        "endsAt": "19:00",
+        "startMin": 1080,
+        "endMin": 1140,
+        "show": "Off The Record",
+        "dj": "Jolie",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Jolie",
+          "initials": "J",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "off-the-record",
+        "occurrenceId": "2026-10-02T18:00:00-04:00_off-the-record"
+      },
+      {
+        "id": "fri-1900-the-bit",
+        "uid": "5cbabvt01ca7ulvrn6ic5rs9l2@google.com",
+        "startsAt": "19:00",
+        "endsAt": "21:00",
+        "startMin": 1140,
+        "endMin": 1260,
+        "show": "The Bit",
+        "dj": "Tom",
+        "genre": "Eclectic, alternative, metal, jazz, soul, R and B…",
+        "description": "Eclectic, alternative, metal, jazz, soul, R and B, electronic, etc.",
+        "host": {
+          "name": "Tom",
+          "initials": "T",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "the-bit",
+        "occurrenceId": "2026-10-02T19:00:00-04:00_the-bit"
+      },
+      {
+        "id": "fri-2200-what-s-poppin-radio-show",
+        "uid": "7b2q4qumtjquuejrln57v8rpdn@google.com",
+        "startsAt": "22:00",
+        "endsAt": "23:00",
+        "startMin": 1320,
+        "endMin": 1380,
+        "show": "What’s Poppin’? Radio Show",
+        "dj": "Téo",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Téo",
+          "initials": "T",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "what-s-poppin-radio-show",
+        "occurrenceId": "2026-10-02T22:00:00-04:00_what-s-poppin-radio-show"
+      }
+    ],
+    "sat": [
+      {
+        "id": "sat-1400-alternative-sound",
+        "uid": "75l6s8t4hvnaev97grlgckl1oq@google.com",
+        "startsAt": "14:00",
+        "endsAt": "15:00",
+        "startMin": 840,
+        "endMin": 900,
+        "show": "Alternative Sound",
+        "dj": "Jamya",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Jamya",
+          "initials": "J",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "alternative-sound",
+        "occurrenceId": "2026-10-03T14:00:00-04:00_alternative-sound"
+      },
+      {
+        "id": "sat-1700-rock-on-evening",
+        "uid": "6kd74elsci7k261k44iibjkup6@google.com",
+        "startsAt": "17:00",
+        "endsAt": "18:00",
+        "startMin": 1020,
+        "endMin": 1080,
+        "show": "Rock on Evening",
+        "dj": "Isabella Mazza",
+        "genre": "Rock, pop punk, emo, alternative",
+        "description": "Rock, pop punk, emo, alternative",
+        "host": {
+          "name": "Isabella Mazza",
+          "initials": "IM",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "rock-on-evening",
+        "occurrenceId": "2026-10-03T17:00:00-04:00_rock-on-evening"
+      }
+    ],
+    "sun": [
+      {
+        "id": "sun-0800-postmodern-jrh",
+        "uid": "4igvejhhg588j82p4k68v5cfru@google.com",
+        "startsAt": "08:00",
+        "endsAt": "10:00",
+        "startMin": 480,
+        "endMin": 600,
+        "show": "Postmodern JRH",
+        "dj": "Scott",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Scott",
+          "initials": "S",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "postmodern-jrh",
+        "occurrenceId": "2026-10-04T08:00:00-04:00_postmodern-jrh"
+      },
+      {
+        "id": "sun-1100-freak-show",
+        "uid": "4qpmd1f5o3utbtdgj9udl9mmir@google.com",
+        "startsAt": "11:00",
+        "endsAt": "12:00",
+        "startMin": 660,
+        "endMin": 720,
+        "show": "Freak Show",
+        "dj": "Sofie Nordstrom",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Sofie Nordstrom",
+          "initials": "SN",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "freak-show",
+        "occurrenceId": "2026-10-04T11:00:00-04:00_freak-show"
+      },
+      {
+        "id": "sun-1800-harry-son-s-hits",
+        "uid": "74fs4auhbndk02qfm4tno4s4ec@google.com",
+        "startsAt": "18:00",
+        "endsAt": "19:00",
+        "startMin": 1080,
+        "endMin": 1140,
+        "show": "Harry Son's Hits",
+        "dj": "Harrison",
+        "genre": "Pop/Sports talk",
+        "description": "Pop/Sports talk",
+        "host": {
+          "name": "Harrison",
+          "initials": "H",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "harry-son-s-hits",
+        "occurrenceId": "2026-10-04T18:00:00-04:00_harry-son-s-hits"
+      },
+      {
+        "id": "sun-2000-mouthpeace",
+        "uid": "29716picbnq0sl9bak1ae9o6r2@google.com",
+        "startsAt": "20:00",
+        "endsAt": "21:00",
+        "startMin": 1200,
+        "endMin": 1260,
+        "show": "MouthPeace",
+        "dj": "Lorelai",
+        "genre": "",
+        "description": "",
+        "host": {
+          "name": "Lorelai",
+          "initials": "L",
+          "bio": ""
+        },
+        "recurring": true,
+        "showId": "mouthpeace",
+        "occurrenceId": "2026-10-04T20:00:00-04:00_mouthpeace"
+      }
+    ]
+  }
+}

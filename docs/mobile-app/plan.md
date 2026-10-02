@@ -124,9 +124,9 @@ which case the web origin must be added to `CORS_ORIGINS`.
 ## Build order (when building starts)
 
 1. **Audio spike:** pick the live-audio library (see Stack). Simulator part done, see [`audio-spike.md`](audio-spike.md); iPhone and Android checks remain.
-2. **Scaffold:** `create-expo-app` in `apps/mobile`, Expo Router tabs, EAS profiles, env config. Done in `apps/mobile` (not yet built on the simulator).
+2. **Scaffold:** `create-expo-app` in `apps/mobile`, Expo Router tabs, EAS profiles, env config. Done in `apps/mobile`.
 3. **Contract layer:** generated types, a typed `fetch` client with the error envelope, query hooks,
-   and fixtures from the fake station for offline UI work.
+   and fixtures from the fake station for offline UI work. Done in `apps/mobile/src/api` (see its README).
 4. **Now tab:** live player, now-playing, recent, health banner. This is the first real milestone.
 5. **Schedule and show pages**, plus local reminder notifications.
 6. **Station tab.**

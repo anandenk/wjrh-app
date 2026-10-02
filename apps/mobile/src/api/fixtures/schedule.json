@@ -1,0 +1,141 @@
+{
+  "timezone": "America/New_York",
+  "generatedAt": "2026-10-02T01:19:10-04:00",
+  "checkedAt": "2026-10-02T01:19:10-04:00",
+  "stale": false,
+  "source": "google-calendar",
+  "from": "2026-10-02T00:00:00-04:00",
+  "to": "2026-10-05T00:00:00-04:00",
+  "occurrences": [
+    {
+      "id": "2026-10-02T16:00:00-04:00_supercut",
+      "showId": "supercut",
+      "title": "Supercut",
+      "hostNames": [
+        "Reese"
+      ],
+      "startsAt": "2026-10-02T16:00:00-04:00",
+      "endsAt": "2026-10-02T17:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-02T18:00:00-04:00_off-the-record",
+      "showId": "off-the-record",
+      "title": "Off The Record",
+      "hostNames": [
+        "Jolie"
+      ],
+      "startsAt": "2026-10-02T18:00:00-04:00",
+      "endsAt": "2026-10-02T19:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-02T19:00:00-04:00_the-bit",
+      "showId": "the-bit",
+      "title": "The Bit",
+      "hostNames": [
+        "Tom"
+      ],
+      "startsAt": "2026-10-02T19:00:00-04:00",
+      "endsAt": "2026-10-02T21:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-02T22:00:00-04:00_what-s-poppin-radio-show",
+      "showId": "what-s-poppin-radio-show",
+      "title": "What’s Poppin’? Radio Show",
+      "hostNames": [
+        "Téo"
+      ],
+      "startsAt": "2026-10-02T22:00:00-04:00",
+      "endsAt": "2026-10-02T23:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-03T14:00:00-04:00_alternative-sound",
+      "showId": "alternative-sound",
+      "title": "Alternative Sound",
+      "hostNames": [
+        "Jamya"
+      ],
+      "startsAt": "2026-10-03T14:00:00-04:00",
+      "endsAt": "2026-10-03T15:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-03T17:00:00-04:00_rock-on-evening",
+      "showId": "rock-on-evening",
+      "title": "Rock on Evening",
+      "hostNames": [
+        "Isabella Mazza"
+      ],
+      "startsAt": "2026-10-03T17:00:00-04:00",
+      "endsAt": "2026-10-03T18:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-04T08:00:00-04:00_postmodern-jrh",
+      "showId": "postmodern-jrh",
+      "title": "Postmodern JRH",
+      "hostNames": [
+        "Scott"
+      ],
+      "startsAt": "2026-10-04T08:00:00-04:00",
+      "endsAt": "2026-10-04T10:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-04T11:00:00-04:00_freak-show",
+      "showId": "freak-show",
+      "title": "Freak Show",
+      "hostNames": [
+        "Sofie Nordstrom"
+      ],
+      "startsAt": "2026-10-04T11:00:00-04:00",
+      "endsAt": "2026-10-04T12:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-04T18:00:00-04:00_harry-son-s-hits",
+      "showId": "harry-son-s-hits",
+      "title": "Harry Son's Hits",
+      "hostNames": [
+        "Harrison"
+      ],
+      "startsAt": "2026-10-04T18:00:00-04:00",
+      "endsAt": "2026-10-04T19:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    },
+    {
+      "id": "2026-10-04T20:00:00-04:00_mouthpeace",
+      "showId": "mouthpeace",
+      "title": "MouthPeace",
+      "hostNames": [
+        "Lorelai"
+      ],
+      "startsAt": "2026-10-04T20:00:00-04:00",
+      "endsAt": "2026-10-04T21:00:00-04:00",
+      "cancelled": false,
+      "recurring": true,
+      "hasProfile": true
+    }
+  ]
+}

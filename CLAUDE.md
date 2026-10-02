@@ -7,7 +7,7 @@ explain things plainly and briefly, and check before assuming.
 
 | Path | What |
 |---|---|
-| `apps/mobile/` | The Expo / React Native app. Scaffold only (placeholder tabs, EAS profiles, config); not yet run on the simulator. |
+| `apps/mobile/` | The Expo / React Native app. Scaffold + API layer (generated types, typed client, query hooks, fixtures); placeholder screens. Runs on the iOS simulator. |
 | `apps/audio-spike/` | Throwaway audio test; results in `docs/mobile-app/audio-spike.md`. |
 | `docs/mobile-app/plan.md` | The app plan: stack, screen → endpoint map, rules, build order. Read this first. |
 | `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, not deployed. |
@@ -26,6 +26,9 @@ backend/scripts/dev.sh                 # fake station + fake Mixcloud + API on h
 backend/scripts/dev-real.sh            # API on http://127.0.0.1:8797 against the REAL station (read-only)
 python3 backend/scripts/e2e.py --quick # end-to-end check against the running stack
 python3 tools/check_station_services.py  # read-only check of the real stream, feed and calendar
+cd apps/mobile && npm run typecheck && npm run check:contract   # app types; fixtures vs backend/schemas
+cd apps/mobile && npm run smoke:api    # real API client vs the running dev.sh stack
+cd apps/mobile && npm run gen:types    # regenerate src/api/types.ts after backend/schemas changes
 ```
 
 ## Where we are
@@ -34,8 +37,9 @@ Phase 0 is done: the API works against the real stream, feed and calendar with n
 (`docs/mobile-app/phase0-findings.md`). The audio spike (`apps/audio-spike/`, throwaway) passed on
 the iOS simulator with `expo-audio`: live stream, background playback, lock-screen registration
 (`docs/mobile-app/audio-spike.md`). Still to do on a real iPhone: lock-screen look, interruptions,
-headphones, long background run. The real app is scaffolded in `apps/mobile` (typecheck and
-expo-doctor pass; first simulator build still to do, see its README). Next: plan step 3, the contract layer.
+headphones, long background run. The real app is scaffolded in `apps/mobile` and its API layer
+(plan step 3) is done and verified in the simulator against the local API. Next: plan step 4, the Now
+tab (live player with `expo-audio`, now-playing, recent, health banner).
 Use `react-native-track-player` only if the iPhone tests fail. Xcode 27 has no Simulator app: use
 DeviceHub (see the doc).
 

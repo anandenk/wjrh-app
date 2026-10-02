@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "paths": { "@/*": ["../src/*"] }
+  },
+  "include": ["globals.d.ts", "smoke-api.ts", "../src/api/client.ts", "../src/api/endpoints.ts", "../src/config.ts"]
+}

@@ -1,0 +1,334 @@
+{
+  "updatedAt": "2026-09-27T00:00:00-04:00",
+  "shows": [
+    {
+      "id": "alternative-sound",
+      "name": "Alternative Sound",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Jamya"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "amber-on-audio",
+      "name": "Amber on Audio",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Amber"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "api-on-air",
+      "name": "API on Air",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Cassie"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "barthalomew-the-aquarium",
+      "name": "Barthalomew & The Aquarium",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Ben"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "basement-jams",
+      "name": "Basement Jams",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Darby"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "c-squared",
+      "name": "C SQUARED",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Cora",
+        "Cassie"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "earworm",
+      "name": "Earworm",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Calvin"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "fatou-talks",
+      "name": "Fatou Talks",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Fatoumata"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "fern-s-folk-fun",
+      "name": "Fern's Folk Fun",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Fern"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "freak-show",
+      "name": "Freak Show",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Sofie Nordstrom"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "giuseppe",
+      "name": "Giuseppe",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Cameron",
+        "Mats"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "harry-son-s-hits",
+      "name": "Harry Son's Hits",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Harrison"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "j-j-jams",
+      "name": "J-J-Jams",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Janella",
+        "Josie"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "mayo-s-mix",
+      "name": "Mayo's Mix",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Mayloni Belcher"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "mouthpeace",
+      "name": "MouthPeace",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Lorelai"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "naive-melody",
+      "name": "Naive Melody",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Koby"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "off-the-record",
+      "name": "Off The Record",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Jolie"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "playlist-of-the-month",
+      "name": "Playlist of the Month",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Ella Selnick"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "postmodern-jrh",
+      "name": "Postmodern JRH",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Scott"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "rock-on-evening",
+      "name": "Rock on Evening",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Isabella Mazza"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "sarah-smiles",
+      "name": "Sarah Smiles",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Sarah"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "soupburger",
+      "name": "SoupBurger!!",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Sonia Pattie",
+        "Lawson Campbell"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "supercut",
+      "name": "Supercut",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Reese"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "the-bit",
+      "name": "The Bit",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Tom"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "the-rodeo",
+      "name": "The Rodeo",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Josie",
+        "Rosetta"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "the-spinoff-with-orry",
+      "name": "The Spinoff with Orry",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Orry"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    },
+    {
+      "id": "what-s-poppin-radio-show",
+      "name": "What’s Poppin’? Radio Show",
+      "genres": [],
+      "description": null,
+      "hostNames": [
+        "Téo"
+      ],
+      "hostBio": null,
+      "artwork": null,
+      "active": true
+    }
+  ]
+}

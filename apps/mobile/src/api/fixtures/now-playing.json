@@ -1,0 +1,25 @@
+{
+  "asOf": "2026-10-02T01:19:32-04:00",
+  "sourceUpdatedAt": "2026-10-02T01:19:00-04:00",
+  "stale": false,
+  "live": false,
+  "automation": true,
+  "track": {
+    "title": "Cellophane Wing",
+    "artist": "Miri Vale",
+    "album": null,
+    "artworkUrl": null
+  },
+  "show": null,
+  "nextShow": {
+    "id": "supercut",
+    "occurrenceId": "2026-10-02T16:00:00-04:00_supercut",
+    "name": "Supercut",
+    "hostNames": [
+      "Reese"
+    ],
+    "startsAt": "2026-10-02T16:00:00-04:00",
+    "endsAt": "2026-10-02T17:00:00-04:00",
+    "hasProfile": true
+  }
+}

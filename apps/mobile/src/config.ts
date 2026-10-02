@@ -5,7 +5,7 @@
 // needs http://10.0.2.2:8787 and a physical phone needs the laptop's LAN IP (docs/mobile-app/plan.md).
 // Preview/production builds must set EXPO_PUBLIC_API_BASE: the API is not deployed yet.
 export const API_BASE: string =
-  process.env.EXPO_PUBLIC_API_BASE ?? (__DEV__ ? 'http://127.0.0.1:8787' : '');
+  process.env.EXPO_PUBLIC_API_BASE ?? (typeof __DEV__ !== 'undefined' && __DEV__ ? 'http://127.0.0.1:8787' : '');
 
 // Live audio never depends on the API: if /v1/station is unreachable, play this directly.
 export const FALLBACK_STREAM_URL = 'https://internetstreamer.lafayette.edu/';
@@ -14,3 +14,6 @@ export const FEATURES = {
   // Archives stay off until the station decides (docs/backend-proposal/decisions/002).
   archive: false,
 };
+
+// Offline UI work: serve src/api/fixtures instead of calling the API (EXPO_PUBLIC_USE_FIXTURES=1).
+export const USE_FIXTURES = process.env.EXPO_PUBLIC_USE_FIXTURES === '1';
