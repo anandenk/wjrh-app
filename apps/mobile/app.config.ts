@@ -34,6 +34,8 @@ const config: ExpoConfig = {
   },
   plugins: [
     'expo-router',
+    // Background playback + lock screen / Control Center controls for the live stream.
+    ['expo-audio', { microphonePermission: false, recordAudioAndroid: false }],
     [
       'expo-splash-screen',
       { backgroundColor: '#F8E5BF', image: './assets/splash-icon.png', imageWidth: 76 },

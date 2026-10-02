@@ -1,7 +1,7 @@
 # WJRH mobile app (Expo)
 
-The native iOS and Android listener app. **Scaffold + API layer:** four placeholder tabs (Now, Schedule,
-Archive, Station), build profiles, config, and the typed API layer. No real screens yet.
+The native iOS and Android listener app. **Scaffold, API layer and the Now tab.** Schedule, Station and Archive
+are still placeholders.
 
 The stack, the screen-to-endpoint map, the licensing rules and the build order are in
 [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md). Audio spike results (library choice) are
@@ -17,6 +17,34 @@ in [`docs/mobile-app/audio-spike.md`](../../docs/mobile-app/audio-spike.md).
 | `src/config.ts` | `API_BASE`, built-in fallback stream URL, feature flags (Archive is off) |
 | `app.config.ts` | App config; dev-only plain-HTTP allowance for the local API |
 | `eas.json` | Build profiles: `development` (simulator dev client), `preview`, `production` |
+
+## Now tab and live audio
+
+| Path | What |
+|---|---|
+| `src/audio/use-live-player.ts` | The live player (`expo-audio`). Plays straight from the stream URL; never needs the API |
+| `src/audio/live-player-provider.tsx` | One player for the whole app (playback survives tab switches); feeds lock-screen text from now-playing |
+| `src/screens/now/` | The screen. `now-state.ts` is the pure "what do we say for this API answer" logic (unit-tested) |
+
+How the player behaves (the rules in `docs/mobile-app/plan.md`):
+
+- **Never depends on the API.** With no `/v1/station` answer it plays the built-in `FALLBACK_STREAM_URL`;
+  if the API's stream URL fails it switches to the fallback by itself, then retries with growing delays.
+- **No rewinding.** Every Play (and every resume from outside the app) reconnects at the live edge, so a
+  pause is never a way to replay the broadcast.
+- **Lock screen / Control Center:** title, artist, album from now-playing, flagged as a live stream (no
+  scrub bar, no skip buttons).
+- **Unknown is explicit:** `null` artist/title show "Artist metadata unavailable" / "Track title
+  unavailable"; album is simply omitted until the encoder sends it; no upcoming songs, ever.
+
+Verified on the iOS 27 simulator (Mac muted, so by state log and screenshots, not by ear): normal
+playback; the API's stream URL dead (switched to the fallback and played); the whole API down (played,
+with the "Live audio still works" notice). **Not verified, needs an iPhone:** how the lock screen looks,
+pausing/resuming from it (the resume path reconnects at the live edge but has only been exercised in
+code), call interruptions, headphones, and a long background run.
+
+Dev test hooks: `EXPO_PUBLIC_AUTOPLAY=1` (dev builds only) presses Play 4 s after launch; the player
+logs `[live] state=… fallback=…` to Metro. `npm test` runs the unit tests.
 
 ## API layer (`src/api/`)
 

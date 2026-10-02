@@ -17,3 +17,8 @@ export const FEATURES = {
 
 // Offline UI work: serve src/api/fixtures instead of calling the API (EXPO_PUBLIC_USE_FIXTURES=1).
 export const USE_FIXTURES = process.env.EXPO_PUBLIC_USE_FIXTURES === '1';
+
+// Dev-only test hook: press Play automatically a few seconds after launch, so playback can be
+// checked without tapping (EXPO_PUBLIC_AUTOPLAY=1). Ignored in release builds.
+export const DEV_AUTOPLAY =
+  typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_AUTOPLAY === '1';

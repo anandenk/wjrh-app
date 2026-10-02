@@ -7,7 +7,7 @@ explain things plainly and briefly, and check before assuming.
 
 | Path | What |
 |---|---|
-| `apps/mobile/` | The Expo / React Native app. Scaffold + API layer (generated types, typed client, query hooks, fixtures); placeholder screens. Runs on the iOS simulator. |
+| `apps/mobile/` | The Expo / React Native app. Scaffold, API layer, and the Now tab (live player). Schedule, Station and Archive are still placeholders. Runs on the iOS simulator. |
 | `apps/audio-spike/` | Throwaway audio test; results in `docs/mobile-app/audio-spike.md`. |
 | `docs/mobile-app/plan.md` | The app plan: stack, screen → endpoint map, rules, build order. Read this first. |
 | `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, not deployed. |
@@ -29,6 +29,7 @@ python3 tools/check_station_services.py  # read-only check of the real stream, f
 cd apps/mobile && npm run typecheck && npm run check:contract   # app types; fixtures vs backend/schemas
 cd apps/mobile && npm run smoke:api    # real API client vs the running dev.sh stack
 cd apps/mobile && npm run gen:types    # regenerate src/api/types.ts after backend/schemas changes
+cd apps/mobile && npm test             # unit tests for the Now-screen logic and time formatting
 ```
 
 ## Where we are
@@ -38,8 +39,11 @@ Phase 0 is done: the API works against the real stream, feed and calendar with n
 the iOS simulator with `expo-audio`: live stream, background playback, lock-screen registration
 (`docs/mobile-app/audio-spike.md`). Still to do on a real iPhone: lock-screen look, interruptions,
 headphones, long background run. The real app is scaffolded in `apps/mobile` and its API layer
-(plan step 3) is done and verified in the simulator against the local API. Next: plan step 4, the Now
-tab (live player with `expo-audio`, now-playing, recent, health banner).
+(plan step 3) is done. The Now tab (plan step 4) is built and verified in the simulator: live player
+with `expo-audio` (own fallback to the built-in stream URL, reconnects at the live edge on every play),
+now-playing, recent, health notices. Still to do on a real iPhone: the checks in
+`docs/mobile-app/audio-spike.md` plus lock-screen resume (see `apps/mobile/README.md`). Next: plan
+step 5, Schedule and show pages.
 Use `react-native-track-player` only if the iPhone tests fail. Xcode 27 has no Simulator app: use
 DeviceHub (see the doc).
 

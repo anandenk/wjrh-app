@@ -128,6 +128,7 @@ which case the web origin must be added to `CORS_ORIGINS`.
 3. **Contract layer:** generated types, a typed `fetch` client with the error envelope, query hooks,
    and fixtures from the fake station for offline UI work. Done in `apps/mobile/src/api` (see its README).
 4. **Now tab:** live player, now-playing, recent, health banner. This is the first real milestone.
+   Built and verified on the simulator; iPhone checks remain (see `apps/mobile/README.md`).
 5. **Schedule and show pages**, plus local reminder notifications.
 6. **Station tab.**
 7. **Archive tab:** behind a flag until the board decides; Mixcloud WebView first.
