@@ -160,8 +160,9 @@ introduced.
   - Report the failure through `/v1/health` (`services.schedule.lastError`).
   - Overlaps and empty weeks are warnings, not rejections.
 - **Add `GET /v1/schedule/weekly?week=YYYY-MM-DD`.**
-  - It returns one real week in the exact `tools/schedule-snapshot.json` shape, plus `showId` and
-    `occurrenceId` per slot.
+  - It returns one real week in the exact `tools/schedule-snapshot.json` shape, plus `showId`, `occurrenceId` and
+    `recurring` per slot and `weekOf` / `contentChangedAt` at the top level (all declared in
+    `schemas/schedule-weekly.schema.json`, which the mobile app's types are generated from).
   - Existing frontends can switch source without a rewrite. Built from the current calendar, it
     reproduced the committed `tools/schedule-snapshot.json` exactly.
   - Its `generatedAt` should mean "last confirmed current" (the last successful check), so a

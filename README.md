@@ -9,10 +9,11 @@ board approves it.
 | Path | What it is |
 |---|---|
 | `frontend/` | The app design (`index.html`), running on built-in demo data. Also what deploys to Cloudflare Pages. |
-| `apps/mobile/` | The native listener app (Expo / React Native). Not started; the plan is in [`docs/mobile-app/plan.md`](docs/mobile-app/plan.md). |
+| `apps/mobile/` | The native listener app (Expo / React Native, SDK 57). Now, Schedule (with show pages and reminders) and Station tabs are built and run on the iOS simulator; Archive is a hidden placeholder. See its [README](apps/mobile/README.md). |
+| `apps/audio-spike/` | Throwaway audio test, kept for repeating the audio checks on a real phone. |
 | `backend/` | The proposed `/v1` API (a Cloudflare Worker), the archive recorder, and a fake station to run them against. Local only; see [`backend/TESTING.md`](backend/TESTING.md). |
 | `docs/backend-proposal/` | What exists today, the gaps, the proposed API, the rollout plan, and decisions awaiting the board. |
-| `docs/mobile-app/` | The plan for the Expo app: stack, screen-to-endpoint map, rules it must keep, build order. |
+| `docs/mobile-app/` | The Expo app: [`status.md`](docs/mobile-app/status.md) (current state, next steps, how to run, gotchas: **start here**), [`plan.md`](docs/mobile-app/plan.md) (stack, screen-to-endpoint map, rules, build order), [`iphone-test-checklist.md`](docs/mobile-app/iphone-test-checklist.md) (what still needs a real phone), the audio spike and phase 0 findings. |
 | `docs/station-content-brief.md` | Show genres, blurbs and host bios the station needs to supply. |
 | `docs/deploying-the-frontend.md` | How to deploy `frontend/` to Cloudflare Pages. |
 | `tools/` | Read-only checks of the real stream, feed and calendar, and the current schedule snapshot. |
@@ -41,6 +42,17 @@ Free: no Cloudflare or Mixcloud account needed. Needs Node 20+ and Python 3.10+.
 cd backend/api && npm ci && npm test      # 50 tests in Cloudflare's runtime
 backend/scripts/dev.sh                    # fake station + fake Mixcloud + API on :8787
 ```
+
+## Run the app (iOS simulator)
+
+```bash
+backend/scripts/dev.sh                     # the API the app talks to (fake station), on :8787
+cd apps/mobile && npm ci
+APP_VARIANT=development npx expo run:ios   # builds a development app and starts Metro
+```
+
+Needs a Mac with Xcode 27 (its simulator app is `DeviceHub`, not `Simulator`). Full steps, the dev-only test hooks
+and the known gotchas are in [`docs/mobile-app/status.md`](docs/mobile-app/status.md).
 
 ## Check the real services
 

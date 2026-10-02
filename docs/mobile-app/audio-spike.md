@@ -42,7 +42,18 @@
 - Metro must listen on IPv4 (default `expo start`), not `--localhost`, for the simulator at
   `127.0.0.1`.
 
+## What changed after the spike
+
+`expo-audio` was adopted for the real app (`apps/mobile/src/audio/`, PR #13), which adds what the spike lacked:
+its own fallback to the built-in stream URL and timed retries after an error, a reconnect at the live edge on
+every Play (no rewinding), one app-wide player, and lock-screen text from the real now-playing data. The simulator
+checks of that code are in [`apps/mobile/README.md`](../../apps/mobile/README.md). `apps/audio-spike/` is kept only to
+repeat these audio checks on a phone or to isolate an audio problem: [`apps/audio-spike/README.md`](../../apps/audio-spike/README.md).
+
 ## Not testable on the simulator: do these on the iPhone
+
+The full, current checklist (with build steps and a results log) is
+[`iphone-test-checklist.md`](iphone-test-checklist.md); this short list is the original from the spike.
 
 1. **Lock-screen and Control Center look and controls:** title, artist, album shown; play/pause
    works; no scrub bar or skip buttons.

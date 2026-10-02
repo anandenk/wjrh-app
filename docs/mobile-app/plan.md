@@ -1,7 +1,8 @@
 # Mobile app plan (Expo / React Native)
 
-- **Status:** Proposed. Groundwork only; no app code yet.
-- **Date:** 2026-09-28
+- **Status:** Built up to step 6 and verified on the iOS simulator; see [`status.md`](status.md) for where things
+  stand. Phone and Android checks, the Archive tab (step 7) and design polish (step 8) remain.
+- **Date:** 2026-09-28 (updated 2026-10-02)
 - **Builds on:** the `/v1` API in [`backend/`](../../backend/), [Decision 001](../backend-proposal/decisions/001-hosting-on-cloudflare.md)
   (Cloudflare) and [Decision 002](../backend-proposal/decisions/002-archive-and-licensing.md) (Mixcloud archives).
 
@@ -29,7 +30,8 @@ two exceptions that go direct:
 
 | Path | What |
 |---|---|
-| `apps/mobile/` | The Expo app. Empty until the build starts. |
+| `apps/mobile/` | The Expo app (see its README). |
+| `apps/audio-spike/` | Throwaway audio test; results in [`audio-spike.md`](audio-spike.md). |
 | `backend/` | The `/v1` Worker, schemas, mocks, recorder (unchanged). |
 | `backend/schemas/` | **Source of truth for the app's types.** The app generates TypeScript from these rather than hand-writing response shapes. |
 | `frontend/` | The browser design. Visual reference and Cloudflare Pages preview. |
@@ -52,9 +54,10 @@ then `apps/mobile` and `backend/api` keep separate `package.json` files, as `bac
 | Builds | EAS Build (dev client, preview, production profiles) | Track player needs a development build, not Expo Go |
 | Reminders | Local notifications (`expo-notifications`) scheduled from `/v1/schedule` | "Remind me when this show starts" without the push backend in the API proposal |
 
-The two audio libraries are the one real choice to settle first. Build a throwaway spike that plays
-the real stream in the background on one iPhone and one Android device, with lock-screen controls
-and a phone-call interruption. Pick whichever passes.
+**Audio library: `expo-audio` is chosen** (it passed the simulator spike, [`audio-spike.md`](audio-spike.md)); the
+plan's original pick, `react-native-track-player`, stays the fallback. The phone checks (background, lock screen,
+call interruption, Android) are in [`iphone-test-checklist.md`](iphone-test-checklist.md). If they fail with
+`expo-audio`, switch before building more on top.
 
 ## Screen → endpoint map
 
@@ -113,7 +116,7 @@ can't reach the laptop's `127.0.0.1`:
 |---|---|
 | iOS Simulator | `http://127.0.0.1:8787` |
 | Android Emulator | `http://10.0.2.2:8787` |
-| Physical phone (same Wi-Fi) | `http://<laptop LAN IP>:8787`, with `wrangler dev --ip 0.0.0.0` |
+| Physical phone (same Wi-Fi) | `http://<laptop LAN IP>:8787`; start the API with `API_HOST=0.0.0.0 backend/scripts/dev.sh` (or `dev-real.sh`, port 8797) |
 
 Dev builds need cleartext HTTP allowed (iOS ATS exception, Android `usesCleartextTraffic`) **in the
 development profile only**. Production uses HTTPS everywhere. The real stream is already HTTPS.
@@ -121,27 +124,56 @@ development profile only**. Production uses HTTPS everywhere. The real stream is
 CORS doesn't apply to native requests. It matters only if the app is also run as Expo web, in
 which case the web origin must be added to `CORS_ORIGINS`.
 
-## Build order (when building starts)
+## Build order
 
-1. **Audio spike:** pick the live-audio library (see Stack). Simulator part done, see [`audio-spike.md`](audio-spike.md); iPhone and Android checks remain.
-2. **Scaffold:** `create-expo-app` in `apps/mobile`, Expo Router tabs, EAS profiles, env config. Done in `apps/mobile`.
+Status as of 2026-10-02 (details, PR numbers and what is verified: [`status.md`](status.md)).
+
+0. **Run the API against the real stream, feed and calendar.** Done ([`phase0-findings.md`](phase0-findings.md)).
+1. **Audio spike:** pick the live-audio library. Simulator part done, `expo-audio` chosen; iPhone and Android checks
+   remain ([`iphone-test-checklist.md`](iphone-test-checklist.md)).
+2. **Scaffold:** `create-expo-app` in `apps/mobile`, Expo Router tabs, EAS profiles, env config. Done.
 3. **Contract layer:** generated types, a typed `fetch` client with the error envelope, query hooks,
    and fixtures from the fake station for offline UI work. Done in `apps/mobile/src/api` (see its README).
 4. **Now tab:** live player, now-playing, recent, health banner. This is the first real milestone.
-   Built and verified on the simulator; iPhone checks remain (see `apps/mobile/README.md`).
+   Built and verified on the simulator; iPhone checks remain.
 5. **Schedule and show pages**, plus local reminder notifications. Built and verified on the simulator;
-   reminder permission and delivery need an iPhone (see `apps/mobile/README.md`).
-6. **Station tab.** Built and verified on the simulator (`apps/mobile/README.md`).
-7. **Archive tab:** behind a flag until the board decides; Mixcloud WebView first.
+   reminder permission and delivery need an iPhone.
+6. **Station tab.** Built and verified on the simulator. Team is hidden until the API's `approved` flag is true.
+7. **Archive tab:** behind a flag (`FEATURES.archive`, off) until the board decides; Mixcloud WebView first.
+   **Not started.**
 8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and
    station photos in `frontend/assets/`, an accessibility pass, store assets. Skip the `recent-cover-*`
-   images: they are placeholder album art, and the feed has no artwork.
+   images: they are placeholder album art, and the feed has no artwork. **Not started.**
+
+## Decisions made while building
+
+- **Navigation:** Expo Router with `NativeTabs` (real UITabBar / Material tabs). Schedule and Station are each a
+  stack inside their tab (list, then detail). Archive's tab is hidden by the flag.
+- **Live audio:** one app-wide player (`expo-audio`) so playback survives tab changes. It loads the stream only via
+  `replace()` and reconnects at the live edge on every Play, because resuming from a buffer would be a rewind.
+  Fallback chain: API stream URL, then the built-in URL, then timed retries. It never needs the API.
+- **Reminders:** local notifications, one per upcoming episode from `/v1/schedule` (28 days, soonest 60 because of
+  iOS's 64 limit), re-planned on launch/foreground. No push server and no storage: the scheduled notifications are
+  the record. They run out if the app is never opened for four weeks.
+- **Station time:** "today", "on air now" and all displayed times are America/New_York, wherever the phone is.
+- **Roster privacy:** `approved: false` hides the student roster (names and emails) entirely.
+- **Contract:** the weekly-schedule and station schemas now declare every field the app relies on
+  (`showId`, `occurrenceId`, host fields, team and event fields); the app's types are generated from them.
+- **iOS 27:** apps must adopt the UIScene lifecycle; `app.config.ts` enables it through `expo-build-properties`
+  until Expo SDK 58 does it by default.
 
 ## Open questions
 
 1. Who owns the Apple Developer ($99/yr) and Google Play ($25 once) accounts? They should belong to
    the station, not a student, like the Cloudflare account in Decision 001.
-2. Bundle ID / package name (e.g. `org.wjrh.app`).
+2. Bundle ID / package name. `org.wjrh.app` is a **placeholder** (overridable with `WJRH_BUNDLE_ID` for testing);
+   it is permanent after the first store release.
 3. Minimum OS versions to support.
-4. Is Expo web a target, or is `frontend/` on Cloudflare Pages the web presence?
+4. Is Expo web a target, or is `frontend/` on Cloudflare Pages the web presence? (The app currently targets
+   iOS and Android only; `react-dom` is installed only so `npm install` resolves Expo Router's optional peer.)
 5. Does the station want crash reporting (e.g. Sentry), given the privacy stance in `api.md`?
+6. Should the roster show regardless of `approved`, and should events wait for approval too? (Defaults: roster
+   hidden until approved, events always shown.)
+7. Archives: ship them, and how (Decision 002)? Do Mixcloud's widget terms allow embedding in a station app?
+8. Where and when the API is deployed (Decision 001). Preview and production builds need `EXPO_PUBLIC_API_BASE`.
+9. Wording of the reminder notification (currently "<show> is starting", "with <hosts> · WJRH 104.9 FM").

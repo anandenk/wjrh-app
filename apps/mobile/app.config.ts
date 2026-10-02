@@ -4,6 +4,11 @@ import type { ExpoConfig } from 'expo/config';
 // the app can reach the local API (backend/scripts/dev.sh); preview and production use HTTPS only.
 const isDev = process.env.APP_VARIANT === 'development';
 
+// Placeholder identifier (an open question in docs/mobile-app/plan.md; permanent after the first store release).
+// For testing on a phone with a personal Apple ID, override it without editing this file:
+//   WJRH_BUNDLE_ID=com.yourname.wjrh npx expo prebuild --clean   (then build as usual)
+const bundleId = process.env.WJRH_BUNDLE_ID ?? 'org.wjrh.app';
+
 const config: ExpoConfig = {
   name: 'WJRH 104.9',
   slug: 'wjrh',
@@ -13,9 +18,7 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png', // placeholder (Expo default); real branding is plan step 8
   ios: {
-    // Placeholder: the bundle ID is an open question in docs/mobile-app/plan.md. It cannot
-    // change after the first store release, so settle it before submitting.
-    bundleIdentifier: 'org.wjrh.app',
+    bundleIdentifier: bundleId,
     supportsTablet: false,
     infoPlist: {
       // Local-network HTTP (127.0.0.1, LAN) for the dev API only. Never in preview/production.
@@ -23,7 +26,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: 'org.wjrh.app', // placeholder, same open question as the iOS bundle ID
+    package: bundleId,
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/android-icon-foreground.png',

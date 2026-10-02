@@ -1,22 +1,77 @@
 # WJRH mobile app (Expo)
 
-The native iOS and Android listener app. **Scaffold, API layer, Now tab, Schedule tab with show pages and
-reminders, and the Station tab.** Archive is a hidden placeholder.
+The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router, TypeScript). Built so far: the
+**Now** tab (live player), the **Schedule** tab (with show pages and reminders) and the **Station** tab, plus the
+typed API layer. **Archive** is a hidden placeholder. Everything is verified on the **iOS 27 simulator only**; nothing
+has run on a physical phone or Android yet.
 
-The stack, the screen-to-endpoint map, the licensing rules and the build order are in
-[`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md). Audio spike results (library choice) are
-in [`docs/mobile-app/audio-spike.md`](../../docs/mobile-app/audio-spike.md).
+- Where things stand, next steps, gotchas, decisions waiting on people: [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md)
+- Stack, screen-to-endpoint map, licensing rules, build order: [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md)
+- What still needs a real phone: [`docs/mobile-app/iphone-test-checklist.md`](../../docs/mobile-app/iphone-test-checklist.md)
+- Audio library choice: [`docs/mobile-app/audio-spike.md`](../../docs/mobile-app/audio-spike.md)
+
+## Run it (iOS Simulator)
+
+```bash
+backend/scripts/dev.sh                     # in another terminal: the API on http://127.0.0.1:8787
+cd apps/mobile && npm ci
+APP_VARIANT=development npx expo run:ios   # builds a development app, installs it, starts Metro
+```
+
+- Xcode 27 has no Simulator app: open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app` to get a window.
+- Do **not** run Metro with `CI=1`: it stops watching files and serves a stale bundle.
+- After adding a native module (anything with native code), rebuild with `expo run:ios`; JS changes just reload.
+- Adding a route file? Run Metro once so the typed-route types regenerate, or `tsc` rejects the new path.
+- A real phone needs more steps (LAN API, signing): [`iphone-test-checklist.md`](../../docs/mobile-app/iphone-test-checklist.md).
+- More simulator commands (boot, deep link into the dev build, screenshots): `status.md`, "Run everything".
+
+## Scripts
+
+| Command | What |
+|---|---|
+| `npm run typecheck` | App code **and** `scripts/` (two tsconfigs). Must pass |
+| `npm test` | Unit tests (Node's test runner via `tsx`) for the pure logic: Now, Schedule/station time, reminder planner, Station |
+| `npm run check:contract` | Offline fixtures still validate against `backend/schemas` |
+| `npm run smoke:api` | Real API client vs the running `backend/scripts/dev.sh` stack; validates every response, the error envelope and the admin guard |
+| `npm run smoke:fixtures` | Same, in fixture mode (no server needed) |
+| `npm run gen:types` | Regenerate `src/api/types.ts` from `backend/schemas` (commit the result) |
+| `npx expo-doctor` | Project health; must be 21/21 |
+| `npm run lint` | The script exists, but no ESLint config has been set up or run |
+
+## Environment variables
+
+`EXPO_PUBLIC_*` values are baked in when Metro bundles: restart Metro after changing them. Native settings
+(`APP_VARIANT`, `WJRH_BUNDLE_ID`) are written into the generated `ios/`/`android/` folders by `expo prebuild`
+(`expo run:ios` does it when the folder is missing), so re-run `npx expo prebuild --clean` after changing them.
+
+| Variable | Effect |
+|---|---|
+| `APP_VARIANT=development` | Allows plain-HTTP to local addresses (iOS `NSAllowsLocalNetworking`, Android cleartext). Set by the `development` EAS profile; never for preview/production |
+| `EXPO_PUBLIC_API_BASE` | API address. Default in dev: `http://127.0.0.1:8787`. Android emulator `http://10.0.2.2:8787`; a phone needs the Mac's LAN IP. Preview/production builds must set it (the API is not deployed yet) |
+| `EXPO_PUBLIC_USE_FIXTURES=1` | Serve `src/api/fixtures` instead of calling the API |
+| `WJRH_BUNDLE_ID` | Overrides the placeholder bundle id / package `org.wjrh.app` (for signing with a personal Apple ID) |
+| `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Press Play 4 s after launch |
+| `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigate to each route, 8 s apart, after launch (the simulator can't be tapped from automation, and a deep link from outside shows an iOS "Open in…?" dialog) |
+| `EXPO_PUBLIC_DEV_REMINDER=<showId>` | **Dev only.** Try to schedule a reminder at launch and log the result |
+
+The dev-only hooks are inert in release builds (`__DEV__` is false).
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `src/app/` | Expo Router routes only: `_layout.tsx` (tabs), `index`, `schedule`, `archive`, `station` |
-| `src/api/` | The API layer, see below |
-| `src/components/` | Reusable UI |
-| `src/config.ts` | `API_BASE`, built-in fallback stream URL, feature flags (Archive is off) |
-| `app.config.ts` | App config; dev-only plain-HTTP allowance for the local API |
-| `eas.json` | Build profiles: `development` (simulator dev client), `preview`, `production` |
+| `src/app/` | Expo Router routes only. `_layout.tsx` (providers + tabs), `index` (Now), `schedule/`, `station/`, `archive.tsx` (placeholder, hidden) |
+| `src/api/` | The API layer, below |
+| `src/audio/` | The live player: `use-live-player.ts`, `live-player-provider.tsx`, `audio-session.ts` |
+| `src/screens/` | Screen bodies the routes render: `now/`, `schedule/`, `show/`, `station/`. Each has its logic in a pure `*-state.ts` with a `*.test.ts` |
+| `src/reminders/` | Show reminders: `plan.ts` (pure), `notifications.ts` (expo-notifications), `use-reminder.ts`, `reminders-provider.tsx` |
+| `src/content/station.ts` | The Station tab's static copy and links |
+| `src/components/` | Reusable UI (only `placeholder-screen.tsx` so far; screen-specific pieces live beside their screen) |
+| `src/hooks/`, `src/utils/` | `use-now.ts`; `format-time.ts` (station-time formatting) |
+| `src/config.ts` | `API_BASE`, built-in fallback stream URL, `FEATURES` flags (Archive off), dev hooks |
+| `src/theme.ts` | Colors from the design's default palette (placeholder-level styling) |
+| `scripts/` | `gen-types.mjs`, `check-contract.mjs`, `smoke-api.ts` and their own `tsconfig.json` (Node, not React Native) |
+| `app.config.ts`, `eas.json` | App config (dev-only HTTP allowance, iOS 27 scene fix, bundle id) and EAS profiles `development` / `preview` / `production` |
 
 ## Now tab and live audio
 
@@ -24,7 +79,7 @@ in [`docs/mobile-app/audio-spike.md`](../../docs/mobile-app/audio-spike.md).
 |---|---|
 | `src/audio/use-live-player.ts` | The live player (`expo-audio`). Plays straight from the stream URL; never needs the API |
 | `src/audio/live-player-provider.tsx` | One player for the whole app (playback survives tab switches); feeds lock-screen text from now-playing |
-| `src/screens/now/` | The screen. `now-state.ts` is the pure "what do we say for this API answer" logic (unit-tested) |
+| `src/screens/now/` | The screen. `now-state.ts` is the pure "what do we say for this API answer" logic |
 
 How the player behaves (the rules in `docs/mobile-app/plan.md`):
 
@@ -36,15 +91,12 @@ How the player behaves (the rules in `docs/mobile-app/plan.md`):
   scrub bar, no skip buttons).
 - **Unknown is explicit:** `null` artist/title show "Artist metadata unavailable" / "Track title
   unavailable"; album is simply omitted until the encoder sends it; no upcoming songs, ever.
+- It logs `[live] state=… fallback=…` to Metro in dev builds.
 
-Verified on the iOS 27 simulator (Mac muted, so by state log and screenshots, not by ear): normal
-playback; the API's stream URL dead (switched to the fallback and played); the whole API down (played,
-with the "Live audio still works" notice). **Not verified, needs an iPhone:** how the lock screen looks,
-pausing/resuming from it (the resume path reconnects at the live edge but has only been exercised in
-code), call interruptions, headphones, and a long background run.
-
-Dev test hooks: `EXPO_PUBLIC_AUTOPLAY=1` (dev builds only) presses Play 4 s after launch; the player
-logs `[live] state=… fallback=…` to Metro. `npm test` runs the unit tests.
+Verified on the simulator (Mac muted, so by state log and screenshots, not by ear): normal playback; the API's
+stream URL dead (switched to the fallback and played); the whole API down (played, with the "Live audio still works"
+notice). **Not verified, needs an iPhone:** how the lock screen looks, pausing/resuming from it (the resume path
+reconnects at the live edge but has only been exercised in code), call interruptions, headphones, a long background run.
 
 ## Schedule, show pages and reminders
 
@@ -63,15 +115,11 @@ logs `[live] state=… fallback=…` to Metro. `npm test` runs the unit tests.
   Tapping a reminder opens that show's page. Turning one on asks for notification permission first; if it was
   refused the button says how to turn it on in Settings.
 
-Verified on the iOS 27 simulator: the week's list with the right day marked today, a show page, and the
-schedule failing to load (clear notice, day picker still works). **Not verified, needs an iPhone:** the
-notification permission prompt being accepted, a reminder arriving at the show's start, and tapping it. On the
-simulator iOS refuses to schedule without permission and the prompt can't be tapped from automation, so only the
-planning logic (unit-tested) and the permission state (`undetermined`, so a prompt would appear) were checked.
-
-Dev test hooks (dev builds only): `EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut` (or a comma-separated list, 8 s apart) jumps to a route after launch
-(a deep link from outside shows an iOS "Open in…?" dialog that can't be tapped in automated runs);
-`EXPO_PUBLIC_DEV_REMINDER=<showId>` tries to schedule a reminder at launch and logs the result.
+Verified on the simulator: the week's list with the right day marked today, a show page, and the schedule failing
+to load (clear notice, day picker still works). **Not verified, needs an iPhone:** the notification permission
+prompt being accepted, a reminder arriving at the show's start, and tapping it. On the simulator iOS refuses to
+schedule without permission and the prompt can't be tapped from automation, so only the planning logic
+(unit-tested) and the permission state (`undetermined`, so a prompt would appear) were checked.
 
 ## Station tab
 
@@ -90,9 +138,9 @@ Dev test hooks (dev builds only): `EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut` (or
   Recheck before launch: board-meeting time, GroupMe invite, donation link. No photos yet (plan step 8).
 - Links (email, phone, map, donation, socials, FCC file) open outside the app; failures are ignored quietly.
 
-Verified on the iOS 27 simulator: the hub, Events (upcoming empty state + sorted archive), Contact, Team with the
-roster not approved (hidden) and approved (list with email links). Not verified: that tapping a link actually
-opens Mail / Phone / Safari (simulator limits), which is on the iPhone checklist.
+Verified on the simulator: the hub, Events (upcoming empty state + sorted archive), Contact, Team with the roster
+not approved (hidden) and approved (list with email links; the approved run used a temporary local edit to
+`backend/content/station.json`). Not verified: that tapping a link actually opens Mail / Phone / Safari.
 
 ## API layer (`src/api/`)
 
@@ -105,27 +153,13 @@ opens Mail / Phone / Safari (simulator limits), which is on the iPhone checklist
 | `query-provider.tsx` | Query client; polling pauses when the app is backgrounded; retries network/5xx only |
 | `fixtures/` | Responses captured from the fake station, for offline UI work: `EXPO_PUBLIC_USE_FIXTURES=1` |
 
-Checks: `npm run check:contract` (fixtures still match the schemas), `npm run smoke:api` (needs
-`backend/scripts/dev.sh` running; exercises the real client and validates every response),
-`npm run smoke:fixtures` (same in fixture mode). Not done yet: persisting the last good answers
-across app restarts (needs an async-storage persister), and a fixture with archives (the recorder
-was not running when the fixtures were captured, so `archives.json` is empty).
-
-## Run it (iOS Simulator)
-
-```bash
-backend/scripts/dev.sh                  # in another terminal: API on http://127.0.0.1:8787
-cd apps/mobile && npm ci
-APP_VARIANT=development npx expo run:ios   # builds a dev client and starts Metro
-```
-
-- Do **not** run Metro with `CI=1`: it stops watching files and serves a stale bundle.
-- Xcode 27 has no Simulator app; open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app`.
-- `EXPO_PUBLIC_API_BASE` sets the API address (see the table in the plan for the Android emulator and
-  physical phones). Preview and production builds must set it; the API is not deployed yet.
-- `npm run typecheck` checks the code.
+Not done yet: persisting the last good answers across app restarts (needs an async-storage persister), and a
+fixture with archives (the recorder was not running when the fixtures were captured, so `archives.json` and
+`show-archives.json` are empty). If the API's schemas change, the app's types and fixtures must follow: run
+`npm run gen:types`, then `npm run check:contract`.
 
 ## Placeholders to replace
 
 - Bundle ID / package `org.wjrh.app` (open question in the plan; fixed forever after the first store release).
 - Icon and splash image are Expo's defaults (plan step 8 brings the WJRH logo and fonts).
+- Colors/typography are a stand-in for the design (plan step 8).

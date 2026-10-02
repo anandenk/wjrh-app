@@ -7,6 +7,9 @@
 #   dev tools     :8790  → archive test bench
 #
 # Point a frontend at the API with its base URL, http://127.0.0.1:8787.
+# To reach it from a physical phone on the same Wi-Fi, bind to all interfaces:  API_HOST=0.0.0.0 backend/scripts/dev.sh
+# and use http://<this computer's LAN IP>:8787 (the fake stream/feed stay on 127.0.0.1; the phone then plays
+# the app's built-in stream URL, which is fine for most checks). Only do this on a network you trust.
 #
 # Options:  --with-recorder   also run the archive recorder for every show
 #           (WJRH_ARCHIVE_TO=mixcloud sends recordings to the fake Mixcloud instead of S3)
@@ -76,7 +79,7 @@ cd "$BACKEND/api"
 [[ -d node_modules ]] || npm ci
 [[ -f .dev.vars ]] || cp .dev.vars.example .dev.vars
 npx wrangler d1 migrations apply wjrh --local --env dev --persist-to "$STATE/wrangler" >"$LOGS/migrate.log" 2>&1
-npx wrangler dev --env dev --test-scheduled --persist-to "$STATE/wrangler" --ip 127.0.0.1 --port 8787 >"$LOGS/api.log" 2>&1 & PIDS+=($!)
+npx wrangler dev --env dev --test-scheduled --persist-to "$STATE/wrangler" --ip "${API_HOST:-127.0.0.1}" --port 8787 >"$LOGS/api.log" 2>&1 & PIDS+=($!)
 wait_for http://127.0.0.1:8787/ "API"
 for cron in '*/15+*+*+*+*' '*/5+*+*+*+*' '*+*+*+*+*'; do
   curl -fsS -o /dev/null "http://127.0.0.1:8787/__scheduled?cron=$cron"

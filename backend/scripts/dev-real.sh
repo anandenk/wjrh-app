@@ -4,6 +4,10 @@
 #
 #   API  http://127.0.0.1:8797   (a different port from dev.sh, so both can run at once)
 #
+# For a physical phone on the same Wi-Fi:  API_HOST=0.0.0.0 backend/scripts/dev-real.sh  and use
+# http://<this computer's LAN IP>:8797. The stream URL it hands out is the real HTTPS one, so the phone's
+# audio, lock screen and reminders can be tested against live station data.
+#
 # Uses its own local database in backend/.dev-state/real, separate from dev.sh.
 # Ctrl-C stops it.
 set -euo pipefail
@@ -25,7 +29,7 @@ cd "$ROOT/backend/api"
 npx wrangler d1 migrations apply wjrh --local --env real --persist-to "$STATE" >"$STATE/migrate.log" 2>&1
 
 set -m
-npx wrangler dev --env real --test-scheduled --persist-to "$STATE" --ip 127.0.0.1 --port "$PORT" >"$STATE/api.log" 2>&1 &
+npx wrangler dev --env real --test-scheduled --persist-to "$STATE" --ip "${API_HOST:-127.0.0.1}" --port "$PORT" >"$STATE/api.log" 2>&1 &
 API_PID=$!
 trap 'kill -TERM -- "-$API_PID" 2>/dev/null || true' EXIT
 trap 'exit 130' INT TERM

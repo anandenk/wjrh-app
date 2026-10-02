@@ -35,7 +35,8 @@ cd ../..
 The tests run inside Cloudflare's actual runtime (workerd) with a throwaway database. They cover:
 - every endpoint checked against its JSON Schema in `schemas/`;
 - calendar edge cases: cancelled, moved and skipped shows, and the daylight-saving switch;
-- the new schedule endpoint reproducing today's `tools/schedule-snapshot.json` exactly;
+- the new schedule endpoint reproducing the legacy snapshot exactly (`mocks/fixtures/schedule-snapshot.json`, the frozen
+  snapshot that matches the fixture calendar; `tools/schedule-snapshot.json` tracks the real calendar and is not used here);
 - bad metadata (`Null`, URL-encoded values, feed outages);
 - de-duplication of the play history;
 - the audio health probe;
@@ -216,6 +217,16 @@ python3 tools/check_station_services.py   # real stream, feed and calendar (read
 
 To replace the reconstructed calendar fixture with a real capture, see "About the fixtures" in
 [`README.md`](README.md).
+
+To run the API itself against the real services (still read-only), use `backend/scripts/dev-real.sh` (port 8797).
+
+### Reaching the API from a phone
+
+Both `dev.sh` and `dev-real.sh` bind to `127.0.0.1`, which a phone cannot reach. Bind to the network instead, on a
+Wi-Fi you trust: `API_HOST=0.0.0.0 backend/scripts/dev-real.sh`, then use `http://<this computer's LAN IP>:8797`
+(`ipconfig getifaddr en0` on a Mac). With `dev.sh` the fake stream and feed stay on `127.0.0.1`, so a phone falls back
+to the real stream URL. Steps for testing the app on a phone:
+[`docs/mobile-app/iphone-test-checklist.md`](../docs/mobile-app/iphone-test-checklist.md).
 
 ## Troubleshooting
 
