@@ -35,6 +35,8 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     // Background playback + lock screen / Control Center controls for the live stream.
+    // Local notifications for show reminders (no push server).
+    'expo-notifications',
     ['expo-audio', { microphonePermission: false, recordAudioAndroid: false }],
     [
       'expo-splash-screen',

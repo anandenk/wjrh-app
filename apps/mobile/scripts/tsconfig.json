@@ -23,7 +23,9 @@
     "../src/api/endpoints.ts",
     "../src/api/types.ts",
     "../src/config.ts",
+    "../src/reminders/plan.ts",
     "../src/screens/now/now-state.ts",
+    "../src/screens/schedule/schedule-state.ts",
     "../src/utils/format-time.ts",
     "globals.d.ts",
     "smoke-api.ts"

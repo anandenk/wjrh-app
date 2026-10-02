@@ -129,7 +129,8 @@ which case the web origin must be added to `CORS_ORIGINS`.
    and fixtures from the fake station for offline UI work. Done in `apps/mobile/src/api` (see its README).
 4. **Now tab:** live player, now-playing, recent, health banner. This is the first real milestone.
    Built and verified on the simulator; iPhone checks remain (see `apps/mobile/README.md`).
-5. **Schedule and show pages**, plus local reminder notifications.
+5. **Schedule and show pages**, plus local reminder notifications. Built and verified on the simulator;
+   reminder permission and delivery need an iPhone (see `apps/mobile/README.md`).
 6. **Station tab.**
 7. **Archive tab:** behind a flag until the board decides; Mixcloud WebView first.
 8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and

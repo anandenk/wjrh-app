@@ -1,7 +1,7 @@
 # WJRH mobile app (Expo)
 
-The native iOS and Android listener app. **Scaffold, API layer and the Now tab.** Schedule, Station and Archive
-are still placeholders.
+The native iOS and Android listener app. **Scaffold, API layer, Now tab, Schedule tab with show pages and
+reminders.** Station and Archive are still placeholders.
 
 The stack, the screen-to-endpoint map, the licensing rules and the build order are in
 [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md). Audio spike results (library choice) are
@@ -45,6 +45,33 @@ code), call interruptions, headphones, and a long background run.
 
 Dev test hooks: `EXPO_PUBLIC_AUTOPLAY=1` (dev builds only) presses Play 4 s after launch; the player
 logs `[live] state=… fallback=…` to Metro. `npm test` runs the unit tests.
+
+## Schedule, show pages and reminders
+
+| Path | What |
+|---|---|
+| `src/app/schedule/` | The Schedule tab is a stack: `index` (the week) and `[showId]` (a show page) |
+| `src/screens/schedule/` | Day picker + the day's shows, "ON AIR NOW" highlight. `schedule-state.ts` is the pure station-time logic |
+| `src/screens/show/` | Show page: hosts, genres, when it airs, about (honest empty states for missing text), reminder button |
+| `src/reminders/` | `plan.ts` (pure: which notifications to schedule), `notifications.ts` (expo-notifications), `reminders-provider.tsx` |
+
+- **Station time.** "Today", "on air now" and every displayed time use America/New_York, wherever the phone is.
+- **Reminders** ("remind me when this show starts") are local notifications, one per upcoming episode, planned
+  from `/v1/schedule` for the next 28 days (cancelled episodes skipped, soonest 60 kept: iOS allows 64). They
+  are re-planned each time the app opens or comes to the foreground; if the app is never opened for 4 weeks they
+  run out. The scheduled notifications are the only record of which shows have a reminder (no storage).
+  Tapping a reminder opens that show's page. Turning one on asks for notification permission first; if it was
+  refused the button says how to turn it on in Settings.
+
+Verified on the iOS 27 simulator: the week's list with the right day marked today, a show page, and the
+schedule failing to load (clear notice, day picker still works). **Not verified, needs an iPhone:** the
+notification permission prompt being accepted, a reminder arriving at the show's start, and tapping it. On the
+simulator iOS refuses to schedule without permission and the prompt can't be tapped from automation, so only the
+planning logic (unit-tested) and the permission state (`undetermined`, so a prompt would appear) were checked.
+
+Dev test hooks (dev builds only): `EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut` jumps to a route after launch
+(a deep link from outside shows an iOS "Open in…?" dialog that can't be tapped in automated runs);
+`EXPO_PUBLIC_DEV_REMINDER=<showId>` tries to schedule a reminder at launch and logs the result.
 
 ## API layer (`src/api/`)
 
