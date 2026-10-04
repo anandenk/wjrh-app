@@ -64,10 +64,10 @@ Two lessons from it that the real player should honor:
 - **The error arrives as an event, once.** Read it from the status updates as they happen, not by polling later
   (a later poll showed `null`). The real app uses the hook's status updates.
 - **A failed or stalled player waits forever, so add a timeout.** The real player retries when it sees an error
-  event, but it has **no watchdog for a stall that produces no error** (for example the network dropping mid-stream
-  while playing). A watchdog (say, not audible for 15 s while the user wants playback: reconnect, with backoff) is
-  recommended and not yet built. Checks E1 to E3 in [`iphone-test-checklist.md`](iphone-test-checklist.md) will show
-  whether it matters in practice.
+  event. A stall that raises **no** error (the connection dropping mid-stream) used to leave it on "Connecting…"
+  forever (reproduced: 95 s+ stuck, even after the stream came back). The real app now has a watchdog (PR #19): not
+  audible for 15 s while playback is wanted, so reconnect, waiting 15, 20, then 30 s between tries. Checks E1 to E3
+  in [`iphone-test-checklist.md`](iphone-test-checklist.md) confirm it on a real network.
 
 Other notes from that run: Expo Go can't be driven without a screen (iOS asks "Open in Expo Go?"); a development
 build opens directly. The `expo-audio` config plugin adds the iOS `audio` background mode by default.

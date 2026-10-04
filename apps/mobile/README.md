@@ -86,6 +86,9 @@ How the player behaves (the rules in `docs/mobile-app/plan.md`):
   if the API's stream URL fails it switches to the fallback by itself, then retries with growing delays.
 - **No rewinding.** Every Play (and every resume from outside the app) reconnects at the live edge, so a
   pause is never a way to replay the broadcast.
+- **Recovers from stalls.** If playback is wanted but nothing is audible for 15 s (the connection dropped with no
+  error event), a watchdog reconnects, waiting 15, 20, then 30 s between tries (`stall-watchdog.ts`, pure and
+  unit-tested). The button shows "Reconnecting…" meanwhile.
 - **Lock screen / Control Center:** title, artist, album from now-playing, flagged as a live stream (no
   scrub bar, no skip buttons).
 - **Unknown is explicit:** `null` artist/title show "Artist metadata unavailable" / "Track title

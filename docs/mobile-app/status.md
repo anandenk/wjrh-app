@@ -35,7 +35,9 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
 - A dead API stream URL switches to the built-in stream URL by itself; the whole API being down still plays.
 - Now, Schedule (list, show page, load-failed notice), Station (hub, events, contact, team both approved and not).
 - Types generated from the schemas, fixtures valid against them, client + hooks against the live local API.
-- Unit tests (25), `expo-doctor` (21/21), backend tests (50/50), typecheck.
+- A mid-stream stall with no error (stream connection killed while playing) is noticed after ~20 s and recovered by
+  itself, on the same URL when it is back and on the built-in URL when it is not (`src/audio/stall-watchdog.ts`).
+- Unit tests (28), `expo-doctor` (21/21), backend tests (50/50), typecheck.
 
 **Not verified. Needs a real iPhone** (full list with steps in [`iphone-test-checklist.md`](iphone-test-checklist.md)):
 how the lock screen looks and its controls; pausing/resuming from it (the resume path reconnects at the live
@@ -70,11 +72,7 @@ show's start, and tapping it; Mail/Phone/Safari opening from Station links.
    live and archive audio are mutually exclusive: starting one stops the other).
 4. **Step 8, design polish** (WJRH Display = Barlow Condensed ExtraBold, logo and station photos from
    `frontend/assets/`, skip `recent-cover-*` which are placeholders, accessibility pass, icon/splash, store assets).
-5. **Known gap, worth fixing early:** the live player has no watchdog for a stall that raises no error (the network
-   dropping mid-stream). It retries on error events only, so it could sit on "Connecting…" forever. Add a timeout
-   (not audible for ~15 s while playback is wanted: reconnect, with backoff) in `src/audio/use-live-player.ts`; verify
-   by killing the fake stream mid-play on the simulator, and with checks E1 to E3 on a phone.
-6. Hardening ideas, not started: persist the last good API answers across app restarts (needs an async-storage
+5. Hardening ideas, not started: persist the last good API answers across app restarts (needs an async-storage
    persister for TanStack Query); an offline indicator; Android run; `eas init` and a first EAS build; ESLint
    (the `lint` script exists but no config has been set up or run).
 
@@ -142,8 +140,9 @@ unmutes it themselves. The real app plays at full volume.
   URL does not show it.
 - **iOS refuses to schedule local notifications without permission** (error 2003 "Source is not authorized"), so
   reminders cannot be exercised on the simulator past the permission state.
-- **`expo-audio` does not recover from a failed load on its own.** It reports `error` and sits "buffering"; the
-  app's own fallback/retry (`src/audio/use-live-player.ts`) handles it. It also needs `expo-asset` installed
+- **`expo-audio` does not recover from a failed load or a stall on its own.** A failed load reports `error` once and
+  sits "buffering"; a dropped connection raises no error at all and sat on "Connecting…" for 95 s+ in a test. The
+  app's own fallback/retry and stall watchdog (`src/audio/use-live-player.ts`, `stall-watchdog.ts`) handle both. It also needs `expo-asset` installed
   (peer dependency; `expo-doctor` catches it).
 - **The stream takes about 7 s to start** and its `currentOffsetFromLive` is always `null`; it also answers at *any* URL
   path, so test failure handling with an unreachable host, not a wrong path (`audio-spike.md`, earlier run).

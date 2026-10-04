@@ -150,7 +150,8 @@ Status as of 2026-10-02 (details, PR numbers and what is verified: [`status.md`]
   stack inside their tab (list, then detail). Archive's tab is hidden by the flag.
 - **Live audio:** one app-wide player (`expo-audio`) so playback survives tab changes. It loads the stream only via
   `replace()` and reconnects at the live edge on every Play, because resuming from a buffer would be a rewind.
-  Fallback chain: API stream URL, then the built-in URL, then timed retries. It never needs the API.
+  Fallback chain: API stream URL, then the built-in URL, then timed retries; plus a stall watchdog (not audible
+  for 15 s while playback is wanted: reconnect). It never needs the API.
 - **Reminders:** local notifications, one per upcoming episode from `/v1/schedule` (28 days, soonest 60 because of
   iOS's 64 limit), re-planned on launch/foreground. No push server and no storage: the scheduled notifications are
   the record. They run out if the app is never opened for four weeks.

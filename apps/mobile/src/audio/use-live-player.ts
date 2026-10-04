@@ -4,10 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FALLBACK_STREAM_URL } from '@/config';
 
 import { configureAudioSession } from './audio-session';
+import { isStalled, madeProgress } from './stall-watchdog';
 
 /**
  * idle: not playing. connecting: waiting for audio. playing: audible.
- * reconnecting: playback failed; trying again (and using the built-in stream URL if needed).
+ * reconnecting: playback failed or stalled; trying again (and using the built-in stream URL if needed).
  */
 export type LiveState = 'idle' | 'connecting' | 'playing' | 'reconnecting';
 
@@ -35,6 +36,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   const [wantPlaying, setWantPlaying] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
   const [retryTick, setRetryTick] = useState(0);
+  const [stalled, setStalled] = useState(false);
 
   const wantRef = useRef(false);
   const fallbackRef = useRef(false);
@@ -42,10 +44,15 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   const startedRef = useRef(false); // has this attempt produced audio yet?
   const lockActiveRef = useRef(false);
   const ignorePlayingUntil = useRef(0);
+  const progressSince = useRef(Date.now()); // when audio last moved (or the attempt began)
+  const lastTime = useRef(-1); // last playback position that counted as progress
+  const stallAttempts = useRef(0); // consecutive watchdog reconnects without progress
+  const errorRef = useRef<string | null>(null);
   const streamUrlRef = useRef(streamUrl);
   streamUrlRef.current = streamUrl;
   const metadataRef = useRef(metadata);
   metadataRef.current = metadata;
+  errorRef.current = status.error;
 
   const currentUri = () =>
     fallbackRef.current || !streamUrlRef.current ? FALLBACK_STREAM_URL : streamUrlRef.current;
@@ -53,6 +60,8 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   /** (Re)connect at the live edge and play. */
   const begin = useCallback(() => {
     startedRef.current = false;
+    progressSince.current = Date.now(); // a fresh window for this attempt
+    lastTime.current = -1;
     player.replace({ uri: currentUri() });
     player.play();
     player.setActiveForLockScreen(true, metadataRef.current, {
@@ -66,10 +75,12 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   const setWant = (v: boolean) => {
     wantRef.current = v;
     setWantPlaying(v);
+    if (!v) setStalled(false);
   };
 
   const play = useCallback(async () => {
     attemptsRef.current = 0;
+    stallAttempts.current = 0;
     setWant(true);
     try {
       await configureAudioSession();
@@ -94,6 +105,31 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
       attemptsRef.current = 0;
     }
   }, [status.playing, status.error]);
+
+  // Audio is moving: reset the stall clock.
+  useEffect(() => {
+    if (madeProgress(lastTime.current, status)) {
+      lastTime.current = status.currentTime;
+      progressSince.current = Date.now();
+      stallAttempts.current = 0;
+      setStalled(false);
+    }
+  }, [status]);
+
+  // Watchdog: playback is wanted but nothing audible for too long (a stall raises no error event, so the
+  // error handling below never sees it). Reconnect, waiting longer each time. Errors have their own retry.
+  useEffect(() => {
+    if (!wantPlaying) return;
+    const id = setInterval(() => {
+      if (errorRef.current) return;
+      if (isStalled(Date.now(), progressSince.current, stallAttempts.current)) {
+        stallAttempts.current += 1;
+        setStalled(true);
+        begin();
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [wantPlaying, begin]);
 
   // Failed? Switch to the built-in stream URL first, then retry with growing delays.
   useEffect(() => {
@@ -140,7 +176,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
 
   let state: LiveState = 'idle';
   if (wantPlaying) {
-    if (status.error) state = 'reconnecting';
+    if (status.error || stalled) state = 'reconnecting';
     else if (status.playing && !status.isBuffering) state = 'playing';
     else state = 'connecting';
   }

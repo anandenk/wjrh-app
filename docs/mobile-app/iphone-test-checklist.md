@@ -87,8 +87,8 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 
 ### E. Network
 - [ ] E1. Airplane mode while playing: button says "Reconnecting…". Turn it off: audio comes back within about 20 s
-      **without tapping anything**. *(Likely failure: if the stall produces no error event the player never retries; see the
-      watchdog note in [`audio-spike.md`](audio-spike.md). Record what happens.)*
+      **without tapping anything**. *(The stall watchdog should reconnect on its own: expect "Reconnecting…" after about 20 s without
+      audio, then sound again. Verified on the simulator only; record how long it took here: ____ s.)*
 - [ ] E2. Turn Wi-Fi off mid-play (cellular on): audio recovers.
 - [ ] E3. Launch with no network: Now shows a notice; Play says "Reconnecting…"; once online it plays.
 - [ ] E4. Stop the API on the Mac (Ctrl-C in `dev-real.sh`) while the stream is fine: Play still works, and Now says
