@@ -13,7 +13,8 @@ what is and is not verified, decisions waiting on people, how to run everything,
 | `docs/mobile-app/status.md` | **Handoff: current state, next steps, how to run, gotchas.** Start here |
 | `docs/mobile-app/plan.md` | The app plan: stack, screen → endpoint map, rules, build order |
 | `docs/mobile-app/iphone-test-checklist.md` | Everything still untested because it needs a real phone, with the build steps and a results log |
-| `apps/mobile/` | The Expo / React Native app (SDK 57, Expo Router). Now, Schedule (+ show pages, reminders) and Station tabs are built and match the design; Archive is a hidden placeholder. Its README has the layout and env vars |
+| `apps/mobile/` | The Expo / React Native app (SDK 57, Expo Router). Now, Schedule (+ show pages, reminders) and Station tabs are built and match the design; Archive is a demo only (made-up recordings, `EXPO_PUBLIC_DEMO_ARCHIVES=1`). Its README has the layout and env vars |
+| `docs/mobile-app/archive-demo.md` | The Archive demo for the board pitch: what is made up, and building it onto a phone (`apps/mobile/scripts/build-phone.sh`) |
 | `docs/mobile-app/design-polish.md` | How the app was matched to `frontend/index.html`, where it differs on purpose, and how to re-check (`tools/design-compare/`) |
 | `docs/mobile-app/audio-spike.md` | Why `expo-audio` was chosen (the spike app itself was removed; tag `archive/audio-spike`) |
 | `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, except a demo copy of the API on Cloudflare's free plan ([`docs/backend-proposal/deployed-demo.md`](docs/backend-proposal/deployed-demo.md)) |
@@ -27,10 +28,10 @@ The old `~/Downloads/design_handoff_wjrh_app` folder is superseded; everything i
 ## Commands
 
 ```bash
-cd backend/api && npm ci && npm test   # 50 tests in Cloudflare's runtime; npm run typecheck
+cd backend/api && npm ci && npm test   # unit + contract tests in Cloudflare's runtime; npm run typecheck
 backend/scripts/dev.sh                 # fake station + fake Mixcloud + API on http://127.0.0.1:8787
 backend/scripts/dev-real.sh            # API on http://127.0.0.1:8797 against the REAL station (read-only)
-API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi
+API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi (never on campus Wi-Fi)
 python3 backend/scripts/e2e.py --quick # end-to-end check against the running stack
 python3 tools/check_station_services.py  # read-only check of the real stream, feed and calendar
 cd apps/mobile && npm ci && npm run typecheck && npm test && npm run check:contract && npm run lint   # must all pass
@@ -41,19 +42,23 @@ cd apps/mobile && npx expo-doctor      # must be 21/21
 
 Running the app on the simulator and the dev-only env vars: see `docs/mobile-app/status.md`.
 
-## Where we are (2026-10-02)
+## Where we are (2026-10-15)
 
-Plan steps 0 to 6 are done and merged (PRs #9–#16): the API runs against the real station; the app has the Now tab
+Plan steps 0 to 6 and 8 are done and merged (PRs #9–#24): the API runs against the real station; the app has the Now tab
 (live player with `expo-audio`, own fallback to the built-in stream URL, reconnects at the live edge on every play,
 lock-screen info), the Schedule tab (week list, show pages, local show reminders) and the Station tab (static pages,
 team gated on the API's `approved` flag, events). All of it is verified **on the iOS 27 simulator and the Android 16
 emulator only** (`status.md`). The app has run informally on one iPhone (a demo build), but
 `docs/mobile-app/iphone-test-checklist.md` has not been worked through. The only deployment is a demo copy of the API on
-Cloudflare's free plan (personal account); there are no store builds.
+Cloudflare's free plan (personal account; `docs/backend-proposal/deployed-demo.md`); there are no store builds. Since #16:
+handoff docs (#17), cleanup (#18), the stall watchdog (#19), hardening and saved answers (#20), an Android emulator
+run and player fix (#21), design polish (#22), the Archive demo behind a flag (#23), and the API withholding the roster
+until approved (#24).
 
 **Next:** run the checks in `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
-plan step 7 (Archive tab, behind a flag until the station decides). Design polish (step 8) is done on the simulator: see
-`docs/mobile-app/design-polish.md`. Use
+plan step 7 (the real Archive tab, behind a flag until the station decides; only the demo exists). Design polish (step 8)
+is done on the simulator: see `docs/mobile-app/design-polish.md`. `npx expo-doctor` is 20/21 on `main` until #27
+(the Expo patch releases) is merged. Use
 `react-native-track-player` only if the iPhone audio checks fail with `expo-audio`. Open decisions for the station
 (roster gating, archives, bundle ID, store accounts) are listed in `status.md`.
 
@@ -84,7 +89,7 @@ plan step 7 (Archive tab, behind a flag until the station decides). Design polis
 
 ## Git
 
-- Work on a branch, open a PR, and squash-merge into `main` (as with #1–#16).
+- Work on a branch, open a PR, and squash-merge into `main` (as with #1–#24).
 - **Run the backend tests before merging anything that touches `backend/`, `tools/` or the schemas.**
 - **No Claude attribution** in commits or PRs: no `Co-Authored-By: Claude` or "Generated with
   Claude Code" lines.

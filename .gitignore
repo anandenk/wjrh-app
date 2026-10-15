@@ -12,3 +12,5 @@ node_modules/
 .dev.vars
 backend/.dev-state/
 
+# Claude Code worktrees (one per background session)
+.claude/worktrees/

@@ -63,7 +63,7 @@ Add `--with-recorder` to also run the archive recorder for every show
 ## Unit and contract tests
 
 ```bash
-cd backend/api && npm ci && npm test      # 50 tests, run inside workerd; no network needed
+cd backend/api && npm ci && npm test      # unit + contract tests, run inside workerd; no network needed
 npm run typecheck
 ```
 

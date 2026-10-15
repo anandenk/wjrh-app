@@ -21,7 +21,7 @@ import { colors } from '@/theme';
 // Keep the splash screen up until the fonts are ready, so no screen flashes in the system font.
 void SplashScreen.preventAutoHideAsync();
 
-// Four tabs, in the design's order. The route files are src/app/(now)/, schedule/, archive.tsx and station/;
+// Four tabs, in the design's order. The route files are src/app/(now)/, schedule/, archive/ and station/;
 // the tab bar itself is src/components/tab-bar.tsx (Archive stays hidden while FEATURES.archive is off).
 export default function TabLayout() {
   const [fontsLoaded, fontError] = useFonts({

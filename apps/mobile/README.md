@@ -2,8 +2,10 @@
 
 The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router, TypeScript). Built so far: the
 **Now** tab (live player), the **Schedule** tab (with show pages and reminders) and the **Station** tab, plus the
-typed API layer, in the look of the HTML design ([`docs/mobile-app/design-polish.md`](../../docs/mobile-app/design-polish.md)). **Archive** is a hidden placeholder. Everything is verified on the **iOS 27 simulator** and the **Android 16 emulator** only;
-nothing has run on a physical phone.
+typed API layer, in the look of the HTML design ([`docs/mobile-app/design-polish.md`](../../docs/mobile-app/design-polish.md)). **Archive** exists only as a demo with
+made-up recordings, off unless `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](../../docs/mobile-app/archive-demo.md)).
+Everything is verified on the **iOS 27 simulator** and the **Android 16 emulator**; a demo build has run informally on
+one iPhone, but the [real-phone checklist](../../docs/mobile-app/iphone-test-checklist.md) has not been worked through.
 
 - Where things stand, next steps, gotchas, decisions waiting on people: [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md)
 - Stack, screen-to-endpoint map, licensing rules, build order: [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md)
@@ -78,10 +80,11 @@ The dev-only hooks are inert in release builds (`__DEV__` is false).
 
 | Path | What |
 |---|---|
-| `src/app/` | Expo Router routes only. `_layout.tsx` (providers, fonts, tabs), `(now)/` (Now, and `show/[showId]` opened from it), `schedule/`, `station/`, `archive.tsx` (placeholder, hidden) |
+| `src/app/` | Expo Router routes only. `_layout.tsx` (providers, fonts, tabs), `(now)/` (Now, and `show/[showId]` opened from it), `schedule/`, `station/`, `archive/` (the demo; the tab is hidden unless `FEATURES.archive`) |
 | `src/api/` | The API layer, below |
-| `src/audio/` | The live player: `use-live-player.ts`, `live-player-provider.tsx`, `audio-session.ts` |
-| `src/screens/` | Screen bodies the routes render: `now/`, `schedule/`, `show/`, `station/`. Each has its logic in a pure `*-state.ts` with a `*.test.ts` |
+| `src/audio/` | The live player: `use-live-player.ts`, `live-player-provider.tsx`, `stall-watchdog.ts`, `audio-session.ts` |
+| `src/archive/` | **Demo only:** the Archive demo's made-up data, sample descriptions, album-cover lookups and its pretend player ([`archive-demo.md`](../../docs/mobile-app/archive-demo.md)) |
+| `src/screens/` | Screen bodies the routes render: `now/`, `schedule/`, `show/`, `station/`, `archive/`. Each has its logic in a pure `*-state.ts` with a `*.test.ts` |
 | `src/reminders/` | Show reminders: `plan.ts` (pure), `notifications.ts` (expo-notifications), `use-reminder.ts`, `reminders-provider.tsx` |
 | `src/content/` | `station.ts`: the Station tab's static copy, page layout and links; `images.ts`: the bundled photos |
 | `src/components/` | Shared UI: `tab-bar.tsx` (the design's tab bar), `player-dock.tsx`, `dock-metrics.ts` (room the floating docks need), `icons.tsx`, `logo.tsx`, `text.tsx` (`Text`, `DisplayText`), `focused-status-bar.tsx`; screen-specific pieces live beside their screen |

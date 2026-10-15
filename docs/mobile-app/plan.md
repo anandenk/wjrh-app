@@ -125,7 +125,7 @@ which case the web origin must be added to `CORS_ORIGINS`.
 
 ## Build order
 
-Status as of 2026-10-02 (details, PR numbers and what is verified: [`status.md`](status.md)).
+Status as of 2026-10-15 (details, PR numbers and what is verified: [`status.md`](status.md)).
 
 0. **Run the API against the real stream, feed and calendar.** Done ([`phase0-findings.md`](phase0-findings.md)).
 1. **Audio spike:** pick the live-audio library. Simulator part done, `expo-audio` chosen; iPhone and Android checks
@@ -139,7 +139,8 @@ Status as of 2026-10-02 (details, PR numbers and what is verified: [`status.md`]
    reminder permission and delivery need an iPhone.
 6. **Station tab.** Built and verified on the simulator. Team is hidden until the API's `approved` flag is true.
 7. **Archive tab:** behind a flag (`FEATURES.archive`, off) until the board decides; Mixcloud WebView first.
-   **Not started.**
+   **Real archives not started.** A demo with made-up recordings exists for the board pitch, off unless
+   `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](archive-demo.md)).
 8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and
    station photos in `frontend/assets/`, the tab bar and player dock, icon and splash. Skipped on purpose: the
    `recent-cover-*` images (placeholder album art, and the feed has no artwork). **Done on the iOS simulator**; what

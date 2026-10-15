@@ -94,7 +94,8 @@ def legacy_parity():
     spec.loader.exec_module(mod)
     text = (ROOT / "backend/mocks/fixtures/calendar-snapshot.ics").read_text(encoding="utf-8")
     days = mod.build(mod.parse_events(mod.unfold(text)))
-    assert days == json.loads((ROOT / "tools/schedule-snapshot.json").read_text())["days"]
+    # The frozen snapshot that matches the fixture calendar, not tools/schedule-snapshot.json (the real calendar).
+    assert days == json.loads((ROOT / "backend/mocks/fixtures/schedule-snapshot.json").read_text())["days"]
 
 
 @check("schedule: snapshot, cancellations, and last-known-good on failure")

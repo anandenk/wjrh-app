@@ -3,7 +3,8 @@
 
 // Base URL of the /v1 API. 127.0.0.1 reaches the laptop from the iOS Simulator; Android Emulator
 // needs http://10.0.2.2:8787 and a physical phone needs the laptop's LAN IP (docs/mobile-app/plan.md).
-// Preview/production builds must set EXPO_PUBLIC_API_BASE: the API is not deployed yet.
+// Preview/production builds must set EXPO_PUBLIC_API_BASE: the station's own API is not deployed yet (a demo copy is,
+// docs/backend-proposal/deployed-demo.md).
 export const API_BASE: string =
   process.env.EXPO_PUBLIC_API_BASE ?? (typeof __DEV__ !== 'undefined' && __DEV__ ? 'http://127.0.0.1:8787' : '');
 

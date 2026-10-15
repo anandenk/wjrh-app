@@ -2,7 +2,8 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last updated **2026-10-14** (after PR #19, plus the hardening PR #20, the Android run PR #21 and the design-polish PR C).
+Last updated **2026-10-15** (everything through PR #24 is merged: hardening #20, the Android run #21, design polish #22,
+the Archive demo #23 and the API's roster fix #24).
 
 - Plan, stack and rules: [`plan.md`](plan.md). Project rules and commands: [`../../CLAUDE.md`](../../CLAUDE.md).
 - App code and its own guide: [`../../apps/mobile/README.md`](../../apps/mobile/README.md).
@@ -25,8 +26,8 @@ store builds.
 | 4 | **Now** tab: live player, now-playing, recent, health notices | Done on simulator; phone checks pending | #13 |
 | 5 | **Schedule** tab, show pages, local show reminders | Done on simulator; reminder permission and delivery need a phone | #14, #15 |
 | 6 | **Station** tab (static pages + team + events) | Done on simulator; links need a phone | #16 |
-| 7 | **Archive** tab | **Real archives: not started** (waiting on the station, Decision 002; Mixcloud WebView first). **A demo version exists** with made-up recordings for the board pitch, off unless `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](archive-demo.md)) | |
-| 8 | Design polish: the app matches `frontend/index.html` (fonts, logo, photos, tab bar, player dock, icon/splash) | **Done on the iOS simulator** and checked on four screens on the Android emulator, light only; real phones and store assets still to do ([`design-polish.md`](design-polish.md)) | PR C |
+| 7 | **Archive** tab | **Real archives: not started** (waiting on the station, Decision 002; Mixcloud WebView first). **A demo version exists** with made-up recordings for the board pitch, off unless `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](archive-demo.md)) | #23 (demo) |
+| 8 | Design polish: the app matches `frontend/index.html` (fonts, logo, photos, tab bar, player dock, icon/splash) | **Done on the iOS simulator** and checked on four screens on the Android emulator, light only; real phones and store assets still to do ([`design-polish.md`](design-polish.md)) | #22 |
 
 The throwaway audio-spike app was removed once the real app covered it; it is kept at the git tag `archive/audio-spike`
 (`git checkout archive/audio-spike -- apps/audio-spike` restores it).
@@ -48,18 +49,18 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
 - Live player after the lint-driven refactor of `use-live-player.ts` (refs updated in an effect, stall clock
   started at Play): normal play, and a dead stream URL switching to the built-in one then playing
   (`fallback=true`), both by the `[live]` log.
-- **Design polish (PR C), iPhone 17 simulator:** every screen (Now, Schedule, a show page, the Station hub and all seven
+- **Design polish (#22), iPhone 17 simulator:** every screen (Now, Schedule, a show page, the Station hub and all seven
   pages, top and bottom of each) was screenshotted next to the same screen of the design and compared by eye and by
   pixel position: layout, sizes and text agree to about a point, apart from the deliberate differences listed in
   [`design-polish.md`](design-polish.md). The narrow layouts (under 400 pt wide, which is most iPhones) were checked on
   the same simulator by temporarily raising the breakpoint above 402 and forcing the design's narrow rules at 402: Schedule
   and the Station hub agree; a real 390/393 pt phone was not used (the iPhone 17e simulator could not be driven, see
   Gotchas). Done with fixture data; the live API was not behind these shots.
-- ESLint is clean (`npm run lint`). Unit tests (49), typecheck, `check:contract`, `smoke:api` against `dev.sh`.
-- **`expo-doctor` is 20/21, not 21/21**, and not because of this work: Expo has since published patch releases
-  (`expo` 57.0.27, `expo-asset`, `expo-constants`, `expo-linking`, `expo-notifications`, `expo-router`) that the
-  lockfile on `main` predates. Fix in its own PR with `npx expo install --check`, then rebuild the dev client and
-  re-run the simulator checks. The packages added here (`async-storage`, `netinfo`) match SDK 57.
+- ESLint is clean (`npm run lint`). Unit tests, typecheck, `check:contract`, `smoke:api` against `dev.sh`.
+- **`expo-doctor` is 20/21, not 21/21** (rechecked 2026-10-15): Expo has since published patch releases of 8 packages
+  (`expo` 57.0.30, `expo-asset`, `expo-constants`, `expo-dev-client`, `expo-linking`, `expo-notifications`,
+  `expo-router`, `expo-splash-screen`) that the lockfile on `main` predates. #27 installs them (21/21);
+  after it is merged, run `npm ci`, rebuild the dev client and re-run the simulator checks. The packages added here (`async-storage`, `netinfo`) match SDK 57.
 
 **Android 16 emulator** (Pixel 6 AVD `wjrh-api36`, arm64, 4 GB RAM; Mac muted and the emulator started `-no-audio`).
 Taps work here (`adb shell input tap`), unlike on the iOS simulator:
@@ -124,7 +125,8 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 ## Waiting on people (not engineering)
 
 1. **Roster approval gating (decided conservatively, confirm):** while `/v1/station` says `approved: false` the
-   Team page hides all names/emails. Should it? Should events also wait? (`teamView`, `src/screens/station/station-state.ts`.)
+   Team page hides all names/emails, and since #24 the API itself sends `team: []` (the demo API sent the roster for
+   about 12 hours before that; [`deployed-demo.md`](../backend-proposal/deployed-demo.md)). Should it? Should events also wait? (`teamView`, `src/screens/station/station-state.ts`.)
 2. **Archives** (Decision 002): whether to ship them, and how (Mixcloud). Also confirm Mixcloud's widget terms
    allow embedding in a station app. The Archive tab stays off until then.
 3. **Bundle ID / package name:** `org.wjrh.app` is a placeholder in `apps/mobile/app.config.ts`. It cannot change
@@ -160,8 +162,8 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 # Backend + checks
 backend/scripts/dev.sh                  # fake station + API on http://127.0.0.1:8787   (Ctrl-C stops it)
 backend/scripts/dev-real.sh             # API against the REAL station, :8797, read-only
-API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi
-cd backend/api && npm ci && npm test    # 50 tests; run this whenever you touch backend/, schemas, tools/
+API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi (never campus Wi-Fi: use a hotspot or the demo API)
+cd backend/api && npm ci && npm test    # run this whenever you touch backend/, schemas, tools/
 python3 tools/check_station_services.py # read-only check of the real stream, feed, calendar
 
 # App checks (apps/mobile)
@@ -273,7 +275,8 @@ unmutes it themselves. The real app plays at full volume.
   "Loading…" forever instead of showing their "couldn't load" message, so don't, without reworking those screens.
 - **Backend parity test:** it compares the API on a frozen fixture calendar with
   `backend/mocks/fixtures/schedule-snapshot.json`. `tools/schedule-snapshot.json` tracks the *real* calendar and
-  is only used by the drift check. Do not point the test at the latter (that broke `main` after #9).
+  is only used by the drift check. Do not point the test at the latter (that broke `main` after #9). `e2e.py`'s
+  "legacy parser" check had the same mix-up until 2026-10-15.
 - **Android emulator gotchas.** (1) Give the AVD 4 GB of RAM; the 1.5 GB default thrashed (`kcompactd`) and System UI
   stopped responding. (2) `adb root`, or killing the `adb` server, **drops every `adb reverse` rule**: Metro's log
   stops and the stream at `127.0.0.1:8801` becomes "connection refused". Re-add the rules. (3) `lsof -ti :8801 | xargs kill`
@@ -300,7 +303,7 @@ unmutes it themselves. The real app plays at full volume.
 
 ## Working agreements
 
-- Branch, PR, **squash-merge** into `main` (as #1 to #16). **No Claude attribution** in commits or PRs: no
+- Branch, PR, **squash-merge** into `main` (as #1 to #24). **No Claude attribution** in commits or PRs: no
   `Co-Authored-By` or "Generated with" lines.
 - Explain things plainly and briefly; the owner is learning. Check before assuming on judgment calls, and flag them
   in the PR (the roster gating is an example).
