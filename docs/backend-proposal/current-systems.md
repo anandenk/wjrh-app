@@ -87,7 +87,7 @@ production data. What would replace each fixture is mapped in
 
 An earlier listener PWA (`wjrh-app/`) was connected to the real stream, feed and schedule
 snapshot. It was removed from the repository to keep the focus on the current design; it
-remains in git history (commit `c526e18`).
+remains in git history (commit `a953a95`).
 
 ## Data ownership today
 

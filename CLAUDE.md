@@ -23,7 +23,7 @@ what is and is not verified, decisions waiting on people, how to run everything,
 | `frontend/` | The current visual design (`index.html`). Use it as the design reference, not older copies |
 
 The old `~/Downloads/design_handoff_wjrh_app` folder is superseded; everything in it is in git history
-(commit `c526e18`). The design wired to the API is kept at tag `archive/api-wired-design`; the removed audio spike at `archive/audio-spike`.
+(commit `a953a95`). The design wired to the API is kept at tag `archive/api-wired-design`; the removed audio spike at `archive/audio-spike`.
 
 ## Commands
 

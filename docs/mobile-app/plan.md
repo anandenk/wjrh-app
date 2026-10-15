@@ -89,7 +89,7 @@ From [`current-systems.md`](../backend-proposal/current-systems.md#licensing-rul
 From the API contract:
 
 - **Live audio never depends on the API.** Keep a built-in fallback stream URL. The prototype that
-  proved this is kept at tag `archive/api-wired-design` (commit `e423e98`).
+  proved this is kept at tag `archive/api-wired-design` (commit `37cf17c`).
 - **Keep the last good answer.** A failed poll shows stale data with a label, not a blank screen.
 - `null` means unknown. Render an explicit empty state, never "TBD".
 - Live and archive audio are mutually exclusive: starting one stops the other.

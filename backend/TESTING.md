@@ -91,7 +91,7 @@ Open these in a browser:
 No frontend is wired up in this branch yet; the listener app is being rebuilt separately. Any client
 reads the API at `http://127.0.0.1:8787` (CORS is open in dev). What each screen of the design reads
 is mapped in [`../docs/backend-proposal/api.md`](../docs/backend-proposal/api.md). The earlier
-design and PWA wiring (`?api=` switches) is in git history at commit `e423e98`.
+design and PWA wiring (`?api=` switches) is in git history at commit `37cf17c`.
 
 ### 5c. Break the station on purpose
 

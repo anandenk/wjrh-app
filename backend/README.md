@@ -171,7 +171,7 @@ Staff review and publishing are identical for both.
 ## Connecting a frontend
 
 No frontend is wired to the API on this branch; the listener app is being rebuilt separately. The
-earlier wiring of the design prototype and PWA (`?api=`) is preserved at commit `e423e98`. What each
+earlier wiring of the design prototype and PWA (`?api=`) is preserved at commit `37cf17c`. What each
 screen should read is mapped in [`docs/backend-proposal/api.md`](../docs/backend-proposal/api.md).
 Keep live audio direct from the stream URL in `/v1/station`, so the app still plays when the API is
 down.
