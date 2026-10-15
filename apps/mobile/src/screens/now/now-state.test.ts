@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import type { Health, NowPlaying } from '@/api/types';
 
-import { showHeading, statusNotice, trackLines } from './now-state';
+import { showHeading, statusNotice, trackLines, usableNowPlaying } from './now-state';
 
 const show = {
   id: 'amber-on-audio',
@@ -61,7 +61,14 @@ test('track: no track', () => {
 
 const health = (stream: Health['services']['stream']['status']) =>
   ({ services: { stream: { status: stream } } }) as Health;
-const base = { health: undefined, nowPlayingFailedWithNoData: false, showingStaleSince: null, metadataStale: false };
+const base = {
+  health: undefined,
+  offline: false,
+  nowPlayingFailedWithNoData: false,
+  showingStaleSince: null,
+  lastKnownAt: null,
+  metadataStale: false,
+};
 
 test('notice: nothing wrong -> none', () => {
   assert.equal(statusNotice(base), null);
@@ -78,4 +85,30 @@ test('notice: API unreachable says live audio still works', () => {
 
 test('notice: stale data is labelled with its time', () => {
   assert.match(statusNotice({ ...base, showingStaleSince: '5:18 PM' })!, /5:18 PM/);
+});
+
+test('notice: offline with an old answer labels it with its time', () => {
+  const n = statusNotice({ ...base, offline: true, lastKnownAt: '5:18 PM', health: health('down') })!;
+  assert.match(n, /offline/i); // offline wins over the stream notice: the phone can't know either way
+  assert.match(n, /5:18 PM/);
+});
+
+test('notice: offline with nothing saved does not claim live audio still works', () => {
+  const n = statusNotice({ ...base, offline: true })!;
+  assert.match(n, /offline/i);
+  assert.ok(!/still works/i.test(n));
+});
+
+const answer = np({ live: true, show });
+const early = { data: answer, fromEarlierRun: true, fetching: true, offline: false };
+
+test('usable now-playing: an earlier run\'s answer is hidden while a fresh one loads', () => {
+  assert.equal(usableNowPlaying(early), undefined);
+});
+
+test('usable now-playing: kept when offline, after a failed refresh, or once it is fresh', () => {
+  assert.equal(usableNowPlaying({ ...early, offline: true }), answer); // nothing fresh is coming
+  assert.equal(usableNowPlaying({ ...early, fetching: false }), answer); // refresh failed: shown with a notice
+  assert.equal(usableNowPlaying({ ...early, fromEarlierRun: false }), answer); // this run's own answer
+  assert.equal(usableNowPlaying({ ...early, data: undefined }), undefined);
 });

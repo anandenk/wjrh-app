@@ -17,7 +17,7 @@ export function StationPageScreen({ page }: { page: string }) {
   if (page === 'team') body = <TeamPage />;
   else if (page === 'events') body = <EventsPage />;
   else if (staticPage) body = <Blocks blocks={staticPage.blocks} />;
-  else body = <Text style={styles.note}>We couldn't find that page.</Text>;
+  else body = <Text style={styles.note}>We couldn&apos;t find that page.</Text>;
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">

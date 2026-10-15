@@ -33,13 +33,35 @@ export function trackLines(track: NowPlaying['track'] | undefined): TrackLines {
   };
 }
 
+/**
+ * The now-playing answer to show as current. One saved by an earlier run of the app is only a "last
+ * known" fallback: while a fresh answer is still on its way it would show an old track as playing now.
+ */
+export function usableNowPlaying(opts: {
+  data: NowPlaying | undefined;
+  fromEarlierRun: boolean;
+  fetching: boolean; // a request is in flight
+  offline: boolean; // the phone reports no connection, so no fresh answer is coming
+}): NowPlaying | undefined {
+  if (opts.data && opts.fromEarlierRun && opts.fetching && !opts.offline) return undefined;
+  return opts.data;
+}
+
 /** A line to show above the content when something is off, or null when all is well. */
 export function statusNotice(opts: {
   health: Health | undefined;
+  offline: boolean; // the phone reports no connection
   nowPlayingFailedWithNoData: boolean;
   showingStaleSince: string | null; // formatted time of the last good answer, when a refresh failed
+  lastKnownAt: string | null; // formatted time of the last good answer we still have, if any
   metadataStale: boolean; // the server says the track info may be out of date
 }): string | null {
+  if (opts.offline) {
+    // Live audio needs a connection too, so don't say it still works.
+    return opts.lastKnownAt
+      ? `You're offline. Showing last known info from ${opts.lastKnownAt}.`
+      : "You're offline. Connect to the internet to listen and see what's playing.";
+  }
   const stream = opts.health?.services.stream.status;
   if (stream === 'down') return 'The stream is reporting a problem. We keep trying to connect.';
   if (opts.nowPlayingFailedWithNoData) {

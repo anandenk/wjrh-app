@@ -90,9 +90,15 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
       **without tapping anything**. *(The stall watchdog should reconnect on its own: expect "Reconnecting…" after about 20 s without
       audio, then sound again. Verified on the simulator only; record how long it took here: ____ s.)*
 - [ ] E2. Turn Wi-Fi off mid-play (cellular on): audio recovers.
-- [ ] E3. Launch with no network: Now shows a notice; Play says "Reconnecting…"; once online it plays.
+- [ ] E3. Launch with no network: Now shows "You're offline…" (with "Showing last known info from …" if the app ran
+      before); Play says "Reconnecting…"; once online the notice goes away by itself and it plays.
 - [ ] E4. Stop the API on the Mac (Ctrl-C in `dev-real.sh`) while the stream is fine: Play still works, and Now says
       "Live audio still works."
+- [ ] E5. Saved answers survive a restart: with the app online, open Now, Schedule and Station once. Force-quit,
+      turn on Airplane mode, reopen. Schedule and Station still show their content (not "couldn't load"), and Now
+      shows the last known show with the offline notice. The Mac API being off gives the same result.
+- [ ] E6. Coming back online: turn Airplane mode off with the app open. The offline notice goes away within a few
+      seconds and Now shows what is on air now, without pulling to refresh.
 
 ### F. Schedule and reminders
 - [ ] F1. Schedule: today is marked, times match the station's published schedule, "ON AIR NOW" matches the radio.

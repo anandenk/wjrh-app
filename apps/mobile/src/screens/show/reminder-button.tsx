@@ -24,7 +24,7 @@ export function ReminderButton({ showId, showName }: { showId: string; showName:
         </Text>
       ) : null}
       {result === 'error' ? (
-        <Text style={styles.note}>Couldn't set the reminder. Check your connection and try again.</Text>
+        <Text style={styles.note}>Couldn&apos;t set the reminder. Check your connection and try again.</Text>
       ) : null}
     </View>
   );

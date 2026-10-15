@@ -37,6 +37,8 @@ export function LivePlayerProvider({ children }: { children: ReactNode }) {
     if (!DEV_AUTOPLAY) return;
     const t = setTimeout(player.toggle, 4000);
     return () => clearTimeout(t);
+    // Dev-only hook: press Play once after launch, not again when the player object changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <Ctx.Provider value={player}>{children}</Ctx.Provider>;

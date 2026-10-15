@@ -34,9 +34,9 @@ APP_VARIANT=development npx expo run:ios   # builds a development app, installs 
 | `npm run check:contract` | Offline fixtures still validate against `backend/schemas` |
 | `npm run smoke:api` | Real API client vs the running `backend/scripts/dev.sh` stack; validates every response, the error envelope and the admin guard |
 | `npm run smoke:fixtures` | Same, in fixture mode (no server needed) |
-| `npm run gen:types` | Regenerate `src/api/types.ts` from `backend/schemas` (commit the result) |
+| `npm run gen:types` | Regenerate `src/api/types.ts` and `src/api/schema-version.ts` from `backend/schemas` (commit the result) |
 | `npx expo-doctor` | Project health; must be 21/21 |
-| `npm run lint` | The script exists, but no ESLint config has been set up or run |
+| `npm run lint` | ESLint (`eslint.config.js`: the Expo flat config, which includes React's hook rules). Must be clean |
 
 ## Environment variables
 
@@ -51,6 +51,7 @@ APP_VARIANT=development npx expo run:ios   # builds a development app, installs 
 | `EXPO_PUBLIC_USE_FIXTURES=1` | Serve `src/api/fixtures` instead of calling the API |
 | `WJRH_BUNDLE_ID` | Overrides the placeholder bundle id / package `org.wjrh.app` (for signing with a personal Apple ID) |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Press Play 4 s after launch |
+| `EXPO_PUBLIC_DEV_OFFLINE=1` | **Dev only.** Makes the Now tab show its offline notice (the simulator can't be taken offline without cutting the Mac's network) |
 | `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigate to each route, 8 s apart, after launch (the simulator can't be tapped from automation, and a deep link from outside shows an iOS "Open in…?" dialog) |
 
 The dev-only hooks are inert in release builds (`__DEV__` is false).
@@ -66,7 +67,7 @@ The dev-only hooks are inert in release builds (`__DEV__` is false).
 | `src/reminders/` | Show reminders: `plan.ts` (pure), `notifications.ts` (expo-notifications), `use-reminder.ts`, `reminders-provider.tsx` |
 | `src/content/station.ts` | The Station tab's static copy and links |
 | `src/components/` | Reusable UI (only `placeholder-screen.tsx` so far; screen-specific pieces live beside their screen) |
-| `src/hooks/`, `src/utils/` | `use-now.ts`; `format-time.ts` (station-time formatting) |
+| `src/hooks/`, `src/utils/` | `use-now.ts`, `use-online.ts` (is the phone connected); `format-time.ts` (station-time formatting) |
 | `src/config.ts` | `API_BASE`, built-in fallback stream URL, `FEATURES` flags (Archive off), dev hooks |
 | `src/theme.ts` | Colors from the design's default palette (placeholder-level styling) |
 | `scripts/` | `gen-types.mjs`, `check-contract.mjs`, `smoke-api.ts` and their own `tsconfig.json` (Node, not React Native) |
@@ -152,12 +153,22 @@ not approved (hidden) and approved (list with email links; the approved run used
 | `client.ts` | `apiGet<T>(path)`: timeout, error envelope -> `ApiError {status, code, message, requestId}`, no response -> `NetworkError`. Refuses `/admin/*` |
 | `endpoints.ts` | One typed function per endpoint the app reads (no admin, no `/join`) |
 | `queries.ts` | TanStack Query hooks with the plan's polling intervals; `isShowingStale(query)` is true when a refresh failed but older data is shown |
-| `query-provider.tsx` | Query client; polling pauses when the app is backgrounded; retries network/5xx only |
+| `query-provider.tsx` | Query client; polling pauses when the app is backgrounded; retries network/5xx only; keeps the last good answers on the phone (below); refreshes what is on screen when the connection comes back |
+| `cache-rules.ts` | Pure rules for the saved answers: which queries, how long, the cache key. Unit-tested |
+| `schema-version.ts` | **Generated** hash of `backend/schemas`; part of the cache key, so a changed response shape discards old saved answers |
 | `fixtures/` | Responses captured from the fake station, for offline UI work: `EXPO_PUBLIC_USE_FIXTURES=1` |
 
-Not done yet: persisting the last good answers across app restarts (needs an async-storage persister), and a
-fixture with archives (the recorder was not running when the fixtures were captured, so `archives.json` and
-`show-archives.json` are empty). If the API's schemas change, the app's types and fixtures must follow: run
+**Saved answers.** The last good station info, schedule, show list and now-playing answers are kept in
+AsyncStorage (TanStack Query's persister), so a launch with no signal still has something to show. Station,
+schedule and shows are used for up to 7 days; now-playing for 1 hour, and only as "last known": an answer saved by an
+earlier run is hidden while a fresh one loads, so an old track is never shown as playing now
+(`usableNowPlaying` in `screens/now/now-state.ts`). Health, recent tracks and archives are never saved. Live audio
+does not read any of it. When the phone reports no connection, the Now tab says so
+(`useIsOnline` in `hooks/use-online.ts`, built on NetInfo); queries are *not* paused when offline, so the other
+screens keep showing their own "couldn't load" messages.
+
+Not done yet: a fixture with archives (the recorder was not running when the fixtures were captured, so `archives.json`
+and `show-archives.json` are empty). If the API's schemas change, the app's types and fixtures must follow: run
 `npm run gen:types`, then `npm run check:contract`.
 
 ## Placeholders to replace

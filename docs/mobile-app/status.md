@@ -2,7 +2,7 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last updated **2026-10-02** (after PR #17 and a cleanup pass).
+Last updated **2026-10-08** (after PR #19, plus the hardening PR: ESLint, saved answers, offline notice).
 
 - Plan, stack and rules: [`plan.md`](plan.md). Project rules and commands: [`../../CLAUDE.md`](../../CLAUDE.md).
 - App code and its own guide: [`../../apps/mobile/README.md`](../../apps/mobile/README.md).
@@ -37,7 +37,23 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
 - Types generated from the schemas, fixtures valid against them, client + hooks against the live local API.
 - A mid-stream stall with no error (stream connection killed while playing) is noticed after ~20 s and recovered by
   itself, on the same URL when it is back and on the built-in URL when it is not (`src/audio/stall-watchdog.ts`).
-- Unit tests (28), `expo-doctor` (21/21), backend tests (50/50), typecheck.
+- Saved answers (iOS simulator, API stopped): after a normal run, three launches in a row with no API still show
+  the Schedule week and, on Now, the last known show and track (dimmed, "Showing last known info from 11:51 AM.");
+  Recently played is not saved and says it is unavailable. With the API unreachable and an earlier run's answer saved,
+  Now shows "Waiting for track information" rather than the old track as playing now. The offline wording was
+  checked through the dev hook only (`EXPO_PUBLIC_DEV_OFFLINE=1`), not by really losing the connection.
+- Live player after the lint-driven refactor of `use-live-player.ts` (refs updated in an effect, stall clock
+  started at Play): normal play, and a dead stream URL switching to the built-in one then playing
+  (`fallback=true`), both by the `[live]` log.
+- ESLint is clean (`npm run lint`). Unit tests (40), typecheck, `check:contract`, `smoke:api` against `dev.sh`.
+- **`expo-doctor` is 20/21, not 21/21**, and not because of this work: Expo has since published patch releases
+  (`expo` 57.0.27, `expo-asset`, `expo-constants`, `expo-linking`, `expo-notifications`, `expo-router`) that the
+  lockfile on `main` predates. Fix in its own PR with `npx expo install --check`, then rebuild the dev client and
+  re-run the simulator checks. The packages added here (`async-storage`, `netinfo`) match SDK 57.
+
+**Not re-run after the refactor:** the stall watchdog (stream dies mid-play with no error). Its pure logic is
+unit-tested and the code path is unchanged apart from where its clock starts, but re-check it on the simulator
+(kill the fake stream while playing, expect "Reconnecting…" after about 20 s) before relying on it.
 
 **Not verified. Needs a real iPhone** (full list with steps in [`iphone-test-checklist.md`](iphone-test-checklist.md)):
 how the lock screen looks and its controls; pausing/resuming from it (the resume path reconnects at the live
@@ -72,9 +88,8 @@ show's start, and tapping it; Mail/Phone/Safari opening from Station links.
    live and archive audio are mutually exclusive: starting one stops the other).
 4. **Step 8, design polish** (WJRH Display = Barlow Condensed ExtraBold, logo and station photos from
    `frontend/assets/`, skip `recent-cover-*` which are placeholders, accessibility pass, icon/splash, store assets).
-5. Hardening ideas, not started: persist the last good API answers across app restarts (needs an async-storage
-   persister for TanStack Query); an offline indicator; Android run; `eas init` and a first EAS build; ESLint
-   (the `lint` script exists but no config has been set up or run).
+5. Hardening ideas still open: an Android run; `eas init` and a first EAS build. (Done: ESLint, the saved last
+   good answers across restarts, and the offline notice; see "What is verified".)
 
 ## Run everything (macOS, Xcode 27)
 
@@ -88,7 +103,7 @@ python3 tools/check_station_services.py # read-only check of the real stream, fe
 
 # App checks (apps/mobile)
 npm ci
-npm run typecheck && npm test && npm run check:contract      # all must pass
+npm run typecheck && npm test && npm run check:contract && npm run lint   # all must pass
 npm run smoke:api                       # real client vs the running dev.sh stack
 npm run smoke:fixtures                  # same, offline fixtures
 npm run gen:types                       # after any backend/schemas change; commit the result
@@ -112,6 +127,7 @@ xcrun simctl io booted screenshot /path/shot.png
 | `EXPO_PUBLIC_USE_FIXTURES=1` | Serve `src/api/fixtures` instead of calling the API |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Presses Play 4 s after launch |
 | `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigates to each route 8 s apart after launch |
+| `EXPO_PUBLIC_DEV_OFFLINE=1` | **Dev only.** Makes the Now tab think the phone is offline, to see the offline notice (the simulator can't be taken offline without cutting the Mac's own network) |
 
 The dev-only hooks exist because the simulator cannot be tapped from automation (see below). They are ignored in
 release builds (`__DEV__` is false).
@@ -151,6 +167,14 @@ unmutes it themselves. The real app plays at full volume.
 - **Typed routes:** after adding a route file, run Metro once so `.expo/types` regenerates, or `tsc` reports the new
   path as not assignable. (`.expo/` is gitignored.)
 - **`npx expo install` can fail with ERESOLVE** unless `react-dom` is pinned to the same version as `react`.
+  It also puts `eslint-config-expo` in `dependencies` whatever flags you pass; move it to `devDependencies` by hand.
+- **Saved answers are keyed on the schemas.** `npm run gen:types` writes `src/api/schema-version.ts`, a hash of
+  `backend/schemas`; any schema change makes the phone discard its saved answers on the next launch. Commit the
+  regenerated file with the schema change. If you change *how* answers are saved, bump `CACHE_FORMAT` in
+  `src/api/cache-rules.ts`.
+- **Queries are not paused when the phone is offline.** NetInfo only drives the Now tab's notice and a refresh on
+  reconnect (`query-provider.tsx`). Wiring NetInfo into TanStack's `onlineManager` would make offline screens sit on
+  "Loading…" forever instead of showing their "couldn't load" message, so don't, without reworking those screens.
 - **Backend parity test:** it compares the API on a frozen fixture calendar with
   `backend/mocks/fixtures/schedule-snapshot.json`. `tools/schedule-snapshot.json` tracks the *real* calendar and
   is only used by the drift check. Do not point the test at the latter (that broke `main` after #9).

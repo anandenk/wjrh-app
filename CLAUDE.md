@@ -32,7 +32,7 @@ backend/scripts/dev-real.sh            # API on http://127.0.0.1:8797 against th
 API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi
 python3 backend/scripts/e2e.py --quick # end-to-end check against the running stack
 python3 tools/check_station_services.py  # read-only check of the real stream, feed and calendar
-cd apps/mobile && npm ci && npm run typecheck && npm test && npm run check:contract   # must all pass
+cd apps/mobile && npm ci && npm run typecheck && npm test && npm run check:contract && npm run lint   # must all pass
 cd apps/mobile && npm run smoke:api    # real API client vs the running dev.sh stack (smoke:fixtures: offline)
 cd apps/mobile && npm run gen:types    # regenerate src/api/types.ts after backend/schemas changes
 cd apps/mobile && npx expo-doctor      # must be 21/21

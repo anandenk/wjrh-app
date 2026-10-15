@@ -24,7 +24,7 @@ export function EventsPage() {
     <>
       <Text style={styles.text}>{EVENTS_INTRO}</Text>
       {station.isPending ? <Text style={styles.note}>Loading…</Text> : null}
-      {station.isError && !station.data ? <Text style={styles.note}>Can't load events right now.</Text> : null}
+      {station.isError && !station.data ? <Text style={styles.note}>Can&apos;t load events right now.</Text> : null}
       {station.data ? (
         <>
           <Text style={styles.heading} accessibilityRole="header">

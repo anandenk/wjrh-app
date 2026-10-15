@@ -44,15 +44,19 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   const startedRef = useRef(false); // has this attempt produced audio yet?
   const lockActiveRef = useRef(false);
   const ignorePlayingUntil = useRef(0);
-  const progressSince = useRef(Date.now()); // when audio last moved (or the attempt began)
+  const progressSince = useRef(0); // when audio last moved (or the attempt began); set by play() and begin()
   const lastTime = useRef(-1); // last playback position that counted as progress
   const stallAttempts = useRef(0); // consecutive watchdog reconnects without progress
   const errorRef = useRef<string | null>(null);
   const streamUrlRef = useRef(streamUrl);
-  streamUrlRef.current = streamUrl;
   const metadataRef = useRef(metadata);
-  metadataRef.current = metadata;
-  errorRef.current = status.error;
+  // Timers and callbacks read these refs, so they always see the latest values. This effect is
+  // declared before the others so it runs first after every render.
+  useEffect(() => {
+    streamUrlRef.current = streamUrl;
+    metadataRef.current = metadata;
+    errorRef.current = status.error;
+  });
 
   const currentUri = () =>
     fallbackRef.current || !streamUrlRef.current ? FALLBACK_STREAM_URL : streamUrlRef.current;
@@ -81,6 +85,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   const play = useCallback(async () => {
     attemptsRef.current = 0;
     stallAttempts.current = 0;
+    progressSince.current = Date.now(); // the watchdog's clock starts now, not when the app launched
     setWant(true);
     try {
       await configureAudioSession();

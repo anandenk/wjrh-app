@@ -53,7 +53,7 @@ export function ShowScreen({ showId }: { showId: string }) {
             </Text>
           ))
         ) : (
-          <Text style={styles.body}>Not on this week's schedule.</Text>
+          <Text style={styles.body}>Not on this week&apos;s schedule.</Text>
         )}
       </View>
 

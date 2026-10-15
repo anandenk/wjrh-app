@@ -23,6 +23,11 @@ export const USE_FIXTURES = process.env.EXPO_PUBLIC_USE_FIXTURES === '1';
 export const DEV_AUTOPLAY =
   typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_AUTOPLAY === '1';
 
+// Dev-only test hook: make the app think the phone has no connection (EXPO_PUBLIC_DEV_OFFLINE=1), to see the
+// offline notice. The simulator can't be taken offline without cutting the Mac's own network. Ignored in release builds.
+export const DEV_OFFLINE =
+  typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_DEV_OFFLINE === '1';
+
 // Dev-only test hook: navigate to this route (or a comma-separated list, 8 s apart) after launch
 // (EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut),
 // because a deep link from outside the app shows an iOS "Open in…?" dialog that can't be tapped in automated runs.

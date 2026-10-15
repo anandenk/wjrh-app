@@ -16,14 +16,14 @@ export function TeamPage() {
       <Text style={styles.text}>{TEAM_INTRO}</Text>
       {station.isPending ? <Text style={styles.note}>Loading…</Text> : null}
       {station.isError && !station.data ? (
-        <Text style={styles.note}>Can't load the team right now. Pull back and try again later.</Text>
+        <Text style={styles.note}>Can&apos;t load the team right now. Pull back and try again later.</Text>
       ) : null}
       {isShowingStale(station) ? <Text style={styles.note}>Showing the last list we loaded.</Text> : null}
       {view.kind === 'hidden' && station.data ? (
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Team list coming soon</Text>
           <Text style={styles.note}>
-            The station is confirming this semester's roster. Meanwhile, reach the station at {GENERAL_EMAIL}.
+            The station is confirming this semester&apos;s roster. Meanwhile, reach the station at {GENERAL_EMAIL}.
           </Text>
         </View>
       ) : null}

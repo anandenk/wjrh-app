@@ -1,11 +1,13 @@
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { isFromEarlierRun } from '@/api/cache-rules';
 import { isShowingStale, useHealth, useNowPlaying, useRecent } from '@/api/queries';
 import { useLivePlayerContext } from '@/audio/live-player-provider';
+import { useIsOnline } from '@/hooks/use-online';
 import { colors } from '@/theme';
 import { formatStationTime } from '@/utils/format-time';
 
-import { statusNotice, showHeading, trackLines } from './now-state';
+import { showHeading, statusNotice, trackLines, usableNowPlaying } from './now-state';
 import { PlayButton } from './play-button';
 import { RecentList } from './recent-list';
 
@@ -15,16 +17,27 @@ export function NowScreen() {
   const recent = useRecent(20);
   const health = useHealth();
 
-  const np = nowPlaying.data;
+  const online = useIsOnline();
+
+  // An answer saved by an earlier run is not "playing now" while a fresh one is still loading.
+  const np = usableNowPlaying({
+    data: nowPlaying.data,
+    fromEarlierRun: isFromEarlierRun(nowPlaying.dataUpdatedAt),
+    fetching: nowPlaying.isFetching,
+    offline: !online,
+  });
   const heading = showHeading(np);
   const track = trackLines(np?.track);
+  const lastGoodAt =
+    np && nowPlaying.dataUpdatedAt
+      ? formatStationTime(new Date(nowPlaying.dataUpdatedAt).toISOString())
+      : null;
   const notice = statusNotice({
     health: health.data,
+    offline: !online,
     nowPlayingFailedWithNoData: nowPlaying.isError && !np,
-    showingStaleSince:
-      isShowingStale(nowPlaying) && nowPlaying.dataUpdatedAt
-        ? formatStationTime(new Date(nowPlaying.dataUpdatedAt).toISOString())
-        : null,
+    showingStaleSince: isShowingStale(nowPlaying) ? lastGoodAt : null,
+    lastKnownAt: lastGoodAt,
     metadataStale: !!np?.stale,
   });
   const refreshing = nowPlaying.isRefetching && recent.isRefetching;
@@ -55,7 +68,7 @@ export function NowScreen() {
         </Text>
         {heading.subtitle ? <Text style={styles.showSub}>{heading.subtitle}</Text> : null}
 
-        <View style={[styles.track, (!track.known || np?.stale) && styles.dim]}>
+        <View style={[styles.track, (!track.known || np?.stale || !online || isShowingStale(nowPlaying)) && styles.dim]}>
           <Text style={styles.trackLabel}>NOW PLAYING</Text>
           <Text style={styles.trackTitle} numberOfLines={2}>
             {track.title}
