@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { describe, expect, it } from 'vitest';
+import { publicStation, station } from '../src/content';
 import { admin, audioStream, call, freezeAt, getJson, nowPlayingResponse, runCron, stubUpstreams } from './helpers';
 
 // Friday 2 October 2026, 4:30 PM ET: Supercut (16:00–17:00) is on air.
@@ -213,10 +214,21 @@ describe('shows, station, CORS', () => {
     expect((await getJson('/v1/shows/nope', 'shows')).res.status).toBe(404);
   });
 
-  it('serves the station roster', async () => {
+  it('serves the station record, without the roster until the station approves it', async () => {
     const { body } = await getJson('/v1/station', 'station');
     expect(body.approved).toBe(false);
     expect(body.listen.streamUrl).toBe(env.STREAM_URL);
+    // The roster has students' names and emails: it stays out of the public answer while approved is false.
+    expect(station.team).toEqual([]); // unapproved roster is empty in content
+    expect(body.team).toEqual([]); // ...and is not sent
+    expect(JSON.stringify(body)).not.toContain('@');
+    expect(body.events.length).toBeGreaterThan(0); // everything else is still served
+  });
+
+  it('publicStation sends the roster only when approved', () => {
+    const roster = [{ name: 'A', role: 'GM', email: 'a@example.edu' }];
+    expect(publicStation({ approved: false, team: roster, x: 1 })).toEqual({ approved: false, team: [], x: 1 });
+    expect(publicStation({ approved: true, team: roster, x: 1 })).toEqual({ approved: true, team: roster, x: 1 });
   });
 
   it('allows only configured origins', async () => {

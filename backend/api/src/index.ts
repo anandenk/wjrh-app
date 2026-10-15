@@ -6,7 +6,7 @@ import { cors } from 'hono/cors';
 import type { Env } from './env';
 import { flag, num } from './env';
 import { ApiError, errorResponse, jsonCached, safeEqual, ulid } from './http';
-import { profileFor, shows, showsUpdatedAt, station, type ShowProfile } from './content';
+import { profileFor, publicStation, shows, showsUpdatedAt, station, type ShowProfile } from './content';
 import {
   currentAndNext,
   isStale,
@@ -278,7 +278,8 @@ app.get('/v1/recent', async (c) => {
 // ---------------------------------------------------------------- station + join
 
 app.get('/v1/station', (c) => {
-  const { $comment: _c, ...body } = station as typeof station & { $comment?: string };
+  const { $comment: _c, ...record } = station as typeof station & { $comment?: string };
+  const body = publicStation(record); // no roster until the station approves it
   // Where listeners connect for live audio. It never goes through this API.
   return jsonCached(c, { ...body, listen: { streamUrl: c.env.STREAM_URL } }, 'public, max-age=300');
 });

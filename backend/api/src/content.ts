@@ -27,6 +27,15 @@ export const showsUpdatedAt: string = showsDoc.updatedAt;
 export const shows: ShowProfile[] = showsDoc.shows as ShowProfile[];
 export const station = stationDoc;
 
+/**
+ * The station record as the public API sends it. The roster is students' names and emails, so it goes out only once
+ * the station has approved it (`approved`); until then the team list is empty. The app also hides it, but anyone can
+ * call the API directly.
+ */
+export function publicStation<T extends { approved: boolean; team: unknown[] }>(record: T): T {
+  return record.approved ? record : { ...record, team: [] };
+}
+
 /** Same slug rule as fetch_schedule.py so IDs match the existing schedule.json. */
 export function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'show';

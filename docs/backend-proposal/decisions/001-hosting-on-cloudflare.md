@@ -1,6 +1,7 @@
 # Decision 001: Host the WJRH application layer on Cloudflare
 
-- **Status:** Proposed. Waiting on board approval; nothing is deployed.
+- **Status:** Proposed. Waiting on board approval. (A demo copy has run on a personal account since 2026-10-14, on the free plan,
+  to try the idea: [`../deployed-demo.md`](../deployed-demo.md). This decision is about the station's own production setup.)
 - **Date:** 2026-09-28
 - **Decides:** where the `/v1` API ([`../api.md`](../api.md)), its scheduled jobs,
   its database and any archive audio would live.

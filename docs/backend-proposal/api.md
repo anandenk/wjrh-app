@@ -303,7 +303,7 @@ Station content the design currently hard-codes: the team roster, events, and wh
 }
 ```
 
-`approved` stays `false` until the station confirms the roster each semester.
+`approved` stays `false` until the station confirms the roster each semester. While it is `false` the API sends `team: []`: the roster (students' names and emails) is held back by the server, not only hidden by the app, because anyone can call a public API directly.
 
 ## Archive management endpoints
 

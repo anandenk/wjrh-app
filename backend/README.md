@@ -4,7 +4,7 @@ The application layer that the new frontend design assumes. It runs entirely on 
 against a **fake station**, so you can build and test the backend before the board settles hosting,
 budget or archive licensing.
 
-> **Status: local only, not deployed.** The architecture decisions are in
+> **Status: local, plus a demo copy on Cloudflare's free plan** ([`deployed-demo.md`](../docs/backend-proposal/deployed-demo.md)); not the station's production. The architecture decisions are in
 > [`docs/backend-proposal/decisions/`](../docs/backend-proposal/decisions/):
 > - 001: hosting on Cloudflare, and cost.
 > - 002: archive and licensing (Mixcloud or whole-day blocks).

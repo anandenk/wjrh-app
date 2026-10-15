@@ -1,6 +1,7 @@
 # WJRH application API — Cloudflare Worker.
 #
-# NOT DEPLOYED. Top-level values describe the intended production wiring against
+# NOT THE STATION'S PRODUCTION DEPLOYMENT (a demo copy runs on a personal account: see
+# docs/backend-proposal/deployed-demo.md). Top-level values describe the intended production wiring against
 # the real WJRH upstreams; `[env.dev]` points everything at backend/mocks.
 # See docs/backend-proposal/decisions/001-hosting-on-cloudflare.md.
 
