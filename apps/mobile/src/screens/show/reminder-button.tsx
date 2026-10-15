@@ -1,8 +1,10 @@
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 
+import { Text } from '@/components/text';
 import { useReminder } from '@/reminders/use-reminder';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
 
+/** "Remind me when it starts": a cream pill on the maroon page, gold once it is on. */
 export function ReminderButton({ showId, showName }: { showId: string; showName: string }) {
   const { enabled, busy, result, toggle } = useReminder(showId);
   return (
@@ -15,7 +17,7 @@ export function ReminderButton({ showId, showName }: { showId: string; showName:
         onPress={toggle}
         style={({ pressed }) => [styles.button, enabled && styles.buttonOn, pressed && styles.pressed]}>
         <Text style={[styles.label, enabled && styles.labelOn]}>
-          {busy ? 'Working…' : enabled ? '🔔 Reminder on' : 'Remind me when it starts'}
+          {busy ? 'Working…' : enabled ? 'Reminder on' : 'Remind me when it starts'}
         </Text>
       </Pressable>
       {result === 'denied' ? (
@@ -31,18 +33,18 @@ export function ReminderButton({ showId, showName }: { showId: string; showName:
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: 8 },
+  wrap: { paddingTop: 16, paddingHorizontal: 20, gap: 10, alignItems: 'flex-start' },
   button: {
-    alignSelf: 'flex-start',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    minHeight: 48,
+    paddingHorizontal: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 999,
-    borderWidth: 2,
-    borderColor: colors.live,
+    backgroundColor: colors.accentInk,
   },
-  buttonOn: { backgroundColor: colors.live },
-  pressed: { opacity: 0.8 },
-  label: { fontSize: 16, fontWeight: '700', color: colors.live },
-  labelOn: { color: colors.onImage },
-  note: { fontSize: 13, color: colors.ink2 },
+  buttonOn: { backgroundColor: colors.logoGold },
+  pressed: { opacity: 0.78 },
+  label: { fontFamily: fonts.bold, fontSize: 13, color: colors.live },
+  labelOn: { color: colors.ink },
+  note: { fontFamily: fonts.body, fontSize: 12, lineHeight: 17, color: colors.onImageMuted },
 });

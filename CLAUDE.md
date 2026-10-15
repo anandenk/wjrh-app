@@ -13,7 +13,8 @@ what is and is not verified, decisions waiting on people, how to run everything,
 | `docs/mobile-app/status.md` | **Handoff: current state, next steps, how to run, gotchas.** Start here |
 | `docs/mobile-app/plan.md` | The app plan: stack, screen → endpoint map, rules, build order |
 | `docs/mobile-app/iphone-test-checklist.md` | Everything still untested because it needs a real phone, with the build steps and a results log |
-| `apps/mobile/` | The Expo / React Native app (SDK 57, Expo Router). Now, Schedule (+ show pages, reminders) and Station tabs are built; Archive is a hidden placeholder. Its README has the layout and env vars |
+| `apps/mobile/` | The Expo / React Native app (SDK 57, Expo Router). Now, Schedule (+ show pages, reminders) and Station tabs are built and match the design; Archive is a hidden placeholder. Its README has the layout and env vars |
+| `docs/mobile-app/design-polish.md` | How the app was matched to `frontend/index.html`, where it differs on purpose, and how to re-check (`tools/design-compare/`) |
 | `docs/mobile-app/audio-spike.md` | Why `expo-audio` was chosen (the spike app itself was removed; tag `archive/audio-spike`) |
 | `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, not deployed |
 | `backend/schemas/` | Source of truth for API response shapes; the app's types are generated from these |
@@ -49,7 +50,8 @@ team gated on the API's `approved` flag, events). All of it is verified **on the
 emulator only** (`status.md`). Nothing has been run on a physical phone, and nothing is deployed.
 
 **Next:** run the checks in `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
-plan step 7 (Archive tab, behind a flag until the station decides) and step 8 (design polish). Use
+plan step 7 (Archive tab, behind a flag until the station decides). Design polish (step 8) is done on the simulator: see
+`docs/mobile-app/design-polish.md`. Use
 `react-native-track-player` only if the iPhone audio checks fail with `expo-audio`. Open decisions for the station
 (roster gating, archives, bundle ID, store accounts) are listed in `status.md`.
 
@@ -64,15 +66,17 @@ plan step 7 (Archive tab, behind a flag until the station decides) and step 8 (d
   through our own player.
 - Never ship the admin token or call `/v1/admin/*` from the listener app (the client refuses it).
 - `null` from the API means unknown: show an explicit sentence, never "TBD".
-- The recent-track cover images in `frontend/assets/` are placeholders, not real artwork.
+- The recent-track cover images in `frontend/assets/` are placeholders, not real artwork (the app does not use them).
+- The look follows `frontend/index.html`; where the app must differ (licensing, real data, Archive not built) it is
+  listed in `docs/mobile-app/design-polish.md`. Add to that list when you differ again.
 - The student roster has names and emails: it stays hidden while `/v1/station` says `approved: false`.
 
 ## Gotchas (details in `status.md`)
 
 - Xcode 27 has **no Simulator.app**: open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app`.
 - iOS 27 needs the UIScene setting already in `app.config.ts`; Metro must **not** run with `CI=1`.
-- The simulator cannot be tapped from automation, so dev-only env hooks (`EXPO_PUBLIC_AUTOPLAY`, `_DEV_ROUTE`)
-  drive it. Audio tests are run with the Mac **muted** (the owner is often in class).
+- The simulator cannot be tapped from automation, so dev-only env hooks (`EXPO_PUBLIC_AUTOPLAY`, `_DEV_ROUTE`, which
+  also scrolls with `/route@600`, and `_DEV_NOW`) drive it. Audio tests are run with the Mac **muted** (the owner is often in class).
 - `tools/schedule-snapshot.json` tracks the real calendar; the backend parity test uses
   `backend/mocks/fixtures/schedule-snapshot.json`. Don't mix them up.
 

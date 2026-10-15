@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import type { Health, NowPlaying } from '@/api/types';
 
-import { showHeading, statusNotice, trackLines, usableNowPlaying } from './now-state';
+import { dockLines, showHeading, statePill, statusNotice, trackLines, usableNowPlaying } from './now-state';
 
 const show = {
   id: 'amber-on-audio',
@@ -111,4 +111,33 @@ test('usable now-playing: kept when offline, after a failed refresh, or once it 
   assert.equal(usableNowPlaying({ ...early, fetching: false }), answer); // refresh failed: shown with a notice
   assert.equal(usableNowPlaying({ ...early, fromEarlierRun: false }), answer); // this run's own answer
   assert.equal(usableNowPlaying({ ...early, data: undefined }), undefined);
+});
+
+test('dock: track and "artist · show"', () => {
+  assert.deepEqual(
+    dockLines(np({ live: true, show, track: { title: 'Cellophane Wing', artist: 'Miri Vale', album: null, artworkUrl: null } })),
+    { title: 'Cellophane Wing', sub: 'Miri Vale · Amber on Audio' },
+  );
+});
+
+test('dock: unknown artist is said plainly, never left blank', () => {
+  assert.deepEqual(
+    dockLines(np({ live: true, show, track: { title: 'Gasket Weather', artist: null, album: null, artworkUrl: null } })),
+    { title: 'Gasket Weather', sub: 'Artist metadata unavailable · Amber on Audio' },
+  );
+});
+
+test('dock: no track yet names the show and its hosts', () => {
+  assert.deepEqual(dockLines(np({ live: true, show })), { title: 'Amber on Audio', sub: 'with Amber' });
+});
+
+test('dock: nothing known falls back to the station', () => {
+  assert.deepEqual(dockLines(undefined), { title: 'WJRH 104.9 FM', sub: 'Lafayette College radio' });
+});
+
+test('pill: live, automated, offline, and nothing while unknown', () => {
+  assert.deepEqual(statePill(showHeading(np({ live: true, show })), false), { label: 'LIVE', tone: 'live' });
+  assert.deepEqual(statePill(showHeading(np({ automation: true })), false), { label: 'AUTOMATED', tone: 'idle' });
+  assert.deepEqual(statePill(showHeading(np({ live: true, show })), true), { label: 'OFFLINE', tone: 'off' });
+  assert.equal(statePill(showHeading(undefined), false), null);
 });

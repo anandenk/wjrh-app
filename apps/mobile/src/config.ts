@@ -29,7 +29,13 @@ export const DEV_OFFLINE =
   typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_DEV_OFFLINE === '1';
 
 // Dev-only test hook: navigate to this route (or a comma-separated list, 8 s apart) after launch
-// (EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut),
+// (EXPO_PUBLIC_DEV_ROUTE=/schedule/supercut). An entry can end in "@600" to scroll that screen to 600 px
+// (dev/dev-scroll.ts), and each settled screen logs "[dev-shot N]" for screenshot scripts.
 // because a deep link from outside the app shows an iOS "Open in…?" dialog that can't be tapped in automated runs.
 export const DEV_ROUTE: string | undefined =
   typeof __DEV__ !== 'undefined' && __DEV__ ? process.env.EXPO_PUBLIC_DEV_ROUTE || undefined : undefined;
+
+// Dev-only test hook: pretend it is this moment (EXPO_PUBLIC_DEV_NOW=2026-10-14T19:10:00-04:00) so the schedule's
+// "ON AIR NOW" row can be seen at any hour. Only the schedule's clock; the live player and the API ignore it.
+export const DEV_NOW: string | undefined =
+  typeof __DEV__ !== 'undefined' && __DEV__ ? process.env.EXPO_PUBLIC_DEV_NOW || undefined : undefined;

@@ -83,3 +83,37 @@ export function slotsForShow(
 export function airTimes(entries: { day: DayKey; slot: Slot }[]): string[] {
   return entries.map(({ day, slot }) => `${DAY_LONG[day]}s ${formatRange(slot.startsAt, slot.endsAt)}`);
 }
+
+/** "17:00–18:00": the design prints schedule times on a 24-hour clock, in station time. */
+export function formatRange24(startsAt: string, endsAt: string): string {
+  return `${startsAt}\u2013${endsAt}`;
+}
+
+export type ScheduleRow =
+  | { kind: 'day'; day: DayKey; label: string }
+  | { kind: 'show'; day: DayKey; slot: Slot };
+
+/** The whole week as one stream: a day marker, then that day's shows in air order. Days with no shows are left out. */
+export function scheduleRows(weekly: ScheduleWeekly | undefined): ScheduleRow[] {
+  return DAY_KEYS.flatMap((day) => {
+    const slots = slotsForDay(weekly, day);
+    if (slots.length === 0) return [];
+    return [
+      { kind: 'day' as const, day, label: DAY_LONG[day] },
+      ...slots.map((slot) => ({ kind: 'show' as const, day, slot })),
+    ];
+  });
+}
+
+/** "Mon D" for an ISO timestamp, in station time ("Oct 2"). Empty string if unparseable. */
+export function formatMonthDay(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: STATION_TZ });
+}
+
+/** The line under the list: where the schedule comes from and how fresh it is. */
+export function freshnessLine(generatedAt: string | undefined): string {
+  const when = generatedAt ? formatMonthDay(generatedAt) : '';
+  return when ? `Schedule synced from WJRH Google Calendar \u00b7 ${when}` : 'Schedule from the WJRH Google Calendar';
+}

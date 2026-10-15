@@ -57,11 +57,12 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 - [ ] A2. Now shows the current show/track from the API (same as the real station's now-playing).
 
 ### B. Live audio
-- [ ] B1. Tap **Play live**: audio starts within about 7 s (normal for this stream); the button goes "Connecting…" then "Pause".
+- [ ] B1. Tap the big **play triangle** on Now: audio starts within about 7 s (normal for this stream); the triangle
+      turns into a spinning ring, then a stop square.
 - [ ] B2. Pause: silence immediately. Play again: you hear what is on air **now**, not where you paused (compare with
       the stream on another device). This is the "no rewinding" rule.
 - [ ] B3. Switch to another app for 5 minutes: audio keeps playing.
-- [ ] B4. Lock the phone for 10+ minutes: audio keeps playing, then unlock: the app's button still says Pause.
+- [ ] B4. Lock the phone for 10+ minutes: audio keeps playing, then unlock: the control still shows the stop square (playing).
 - [ ] B5. Ring/silent switch on silent: audio still plays.
 - [ ] B6. When the on-air track changes, the Now tab updates within about 15 s.
 - [ ] B7. A track with no artist shows "Artist metadata unavailable" (only if one comes up; not an error otherwise).
@@ -70,9 +71,9 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 ### C. Lock screen and Control Center
 - [ ] C1. Lock screen shows the track title, artist and album (or the show name), and a play/pause button, with **no
       scrub bar and no skip buttons** (it is a live stream).
-- [ ] C2. Pause from the lock screen: audio stops and, when you open the app, it shows **Play live** (state follows).
+- [ ] C2. Pause from the lock screen: audio stops and, when you open the app, it shows the play triangle (state follows).
 - [ ] C3. Play from the lock screen after pausing: audio resumes **at the live edge** (not old audio) and the app shows
-      Pause. *(The path that has only been exercised in code.)*
+      the stop square. *(The path that has only been exercised in code.)*
 - [ ] C4. Same card and controls in Control Center.
 - [ ] C5. Earbud/headphone play-pause button toggles playback.
 - [ ] C6. Lock-screen text changes when the track changes.
@@ -101,7 +102,7 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
       seconds and Now shows what is on air now, without pulling to refresh.
 
 ### F. Schedule and reminders
-- [ ] F1. Schedule: today is marked, times match the station's published schedule, "ON AIR NOW" matches the radio.
+- [ ] F1. Schedule opens at today's day bar, times (24-hour) match the station's published schedule, "ON AIR NOW" matches the radio.
       Set the phone's time zone to another zone: times still show **Eastern**.
 - [ ] F2. A show page shows hosts, when it airs, and honest "hasn't added a description" text where missing.
 - [ ] F3. Tap **Remind me when it starts**: the iOS notification permission prompt appears; Allow; the button shows
@@ -123,8 +124,24 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 - [ ] G4. Events shows an archive (and any upcoming events) and "View event archive" opens wjrh.org/events.
 
 ### H. General
-- [ ] H1. Dark mode and the largest text size: nothing unreadable or cut off (the design is not finished; just record).
+- [ ] H1. The largest text size: nothing unreadable or cut off (text stops growing at 130% on purpose). Dark mode: the app stays light.
 - [ ] H2. VoiceOver: buttons are announced with sensible names (Play live stream, day names, show rows).
+
+### J. Looks (design polish; the simulator cannot judge these)
+- [ ] J1. Fonts: headlines are the tall condensed face (not a system font) and body text is Inter on every screen, also
+      right after a cold launch (gold-on-maroon splash, then the app, no flash of another font).
+- [ ] J2. The player dock (strip above the tab bar on every screen but Now) blurs what scrolls under it; its play/stop
+      works; tapping its text opens the show on air.
+- [ ] J3. Status bar: light text on Now's photo and the maroon screens (Schedule, show page), dark text on the cream
+      Station screens, also after switching tabs.
+- [ ] J4. Home indicator: scroll to the end of Now, Schedule, a show page and a Station page: nothing is hidden under
+      the dock or tab bar.
+- [ ] J5. Schedule opens at today's bar and returns to it when you press the Schedule tab; coming back from a show page
+      keeps your place. A swipe from the left edge goes back on show and Station pages.
+- [ ] J6. A narrower iPhone (under 400 pt wide, such as an SE or a 16/17): rows, tiles and titles still fit.
+- [ ] J7. Home screen icon and splash look right (gold WJRH on maroon). Reduce Motion on: the tab bar's maroon bar jumps
+      instead of sliding.
+- [ ] J8. A reminder's notification (Android: small icon is a white broadcast symbol, tinted maroon).
 
 ### I. Android (an emulator run is done; this is what is left for a real Android phone)
 The Android 16 emulator run covered: tabs, live play, background play for 3.5+ minutes with a media notification,
@@ -139,6 +156,9 @@ and real offline/online ([`status.md`](status.md), "What is verified"). Still ne
       media notification still hold in the background?
 - [ ] I5. Watch for a crash right after launch or a tab switch (the emulator showed one intermittent native crash,
       not reproduced). If it happens, capture `adb logcat -b crash`. Emulator API address is `http://10.0.2.2:<port>`; a phone uses the LAN IP.
+- [ ] I6. Looks, on a real phone: same as the iPhone checks in section J, except the player dock is a near-solid cream
+      strip (no blur), the app icon is the wordmark on maroon (also the themed/monochrome icon), and gesture or
+      three-button navigation leaves the tab bar clear of the system bar.
 
 ## Results log
 

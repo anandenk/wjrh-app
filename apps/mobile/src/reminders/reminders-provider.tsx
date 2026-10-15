@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 
 import { DEV_ROUTE } from '@/config';
+import { devScrollTo } from '@/dev/dev-scroll';
 
 import { configureNotificationHandler, getReminderShowIds, syncReminders } from './notifications';
 
@@ -28,10 +29,20 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
   // Dev-only: jump to a route (see config.ts).
   useEffect(() => {
     if (!DEV_ROUTE) return;
-    // A comma-separated list steps through the routes, 8 s apart, so one launch can show several screens.
-    const timers = DEV_ROUTE.split(',').map((route, i) =>
-      setTimeout(() => router.navigate(route as never), 3000 + i * 8000),
-    );
+    // A comma-separated list steps through the routes, 5 s apart, so one launch can show several screens.
+    // "/route@600" also scrolls that screen to 600 px. Once a screen has settled it logs "[dev-shot N]",
+    // which a screenshot script can wait for.
+    const timers = DEV_ROUTE.split(',').flatMap((entry, i) => {
+      const [route, y] = entry.split('@');
+      const at = 3000 + i * 5000;
+      return [
+        setTimeout(() => {
+          router.navigate(route as never);
+          devScrollTo(Number(y) || 0);
+        }, at),
+        setTimeout(() => console.log(`[dev-shot ${i}]`), at + 3200),
+      ];
+    });
     return () => timers.forEach(clearTimeout);
   }, [router]);
 

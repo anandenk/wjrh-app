@@ -4,7 +4,8 @@ import { test } from 'node:test';
 import type { ScheduleWeekly } from '@/api/types';
 
 import {
-  airTimes, formatHm, formatRange, isOnAir, slotsForDay, slotsForShow, stationClock, stationDate,
+  airTimes, formatHm, formatRange, formatRange24, freshnessLine, isOnAir, scheduleRows, slotsForDay, slotsForShow,
+  stationClock, stationDate,
 } from './schedule-state';
 
 test('stationClock: Eastern time whatever the instant', () => {
@@ -65,4 +66,25 @@ test('slotsForShow and airTimes', () => {
   const entries = slotsForShow(weekly, 'a');
   assert.deepEqual(entries.map((e) => e.day), ['mon', 'wed']);
   assert.deepEqual(airTimes(entries), ['Mondays 12:00 – 1:00 PM', 'Wednesdays 12:00 – 1:00 PM']);
+});
+
+test('formatRange24 prints the 24-hour range the design uses', () => {
+  assert.equal(formatRange24('17:00', '18:00'), '17:00\u201318:00');
+});
+
+test('scheduleRows: a day marker then its shows in air order; empty days are left out', () => {
+  const rows = scheduleRows(weekly);
+  assert.deepEqual(
+    rows.map((r) => (r.kind === 'day' ? `day:${r.label}` : `show:${r.day}:${r.slot.showId}`)),
+    ['day:Monday', 'show:mon:a', 'show:mon:b', 'day:Wednesday', 'show:wed:a'],
+  );
+  assert.deepEqual(scheduleRows(undefined), []);
+});
+
+test('freshnessLine: the sync date in station time, with a plain fallback', () => {
+  assert.equal(
+    freshnessLine('2026-10-02T01:19:10-04:00'),
+    'Schedule synced from WJRH Google Calendar \u00b7 Oct 2',
+  );
+  assert.equal(freshnessLine(undefined), 'Schedule from the WJRH Google Calendar');
 });

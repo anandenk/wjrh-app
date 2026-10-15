@@ -15,8 +15,10 @@ const config: ExpoConfig = {
   scheme: 'wjrh',
   version: '1.0.0',
   orientation: 'portrait',
-  userInterfaceStyle: 'automatic',
-  icon: './assets/icon.png', // placeholder (Expo default); real branding is plan step 8
+  // The design has one palette (cream and maroon) and no dark variant, so the app stays light.
+  userInterfaceStyle: 'light',
+  backgroundColor: '#F8E5BF',
+  icon: './assets/icon.png', // the wordmark on the station maroon (assets/README.md)
   ios: {
     bundleIdentifier: bundleId,
     supportsTablet: false,
@@ -28,7 +30,7 @@ const config: ExpoConfig = {
   android: {
     package: bundleId,
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
+      backgroundColor: '#861F2C',
       foregroundImage: './assets/android-icon-foreground.png',
       backgroundImage: './assets/android-icon-background.png',
       monochromeImage: './assets/android-icon-monochrome.png',
@@ -38,12 +40,12 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     // Background playback + lock screen / Control Center controls for the live stream.
-    // Local notifications for show reminders (no push server).
-    'expo-notifications',
+    // Local notifications for show reminders (no push server). Android needs a white-only small icon.
+    ['expo-notifications', { icon: './assets/notification-icon.png', color: '#861F2C' }],
     ['expo-audio', { microphonePermission: false, recordAudioAndroid: false }],
     [
       'expo-splash-screen',
-      { backgroundColor: '#F8E5BF', image: './assets/splash-icon.png', imageWidth: 76 },
+      { backgroundColor: '#861F2C', image: './assets/splash-icon.png', imageWidth: 200 },
     ],
     [
       'expo-build-properties',

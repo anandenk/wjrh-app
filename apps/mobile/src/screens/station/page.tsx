@@ -1,34 +1,36 @@
-import { Stack } from 'expo-router';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { findStaticPage, HUB_ORDER } from '@/content/station';
-import { colors } from '@/theme';
+import { Text } from '@/components/text';
+import { API_PAGES, findStaticPage } from '@/content/station';
+import { colors, fonts } from '@/theme';
 
 import { Blocks } from './blocks';
 import { EventsPage } from './events-page';
 import { TeamPage } from './team-page';
+import { PageHero, PageTitle, StationFrame } from './ui';
 
 /** One page of the Station tab: static copy, or the API-backed team / events pages. */
 export function StationPageScreen({ page }: { page: string }) {
-  const entry = HUB_ORDER.find((p) => p.slug === page);
   const staticPage = findStaticPage(page);
+  const def = staticPage ?? API_PAGES[page];
 
-  let body;
-  if (page === 'team') body = <TeamPage />;
-  else if (page === 'events') body = <EventsPage />;
-  else if (staticPage) body = <Blocks blocks={staticPage.blocks} />;
-  else body = <Text style={styles.note}>We couldn&apos;t find that page.</Text>;
+  if (!def) {
+    return (
+      <StationFrame back>
+        <Text style={styles.note}>We couldn&apos;t find that page.</Text>
+      </StationFrame>
+    );
+  }
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
-      <Stack.Screen options={{ title: entry?.title ?? '' }} />
-      {body}
-    </ScrollView>
+    <StationFrame back>
+      <PageTitle kicker={def.kicker} title={def.title} />
+      <PageHero hero={def.hero} />
+      {page === 'team' ? <TeamPage /> : page === 'events' ? <EventsPage /> : staticPage ? <Blocks blocks={staticPage.blocks} /> : null}
+    </StationFrame>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: 20, gap: 14, paddingBottom: 48 },
-  note: { fontSize: 15, color: colors.ink2 },
+  note: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink2 },
 });

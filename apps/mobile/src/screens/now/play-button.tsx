@@ -1,43 +1,47 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { PlayTriangle, Spinner, StopSquare } from '@/components/icons';
 import type { LiveState } from '@/audio/use-live-player';
 import { colors } from '@/theme';
 
 const LABEL: Record<LiveState, string> = {
-  idle: 'Play live',
-  connecting: 'Connecting…',
-  playing: 'Pause',
-  reconnecting: 'Reconnecting…',
+  idle: 'Play live stream',
+  connecting: 'Connecting to live stream',
+  playing: 'Pause live stream',
+  reconnecting: 'Reconnecting to live stream',
 };
 
+/** The big control on the Now hero: a play triangle, a stop square while playing, a ring while connecting. */
 export function PlayButton({ state, onPress }: { state: LiveState; onPress: () => void }) {
   const busy = state === 'connecting' || state === 'reconnecting';
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={state === 'playing' ? 'Pause live stream' : state === 'idle' ? 'Play live stream' : LABEL[state]}
+      accessibilityLabel={LABEL[state]}
       accessibilityState={{ busy }}
       onPress={onPress}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
-      <Text style={styles.glyph}>{state === 'playing' ? '❚❚' : state === 'idle' ? '▶' : '…'}</Text>
-      <Text style={styles.label}>{LABEL[state]}</Text>
+      <View style={styles.shadow}>
+        {busy ? (
+          <Spinner size={38} thickness={4} color={colors.onImage} track={colors.onImageFaint} />
+        ) : state === 'playing' ? (
+          <StopSquare size={38} color={colors.onImage} />
+        ) : (
+          <PlayTriangle size={54} color={colors.onImage} variant="now" />
+        )}
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    alignSelf: 'flex-start',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-    backgroundColor: colors.onImage,
+  button: { width: 72, height: 72, alignItems: 'center', justifyContent: 'center' },
+  pressed: { opacity: 0.88, transform: [{ scale: 0.96 }] },
+  // The design's drop-shadow(0 1px 10px) so the control stays readable on any artwork.
+  shadow: {
+    shadowColor: colors.imageShadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 5,
   },
-  pressed: { opacity: 0.8 },
-  glyph: { fontSize: 16, color: colors.live },
-  label: { fontSize: 17, fontWeight: '700', color: colors.live },
 });

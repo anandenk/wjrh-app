@@ -2,7 +2,7 @@
 
 The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router, TypeScript). Built so far: the
 **Now** tab (live player), the **Schedule** tab (with show pages and reminders) and the **Station** tab, plus the
-typed API layer. **Archive** is a hidden placeholder. Everything is verified on the **iOS 27 simulator** and the **Android 16 emulator** only;
+typed API layer, in the look of the HTML design ([`docs/mobile-app/design-polish.md`](../../docs/mobile-app/design-polish.md)). **Archive** is a hidden placeholder. Everything is verified on the **iOS 27 simulator** and the **Android 16 emulator** only;
 nothing has run on a physical phone.
 
 - Where things stand, next steps, gotchas, decisions waiting on people: [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md)
@@ -67,7 +67,8 @@ Unlike the iOS simulator, an Android emulator can be tapped from automation (`ad
 | `WJRH_BUNDLE_ID` | Overrides the placeholder bundle id / package `org.wjrh.app` (for signing with a personal Apple ID) |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Press Play 4 s after launch |
 | `EXPO_PUBLIC_DEV_OFFLINE=1` | **Dev only.** Makes the Now tab show its offline notice (the simulator can't be taken offline without cutting the Mac's network) |
-| `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigate to each route, 8 s apart, after launch (the simulator can't be tapped from automation, and a deep link from outside shows an iOS "Open in…?" dialog) |
+| `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigate to each route, 5 s apart, after launch (the simulator can't be tapped from automation, and a deep link from outside shows an iOS "Open in…?" dialog). `/a@600` also scrolls that screen 600 pt, and each settled screen logs `[dev-shot N]` for [`tools/design-compare`](../../tools/design-compare/README.md) |
+| `EXPO_PUBLIC_DEV_NOW=2026-10-14T19:10:00-04:00` | **Dev only.** The schedule's clock, so "ON AIR NOW" can be seen at any hour (the player and API ignore it) |
 
 The dev-only hooks are inert in release builds (`__DEV__` is false).
 
@@ -75,16 +76,18 @@ The dev-only hooks are inert in release builds (`__DEV__` is false).
 
 | Path | What |
 |---|---|
-| `src/app/` | Expo Router routes only. `_layout.tsx` (providers + tabs), `index` (Now), `schedule/`, `station/`, `archive.tsx` (placeholder, hidden) |
+| `src/app/` | Expo Router routes only. `_layout.tsx` (providers, fonts, tabs), `(now)/` (Now, and `show/[showId]` opened from it), `schedule/`, `station/`, `archive.tsx` (placeholder, hidden) |
 | `src/api/` | The API layer, below |
 | `src/audio/` | The live player: `use-live-player.ts`, `live-player-provider.tsx`, `audio-session.ts` |
 | `src/screens/` | Screen bodies the routes render: `now/`, `schedule/`, `show/`, `station/`. Each has its logic in a pure `*-state.ts` with a `*.test.ts` |
 | `src/reminders/` | Show reminders: `plan.ts` (pure), `notifications.ts` (expo-notifications), `use-reminder.ts`, `reminders-provider.tsx` |
-| `src/content/station.ts` | The Station tab's static copy and links |
-| `src/components/` | Reusable UI (only `placeholder-screen.tsx` so far; screen-specific pieces live beside their screen) |
+| `src/content/` | `station.ts`: the Station tab's static copy, page layout and links; `images.ts`: the bundled photos |
+| `src/components/` | Shared UI: `tab-bar.tsx` (the design's tab bar), `player-dock.tsx`, `dock-metrics.ts` (room the floating docks need), `icons.tsx`, `logo.tsx`, `text.tsx` (`Text`, `DisplayText`), `focused-status-bar.tsx`; screen-specific pieces live beside their screen |
+| `src/dev/` | Dev-only helpers (`dev-scroll.ts`); inert in release builds |
 | `src/hooks/`, `src/utils/` | `use-now.ts`, `use-online.ts` (is the phone connected); `format-time.ts` (station-time formatting) |
 | `src/config.ts` | `API_BASE`, built-in fallback stream URL, `FEATURES` flags (Archive off), dev hooks |
-| `src/theme.ts` | Colors from the design's default palette (placeholder-level styling) |
+| `src/theme.ts` | The design's tokens: colors, fonts, gradients, and the display-font nudge. One palette, light only |
+| `assets/` | Photos, the display font, icon, splash and notification icon; provenance in `assets/README.md` |
 | `scripts/` | `gen-types.mjs`, `check-contract.mjs`, `smoke-api.ts` and their own `tsconfig.json` (Node, not React Native) |
 | `app.config.ts`, `eas.json` | App config (dev-only HTTP allowance, iOS 27 scene fix, bundle id) and EAS profiles `development` / `preview` / `production` |
 
@@ -153,7 +156,7 @@ schedule without permission and the prompt can't be tapped from automation, so o
   confirm:** whether events should also wait for approval; today they always show.
 - **Events** are split into Upcoming and Event archive by station-time date, with a link to wjrh.org/events.
 - **Static copy** was verified against wjrh.org on 21 Sep 2026 (`frontend/assets/station-content-sources.md`).
-  Recheck before launch: board-meeting time, GroupMe invite, donation link. No photos yet (plan step 8).
+  Recheck before launch: board-meeting time, GroupMe invite, donation link.
 - Links (email, phone, map, donation, socials, FCC file) open outside the app; failures are ignored quietly.
 
 Verified on the simulator: the hub, Events (upcoming empty state + sorted archive), Contact, Team with the roster
@@ -189,5 +192,5 @@ and `show-archives.json` are empty). If the API's schemas change, the app's type
 ## Placeholders to replace
 
 - Bundle ID / package `org.wjrh.app` (open question in the plan; fixed forever after the first store release).
-- Icon and splash image are Expo's defaults (plan step 8 brings the WJRH logo and fonts).
-- Colors/typography are a stand-in for the design (plan step 8).
+- Icon, splash and the Android notification icon are my layout (the logo on the station maroon): replace them if the
+  station has a brand kit. Show and track artwork falls back to the station's collage until the station supplies art.

@@ -4,5 +4,5 @@ import { ShowScreen } from '@/screens/show';
 
 export default function ShowRoute() {
   const { showId } = useLocalSearchParams<{ showId: string }>();
-  return <ShowScreen showId={showId} />;
+  return <ShowScreen showId={showId} backLabel="SCHEDULE" />;
 }

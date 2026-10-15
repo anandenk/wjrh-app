@@ -22,9 +22,12 @@ export function splitEvents(events: Station['events'], today: string) {
   return { upcoming, past };
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
-/** "2025-10-16" -> "Oct 16, 2025". Returns the input unchanged if it isn't a YYYY-MM-DD date. */
+/** "2025-10-16" -> "October 16, 2025" (the design spells the month out). Returns the input unchanged if it isn't a YYYY-MM-DD date. */
 export function formatEventDate(ymd: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
   if (!m) return ymd;

@@ -1,7 +1,7 @@
 # Mobile app plan (Expo / React Native)
 
 - **Status:** Built up to step 6 and verified on the iOS simulator; see [`status.md`](status.md) for where things
-  stand. Phone and Android checks, the Archive tab (step 7) and design polish (step 8) remain.
+  stand. Design polish (step 8) is done on the iOS simulator. Phone and Android checks and the Archive tab (step 7) remain.
 - **Date:** 2026-09-28 (updated 2026-10-02)
 - **Builds on:** the `/v1` API in [`backend/`](../../backend/), [Decision 001](../backend-proposal/decisions/001-hosting-on-cloudflare.md)
   (Cloudflare) and [Decision 002](../backend-proposal/decisions/002-archive-and-licensing.md) (Mixcloud archives).
@@ -141,12 +141,14 @@ Status as of 2026-10-02 (details, PR numbers and what is verified: [`status.md`]
 7. **Archive tab:** behind a flag (`FEATURES.archive`, off) until the board decides; Mixcloud WebView first.
    **Not started.**
 8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and
-   station photos in `frontend/assets/`, an accessibility pass, store assets. Skip the `recent-cover-*`
-   images: they are placeholder album art, and the feed has no artwork. **Not started.**
+   station photos in `frontend/assets/`, the tab bar and player dock, icon and splash. Skipped on purpose: the
+   `recent-cover-*` images (placeholder album art, and the feed has no artwork). **Done on the iOS simulator**; what
+   differs from the design and why: [`design-polish.md`](design-polish.md). Store assets are still to do.
 
 ## Decisions made while building
 
-- **Navigation:** Expo Router with `NativeTabs` (real UITabBar / Material tabs). Schedule and Station are each a
+- **Navigation:** Expo Router's JS tabs (`expo-router/js-tabs`) with the design's own tab bar and player dock
+  (`src/components/tab-bar.tsx`; the system tabs could not draw the design). Now, Schedule and Station are each a
   stack inside their tab (list, then detail). Archive's tab is hidden by the flag.
 - **Live audio:** one app-wide player (`expo-audio`) so playback survives tab changes. It loads the stream only via
   `replace()` and reconnects at the live edge on every Play, because resuming from a buffer would be a rewind.

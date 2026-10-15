@@ -1,23 +1,34 @@
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useRef } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { isFromEarlierRun } from '@/api/cache-rules';
-import { isShowingStale, useHealth, useNowPlaying, useRecent } from '@/api/queries';
+import { isShowingStale, useHealth, useNowPlaying, useRecent, useShows } from '@/api/queries';
 import { useLivePlayerContext } from '@/audio/live-player-provider';
+import { useBottomChrome } from '@/components/dock-metrics';
+import { FocusedStatusBar } from '@/components/focused-status-bar';
+import { Text } from '@/components/text';
+import { IMAGES } from '@/content/images';
+import { useDevScroll } from '@/dev/dev-scroll';
 import { useIsOnline } from '@/hooks/use-online';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
 import { formatStationTime } from '@/utils/format-time';
 
-import { showHeading, statusNotice, trackLines, usableNowPlaying } from './now-state';
-import { PlayButton } from './play-button';
+import { NowHero } from './hero';
+import { showHeading, statePill, statusNotice, trackLines, usableNowPlaying } from './now-state';
 import { RecentList } from './recent-list';
 
 export function NowScreen() {
+  const router = useRouter();
   const player = useLivePlayerContext();
   const nowPlaying = useNowPlaying();
   const recent = useRecent(20);
   const health = useHealth();
+  const shows = useShows();
 
   const online = useIsOnline();
+  const scroller = useRef<ScrollView>(null);
+  useDevScroll(scroller);
 
   // An answer saved by an earlier run is not "playing now" while a fresh one is still loading.
   const np = usableNowPlaying({
@@ -41,99 +52,86 @@ export function NowScreen() {
     metadataStale: !!np?.stale,
   });
   const refreshing = nowPlaying.isRefetching && recent.isRefetching;
+  const chrome = useBottomChrome({ screen: 'now' });
+
+  // The picture is the show's own artwork when the station has supplied it, otherwise the station's collage.
+  const showId = np?.show?.id ?? null;
+  const artwork = showId ? shows.data?.shows.find((s) => s.id === showId)?.artwork : null;
+  const art = artwork ? { uri: artwork.url } : IMAGES.signal;
+  const artLabel = artwork?.alt ?? 'Abstract WJRH live broadcast collage artwork';
+
+  const dimTrack = !track.known || !!np?.stale || !online || isShowingStale(nowPlaying);
 
   return (
-    <ScrollView
-      style={styles.root}
-      contentInsetAdjustmentBehavior="automatic"
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            void nowPlaying.refetch();
-            void recent.refetch();
-            void health.refetch();
-          }}
+    <View style={styles.root}>
+      <FocusedStatusBar style="light" />
+      <ScrollView
+        ref={scroller}
+        contentContainerStyle={{ paddingBottom: chrome.contentPadding }}
+        contentInsetAdjustmentBehavior="never"
+        refreshControl={
+          <RefreshControl
+            tintColor={colors.onImage}
+            refreshing={refreshing}
+            onRefresh={() => {
+              void nowPlaying.refetch();
+              void recent.refetch();
+              void health.refetch();
+            }}
+          />
+        }>
+        {/* Pulling down shows the maroon of the picture's top edge, not a cream flash. */}
+        <View style={styles.overscroll} pointerEvents="none" />
+        <NowHero
+          art={art}
+          artLabel={artLabel}
+          title={heading.title}
+          subtitle={heading.subtitle}
+          showName={np?.show?.name ?? null}
+          onOpenShow={showId ? () => router.push(`/show/${showId}`) : null}
+          pill={statePill(heading, health.data?.services.stream.status === 'down')}
+          track={track}
+          dimTrack={dimTrack}
+          playerState={player.state}
+          onTogglePlay={player.toggle}
         />
-      }>
-      <View style={styles.hero}>
-        {heading.badge ? (
-          <View style={styles.badge}>
-            <View style={[styles.dot, heading.badge === 'AUTOMATED' && styles.dotIdle]} />
-            <Text style={styles.badgeText}>{heading.badge}</Text>
-          </View>
-        ) : null}
-        <Text style={styles.showTitle} accessibilityRole="header">
-          {heading.title}
-        </Text>
-        {heading.subtitle ? <Text style={styles.showSub}>{heading.subtitle}</Text> : null}
 
-        <View style={[styles.track, (!track.known || np?.stale || !online || isShowingStale(nowPlaying)) && styles.dim]}>
-          <Text style={styles.trackLabel}>NOW PLAYING</Text>
-          <Text style={styles.trackTitle} numberOfLines={2}>
-            {track.title}
+        <View style={styles.recent}>
+          {notice ? (
+            <View style={styles.notice} accessibilityRole="alert">
+              <Text style={styles.noticeText}>{notice}</Text>
+            </View>
+          ) : null}
+          <Text style={styles.heading} accessibilityRole="header">
+            Recently played
           </Text>
-          {track.artist ? <Text style={styles.trackSub}>{track.artist}</Text> : null}
-          {track.album ? <Text style={styles.trackSub}>{track.album}</Text> : null}
+          {recent.data ? (
+            <RecentList items={recent.data.items} />
+          ) : (
+            <Text style={styles.empty}>
+              {recent.isError ? 'Recently played is unavailable right now.' : 'Loading…'}
+            </Text>
+          )}
         </View>
-
-        <PlayButton state={player.state} onPress={player.toggle} />
-        {np?.nextShow ? (
-          <Text style={styles.next}>
-            Up next: {np.nextShow.name} at {formatStationTime(np.nextShow.startsAt)}
-          </Text>
-        ) : null}
-      </View>
-
-      {notice ? (
-        <View style={styles.notice} accessibilityRole="alert">
-          <Text style={styles.noticeText}>{notice}</Text>
-        </View>
-      ) : null}
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle} accessibilityRole="header">
-          Recently played
-        </Text>
-        {recent.data ? (
-          <RecentList items={recent.data.items} />
-        ) : (
-          <Text style={styles.empty}>
-            {recent.isError ? 'Recently played is unavailable right now.' : 'Loading…'}
-          </Text>
-        )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  hero: { backgroundColor: colors.page, padding: 24, paddingTop: 72, gap: 10 },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    alignSelf: 'flex-start',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,243,215,0.14)',
+  overscroll: { position: 'absolute', top: -1000, left: 0, right: 0, height: 1000, backgroundColor: colors.page },
+  recent: { paddingTop: 28, paddingHorizontal: 20, paddingBottom: 24 },
+  notice: {
+    marginBottom: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.rim,
+    backgroundColor: colors.surface,
   },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#FAC165' },
-  dotIdle: { backgroundColor: colors.off },
-  badgeText: { fontSize: 11, fontWeight: '800', letterSpacing: 1, color: colors.onImage },
-  showTitle: { fontSize: 36, fontWeight: '800', color: colors.onImage },
-  showSub: { fontSize: 15, color: 'rgba(255,243,215,0.8)' },
-  track: { marginVertical: 14, gap: 3 },
-  dim: { opacity: 0.6 },
-  trackLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: 'rgba(255,243,215,0.62)' },
-  trackTitle: { fontSize: 20, fontWeight: '700', color: colors.onImage },
-  trackSub: { fontSize: 15, color: 'rgba(255,243,215,0.8)' },
-  next: { fontSize: 13, color: 'rgba(255,243,215,0.8)', marginTop: 4 },
-  notice: { backgroundColor: colors.surface2, paddingVertical: 10, paddingHorizontal: 24 },
-  noticeText: { fontSize: 13, fontWeight: '600', color: colors.ink },
-  section: { padding: 24, gap: 12 },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: colors.ink },
-  empty: { fontSize: 14, color: colors.ink2 },
+  noticeText: { fontFamily: fonts.semibold, fontSize: 13, lineHeight: 19, color: colors.ink },
+  heading: { fontFamily: fonts.bold, fontSize: 16, lineHeight: 21, letterSpacing: -0.16, color: colors.ink },
+  empty: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20, marginTop: 8, color: colors.ink2 },
 });

@@ -1,0 +1,10 @@
+{
+  "name": "wjrh-design-compare",
+  "private": true,
+  "type": "module",
+  "description": "Dev tool: screenshot the HTML design and the app, and compare them. Not part of the app.",
+  "dependencies": {
+    "playwright-core": "^1.50.0",
+    "sharp": "^0.34.0"
+  }
+}

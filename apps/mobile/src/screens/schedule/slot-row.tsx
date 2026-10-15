@@ -1,48 +1,69 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { colors } from '@/theme';
+import { DisplayText, Text } from '@/components/text';
+import { WIDE_LAYOUT_MIN_WIDTH, colors, fonts } from '@/theme';
 
-import { formatRange, type Slot } from './schedule-state';
+import { formatRange24, type Slot } from './schedule-state';
 
+/** One show in the week's list: its hours, its name in the display face, its host and genre. */
 export function SlotRow({ slot, onAir, onPress }: { slot: Slot; onAir: boolean; onPress: () => void }) {
-  const range = formatRange(slot.startsAt, slot.endsAt);
+  const narrow = useWindowDimensions().width < WIDE_LAYOUT_MIN_WIDTH;
+  const range = formatRange24(slot.startsAt, slot.endsAt);
+  const meta = slot.dj ? (slot.genre ? `${slot.dj} · ${slot.genre}` : slot.dj) : 'Host to be announced';
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${slot.show}, ${range}, with ${slot.dj}${onAir ? ', on air now' : ''}`}
+      accessibilityLabel={`Open show page for ${slot.show}, ${range}${slot.dj ? `, with ${slot.dj}` : ''}${onAir ? ', on air now' : ''}`}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, onAir && styles.rowOnAir, pressed && styles.pressed]}>
-      <View style={styles.text}>
-        {onAir ? <Text style={styles.onAir}>ON AIR NOW</Text> : null}
-        <Text style={styles.time}>{range}</Text>
-        <Text style={styles.show} numberOfLines={2}>
-          {slot.show}
-        </Text>
-        <Text style={styles.dj} numberOfLines={1}>
-          {slot.dj ? `with ${slot.dj}` : 'Host to be announced'}
-        </Text>
+      style={({ pressed }) => [
+        styles.row,
+        narrow && styles.rowNarrow,
+        onAir && styles.onAirRow,
+        pressed && styles.pressed,
+      ]}>
+      <Text style={[styles.time, narrow && styles.timeNarrow]}>{range}</Text>
+      <View style={styles.copy}>
+        <DisplayText style={[styles.title, narrow && styles.titleNarrow]}>{slot.show}</DisplayText>
+        <Text style={styles.meta}>{meta}</Text>
+        {onAir ? (
+          <View style={styles.live}>
+            <View style={styles.liveDot} />
+            <Text style={styles.liveText}>ON AIR NOW</Text>
+          </View>
+        ) : null}
       </View>
-      <Text style={styles.chevron}>›</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.rim,
+  row: { minHeight: 64, paddingVertical: 12, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'flex-start' },
+  rowNarrow: { paddingHorizontal: 16 },
+  onAirRow: { backgroundColor: colors.imageOverlayMid },
+  pressed: { backgroundColor: colors.scheduleHover },
+  // The time column is 84px wide with a 16px gap (12px on narrow phones).
+  time: {
+    width: 100,
+    paddingTop: 2,
+    fontFamily: fonts.medium,
+    fontSize: 12,
+    lineHeight: 14,
+    fontVariant: ['tabular-nums', 'lining-nums'],
+    color: colors.onImageMuted,
   },
-  rowOnAir: { borderColor: colors.live, borderWidth: 2 },
-  pressed: { opacity: 0.8 },
-  text: { flex: 1, gap: 2 },
-  onAir: { fontSize: 11, fontWeight: '800', letterSpacing: 1, color: colors.live },
-  time: { fontSize: 13, fontWeight: '700', color: colors.ink2, fontVariant: ['tabular-nums'] },
-  show: { fontSize: 18, fontWeight: '700', color: colors.ink },
-  dj: { fontSize: 14, color: colors.ink3 },
-  chevron: { fontSize: 24, color: colors.ink3, marginLeft: 8 },
+  timeNarrow: { width: 96 },
+  copy: { flex: 1, minWidth: 0 },
+  title: {
+    fontFamily: fonts.display,
+    fontSize: 22,
+    lineHeight: 22.4,
+    letterSpacing: 0.22,
+    textTransform: 'uppercase',
+    color: colors.accentInk,
+  },
+  titleNarrow: { fontSize: 20, lineHeight: 20.4, letterSpacing: 0.2 },
+  meta: { marginTop: 4, fontFamily: fonts.body, fontSize: 12, lineHeight: 15, color: colors.onImageMuted },
+  live: { marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.logoGold },
+  liveText: { fontFamily: fonts.bold, fontSize: 11, lineHeight: 11, letterSpacing: 0.88, color: colors.logoGold },
 });

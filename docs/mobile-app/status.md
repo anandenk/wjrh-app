@@ -2,7 +2,7 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last updated **2026-10-08** (after PR #19, plus the hardening PR: ESLint, saved answers, offline notice).
+Last updated **2026-10-14** (after PR #19, plus the hardening PR #20, the Android run PR #21 and the design-polish PR C).
 
 - Plan, stack and rules: [`plan.md`](plan.md). Project rules and commands: [`../../CLAUDE.md`](../../CLAUDE.md).
 - App code and its own guide: [`../../apps/mobile/README.md`](../../apps/mobile/README.md).
@@ -23,7 +23,7 @@ local API. **Nothing has been run on a physical phone**, and nothing is deployed
 | 5 | **Schedule** tab, show pages, local show reminders | Done on simulator; reminder permission and delivery need a phone | #14, #15 |
 | 6 | **Station** tab (static pages + team + events) | Done on simulator; links need a phone | #16 |
 | 7 | **Archive** tab | **Not started.** Hidden behind `FEATURES.archive = false` until the station decides (Decision 002); Mixcloud WebView first | |
-| 8 | Design polish: fonts, logo, photos, light/dark, accessibility pass, icon/splash, store assets | **Not started.** Current styling is placeholder-level on the design's palette | |
+| 8 | Design polish: the app matches `frontend/index.html` (fonts, logo, photos, tab bar, player dock, icon/splash) | **Done on the iOS simulator** and checked on four screens on the Android emulator, light only; real phones and store assets still to do ([`design-polish.md`](design-polish.md)) | PR C |
 
 The throwaway audio-spike app was removed once the real app covered it; it is kept at the git tag `archive/audio-spike`
 (`git checkout archive/audio-spike -- apps/audio-spike` restores it).
@@ -45,7 +45,14 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
 - Live player after the lint-driven refactor of `use-live-player.ts` (refs updated in an effect, stall clock
   started at Play): normal play, and a dead stream URL switching to the built-in one then playing
   (`fallback=true`), both by the `[live]` log.
-- ESLint is clean (`npm run lint`). Unit tests (40), typecheck, `check:contract`, `smoke:api` against `dev.sh`.
+- **Design polish (PR C), iPhone 17 simulator:** every screen (Now, Schedule, a show page, the Station hub and all seven
+  pages, top and bottom of each) was screenshotted next to the same screen of the design and compared by eye and by
+  pixel position: layout, sizes and text agree to about a point, apart from the deliberate differences listed in
+  [`design-polish.md`](design-polish.md). The narrow layouts (under 400 pt wide, which is most iPhones) were checked on
+  the same simulator by temporarily raising the breakpoint above 402 and forcing the design's narrow rules at 402: Schedule
+  and the Station hub agree; a real 390/393 pt phone was not used (the iPhone 17e simulator could not be driven, see
+  Gotchas). Done with fixture data; the live API was not behind these shots.
+- ESLint is clean (`npm run lint`). Unit tests (49), typecheck, `check:contract`, `smoke:api` against `dev.sh`.
 - **`expo-doctor` is 20/21, not 21/21**, and not because of this work: Expo has since published patch releases
   (`expo` 57.0.27, `expo-asset`, `expo-constants`, `expo-linking`, `expo-notifications`, `expo-router`) that the
   lockfile on `main` predates. Fix in its own PR with `npx expo install --check`, then rebuild the dev client and
@@ -77,13 +84,13 @@ Taps work here (`adb shell input tap`), unlike on the iOS simulator:
   apps, so the station must decide whether a show reminder qualifies); (b) `SCHEDULE_EXACT_ALARM` (the listener must
   allow "Alarms & reminders" in Settings, so it needs a small prompt flow); (c) keep inexact and reword so a late one
   is not wrong ("Giuseppe starts at 5:00 PM" rather than "is starting"). Recommendation: (c) now, decide (a) vs (b) with the station.
-- The reminder's small icon is a plain white circle (no monochrome notification icon configured): plan step 8.
+- The reminder's small icon was a plain white circle. Design polish adds a white broadcast symbol
+  (`assets/notification-icon.png`, tinted maroon); not yet seen on a device.
 - **An intermittent native crash, seen once and not reproduced.** SIGSEGV on the JS thread (`mqt_v_js`) inside
   `libreactnative.so`'s Fabric mounting/shadow-tree code, a few seconds after a fresh-data launch while tapping
   between tabs (fault address decodes to text, so it looks like a use-after-free). Three repeats of the same steps
   did not crash. React Native 0.86.3, Android 16 emulator. Watch for it on a real device; if it recurs, keep the
   tombstone (`adb logcat -b crash`) and report it upstream.
-- Screens use a plain white native header instead of the design (plan step 8).
 - The player log showed a brief "connecting" (buffering) blip about once a minute in the background against the
   local fake stream through the `adb` tunnel; it never reconnected or fell back. Not seen on iOS; recheck against the real stream.
 
@@ -95,7 +102,17 @@ unit-tested and the code path is unchanged apart from where its clock starts, bu
 how the lock screen looks and its controls; pausing/resuming from it (the resume path reconnects at the live
 edge but has only been exercised in code); call/Siri interruptions; headphones and Bluetooth; Wi-Fi to cellular;
 the silent switch; a 30+ minute background run; the notification permission prompt, a reminder arriving at a
-show's start, and tapping it; Mail/Phone/Safari opening from Station links.
+show's start, and tapping it; Mail/Phone/Safari opening from Station links. **Design polish on a phone:** how the blurred
+player dock, fonts, status bar, app icon and splash look, the home-indicator spacing, Reduce Motion, and the largest
+text size (section J of the checklist).
+**Design polish on the Android emulator** (Pixel 6 AVD, Mac muted, `-no-audio`): the dev build compiles from this branch
+(about 9 min) and runs; Now, Schedule (opens at today's bar, also when you press the tab), a show page and the Station hub
+were compared with the design at 411 dp and agree; the status-bar icons turn dark on the cream Station screens; the
+player reached "playing" against the fake stream. **Not seen on Android:** the other Station pages, the notification
+small icon, the adaptive and themed icons, the splash, and the dock's look beyond "near-solid cream, no blur".
+The emulator showed its own "System UI isn't responding" box once, right after the build while the Mac was busy
+(see the RAM note under "Android emulator"); and `expo run:android` failed to *install* once because the emulator's
+system services were not up yet (the build was fine; `adb install -r <apk>` afterwards worked).
 **Not verified on Android** (needs a physical device or more time): a real phone; a 30+ minute background run;
 call and other-app audio-focus interruptions; headphones and Bluetooth; battery optimisation and Doze with an idle phone
 (reminders could be later still); a cold start from a tapped reminder (a warm start works); the real station stream for
@@ -126,8 +143,9 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 2. Settle the decisions above that block work (roster gating and bundle ID are the cheap ones).
 3. **Step 7, Archive tab** behind the flag (Mixcloud widget in a WebView; audio must stay inside Mixcloud's player;
    live and archive audio are mutually exclusive: starting one stops the other).
-4. **Step 8, design polish** (WJRH Display = Barlow Condensed ExtraBold, logo and station photos from
-   `frontend/assets/`, skip `recent-cover-*` which are placeholders, accessibility pass, icon/splash, store assets).
+4. Design follow-ups (step 8 itself is done): the Archive screens in the design's style when step 7 is built; real
+   artwork from the station (shows and tracks) in place of the collage; a brand kit if the station has one (the icon
+   and splash are my layout); store screenshots and listing text.
 5. Hardening ideas still open: `eas init` and a first EAS build; an Android run on a real phone. (Done: ESLint, the
    saved last good answers across restarts, the offline notice, and an emulator run; see "What is verified".)
 
@@ -198,7 +216,8 @@ To test a reminder without waiting for the show: `adb shell settings put global 
 | `EXPO_PUBLIC_API_BASE` | API address. Default in dev: `http://127.0.0.1:8787`. Android emulator `http://10.0.2.2:8787`; phone `http://<LAN IP>:8787` |
 | `EXPO_PUBLIC_USE_FIXTURES=1` | Serve `src/api/fixtures` instead of calling the API |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Presses Play 4 s after launch |
-| `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigates to each route 8 s apart after launch |
+| `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigates to each route 5 s apart after launch; `/a@600` also scrolls that screen 600 pt; each settled screen logs `[dev-shot N]` (used by `tools/design-compare`) |
+| `EXPO_PUBLIC_DEV_NOW=2026-10-14T19:10:00-04:00` | **Dev only.** The schedule's clock, to see "ON AIR NOW" at any hour |
 | `EXPO_PUBLIC_DEV_OFFLINE=1` | **Dev only.** Makes the Now tab think the phone is offline, to see the offline notice (the simulator can't be taken offline without cutting the Mac's own network) |
 
 The dev-only hooks exist because the simulator cannot be tapped from automation (see below). They are ignored in
@@ -261,6 +280,18 @@ unmutes it themselves. The real app plays at full volume.
 - **Android reports a closed live stream as "ended", not as an error** (`playbackState: 'ended'`, `didJustFinish`), so
   it needs its own handling (`isDropped`). iOS never showed this.
 - **`json.tool` in Python 3.14 colorizes output** into files; write JSON with `json.dumps`.
+
+- **The tab bar and player dock float over the screens** (`src/components/tab-bar.tsx`), so every scrolling screen must
+  leave room at the bottom (`useBottomChrome` in `dock-metrics.ts`; the amounts are the design's). A new screen that
+  forgets it ends up with its last item under the dock.
+- **Design polish added native modules** (`react-native-svg`, `expo-image`, `expo-linear-gradient`, `expo-blur`): rebuild
+  the dev client after pulling it (`APP_VARIANT=development npx expo run:ios`), or the app crashes on launch.
+- **React Native draws the display font about 0.095 em higher than a browser.** Use `DisplayText` (not `Text`) for
+  anything in "WJRH Display", or it will sit a few points high against the design (`DISPLAY_NUDGE`, `theme.ts`).
+- **The first `exp+wjrh://` link on a simulator you have not used before shows iOS's "Open in…?" box**, which cannot
+  be tapped from automation. The iPhone 17 simulator had been approved by hand earlier; a fresh one (the 17e) was not,
+  so scripted runs only work on a simulator where someone clicked Open once in the DeviceHub window.
+- **Hot reload restarts the dev route sequence** (`EXPO_PUBLIC_DEV_ROUTE`); do not edit app source during a capture run.
 
 ## Working agreements
 

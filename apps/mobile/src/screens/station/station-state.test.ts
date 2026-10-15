@@ -25,8 +25,8 @@ test('splitEvents: upcoming ascending, past descending, today counts as upcoming
 });
 
 test('formatEventDate', () => {
-  assert.equal(formatEventDate('2025-10-16'), 'Oct 16, 2025');
-  assert.equal(formatEventDate('2026-01-05'), 'Jan 5, 2026');
+  assert.equal(formatEventDate('2025-10-16'), 'October 16, 2025');
+  assert.equal(formatEventDate('2026-01-05'), 'January 5, 2026');
   assert.equal(formatEventDate('soon'), 'soon');
   assert.equal(formatEventDate('2026-13-01'), '2026-13-01');
 });

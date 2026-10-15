@@ -1,55 +1,70 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Text } from '@/components/text';
 import type { Block } from '@/content/station';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
 
 import { openLink } from './open-link';
+import { BodyText, CtaButton, FactGrid, InfoList, RowLink, SectionLabel, SmallNote, stationText } from './ui';
 
+/** Draws a static page's blocks in the design's styles. */
 export function Blocks({ blocks }: { blocks: Block[] }) {
+  const router = useRouter();
   return (
     <>
       {blocks.map((b, i) => {
         switch (b.kind) {
-          case 'heading':
-            return (
-              <Text key={i} style={styles.heading} accessibilityRole="header">
-                {b.text}
-              </Text>
-            );
           case 'text':
             return (
-              <Text key={i} style={styles.text}>
+              <BodyText key={i} flush={b.flush}>
                 {b.text}
-              </Text>
+              </BodyText>
             );
+          case 'label':
+            return <SectionLabel key={i}>{b.text}</SectionLabel>;
           case 'facts':
+            return <FactGrid key={i} items={b.items} />;
+          case 'timeline':
+            return <InfoList key={i} items={b.items.map((t) => ({ title: t.when, meta: t.what }))} />;
+          case 'note':
             return (
-              <View key={i} style={styles.facts}>
-                {b.items.map((f) => (
-                  <View key={f.big} style={styles.fact}>
-                    <Text style={styles.factBig}>{f.big}</Text>
-                    <Text style={styles.factSmall}>{f.small}</Text>
-                  </View>
+              <View key={i} style={styles.note}>
+                <Text style={styles.noteTitle}>{b.title}</Text>
+                <Text style={styles.noteText}>{b.text}</Text>
+              </View>
+            );
+          case 'buttons':
+            return (
+              <View key={i} style={styles.buttons}>
+                {b.items.map((cta) => (
+                  <CtaButton key={cta.label} cta={cta} />
                 ))}
               </View>
             );
-          case 'timeline':
+          case 'button':
             return (
-              <View key={i} style={styles.timeline}>
-                {b.items.map((t) => (
-                  <View key={t.when} style={styles.tRow}>
-                    <Text style={styles.tWhen}>{t.when}</Text>
-                    <Text style={styles.tWhat}>{t.what}</Text>
-                  </View>
+              <View key={i}>
+                <CtaButton cta={b.cta} top={b.gapAbove} />
+                {b.after ? <SmallNote top={10}>{b.after}</SmallNote> : null}
+              </View>
+            );
+          case 'rows':
+            return (
+              <View key={i}>
+                {b.items.map((r) => (
+                  <RowLink key={r.page} label={r.label} onPress={() => router.push(`/station/${r.page}`)} />
                 ))}
               </View>
             );
           case 'card': {
+            const first = blocks[i - 1]?.kind !== 'card';
             const body = (
               <>
                 <Text style={styles.cardLabel}>{b.label}</Text>
-                <Text style={[styles.cardValue, b.url && styles.cardLink]}>{b.value}</Text>
-                {b.note ? <Text style={styles.note}>{b.note}</Text> : null}
+                <Text style={styles.cardValue}>{b.value}</Text>
+                {b.note ? <Text style={stationText.meta}>{b.note}</Text> : null}
+                {b.cta ? <CtaButton cta={b.cta} top={12} /> : null}
               </>
             );
             return b.url ? (
@@ -58,27 +73,15 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
                 accessibilityRole="link"
                 accessibilityLabel={`${b.label}: ${b.value}`}
                 onPress={() => openLink(b.url!)}
-                style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
+                style={({ pressed }) => [styles.card, first && styles.cardFirst, pressed && { opacity: 0.78 }]}>
                 {body}
               </Pressable>
             ) : (
-              <View key={i} style={styles.card}>
+              <View key={i} style={[styles.card, first && styles.cardFirst]}>
                 {body}
               </View>
             );
           }
-          case 'link':
-            return (
-              <View key={i} style={styles.linkWrap}>
-                <Pressable
-                  accessibilityRole="link"
-                  onPress={() => openLink(b.url)}
-                  style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
-                  <Text style={styles.buttonText}>{b.label}</Text>
-                </Pressable>
-                {b.note ? <Text style={styles.note}>{b.note}</Text> : null}
-              </View>
-            );
         }
       })}
     </>
@@ -86,44 +89,20 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
 }
 
 const styles = StyleSheet.create({
-  heading: { fontSize: 24, fontWeight: '800', color: colors.ink, marginTop: 8 },
-  text: { fontSize: 16, lineHeight: 24, color: colors.ink },
-  facts: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  fact: {
-    flexGrow: 1,
-    flexBasis: '45%',
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: colors.surface,
+  note: {
+    marginTop: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 15,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.rim,
-  },
-  factBig: { fontSize: 22, fontWeight: '800', color: colors.live },
-  factSmall: { fontSize: 11, fontWeight: '700', letterSpacing: 1, color: colors.ink2, marginTop: 2 },
-  timeline: { gap: 12 },
-  tRow: { gap: 2 },
-  tWhen: { fontSize: 13, fontWeight: '800', letterSpacing: 0.5, color: colors.live },
-  tWhat: { fontSize: 16, lineHeight: 22, color: colors.ink },
-  card: {
-    padding: 16,
-    borderRadius: 12,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.rim,
-    gap: 3,
   },
-  cardLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 1, color: colors.live },
-  cardValue: { fontSize: 17, fontWeight: '600', color: colors.ink },
-  cardLink: { textDecorationLine: 'underline' },
-  note: { fontSize: 13, lineHeight: 19, color: colors.ink2 },
-  linkWrap: { gap: 6 },
-  button: {
-    alignSelf: 'flex-start',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 999,
-    backgroundColor: colors.live,
-  },
-  buttonText: { fontSize: 16, fontWeight: '700', color: colors.onImage },
-  pressed: { opacity: 0.8 },
+  noteTitle: { fontFamily: fonts.bold, fontSize: 12, lineHeight: 15, color: colors.ink },
+  noteText: { marginTop: 3, fontFamily: fonts.body, fontSize: 12, lineHeight: 17.4, color: colors.ink2 },
+  buttons: { marginTop: 18, flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
+  card: { paddingVertical: 15, paddingHorizontal: 2, borderTopWidth: 1, borderTopColor: colors.rim },
+  cardFirst: { marginTop: 18 },
+  cardLabel: { fontFamily: fonts.bold, fontSize: 12, lineHeight: 15, letterSpacing: 0.48, color: colors.ink3 },
+  cardValue: { marginTop: 7, fontFamily: fonts.body, fontSize: 15, lineHeight: 21.75, color: colors.ink },
 });

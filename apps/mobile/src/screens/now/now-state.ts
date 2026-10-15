@@ -18,6 +18,19 @@ export function showHeading(np: NowPlaying | undefined): ShowHeading {
   return { badge: null, title: show?.name ?? STATION_NAME, subtitle: hosts };
 }
 
+export type StatePill = { label: 'LIVE' | 'AUTOMATED' | 'OFFLINE'; tone: 'live' | 'idle' | 'off' };
+
+/**
+ * The pill in the corner of the Now hero. "OFFLINE" only when the API says the stream is down (the design's
+ * stream-down state); otherwise live or automated, and nothing at all while we don't know yet.
+ */
+export function statePill(heading: ShowHeading, streamDown: boolean): StatePill | null {
+  if (streamDown) return { label: 'OFFLINE', tone: 'off' };
+  if (heading.badge === 'LIVE') return { label: 'LIVE', tone: 'live' };
+  if (heading.badge === 'AUTOMATED') return { label: 'AUTOMATED', tone: 'idle' };
+  return null;
+}
+
 export type TrackLines = { title: string; artist: string; album: string | null; known: boolean };
 
 /** The track block: title, artist and album while a track plays. Album is omitted until known. */
@@ -45,6 +58,25 @@ export function usableNowPlaying(opts: {
 }): NowPlaying | undefined {
   if (opts.data && opts.fromEarlierRun && opts.fetching && !opts.offline) return undefined;
   return opts.data;
+}
+
+export type DockLines = { title: string; sub: string };
+
+/**
+ * The two lines of the player dock (and so the same words the lock screen could show): the track and
+ * "artist · show". With no track yet it names the show instead.
+ */
+export function dockLines(np: NowPlaying | undefined): DockLines {
+  const showName = np?.show?.name ?? null;
+  const track = np?.track;
+  if (track) {
+    return {
+      title: track.title ?? 'Track title unavailable',
+      sub: [track.artist ?? 'Artist metadata unavailable', showName].filter(Boolean).join(' · '),
+    };
+  }
+  const hosts = np?.show?.hostNames.length ? `with ${np.show.hostNames.join(', ')}` : null;
+  return { title: showName ?? STATION_NAME, sub: hosts ?? 'Lafayette College radio' };
 }
 
 /** A line to show above the content when something is off, or null when all is well. */
