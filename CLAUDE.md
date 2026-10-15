@@ -57,8 +57,8 @@ until approved (#24).
 
 **Next:** run the checks in `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
 plan step 7 (the real Archive tab, behind a flag until the station decides; only the demo exists). Design polish (step 8)
-is done on the simulator: see `docs/mobile-app/design-polish.md`. `npx expo-doctor` is 20/21 on `main` until #27
-(the Expo patch releases) is merged. Use
+is done on the simulator: see `docs/mobile-app/design-polish.md`. `npx expo-doctor` is 21/21 since #27 (Expo patch
+releases); the simulator checks have not been re-run on those versions yet (`status.md`). Use
 `react-native-track-player` only if the iPhone audio checks fail with `expo-audio`. Open decisions for the station
 (roster gating, archives, bundle ID, store accounts) are listed in `status.md`.
 

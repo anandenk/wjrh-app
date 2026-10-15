@@ -57,10 +57,14 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
   and the Station hub agree; a real 390/393 pt phone was not used (the iPhone 17e simulator could not be driven, see
   Gotchas). Done with fixture data; the live API was not behind these shots.
 - ESLint is clean (`npm run lint`). Unit tests, typecheck, `check:contract`, `smoke:api` against `dev.sh`.
-- **`expo-doctor` is 20/21, not 21/21** (rechecked 2026-10-15): Expo has since published patch releases of 8 packages
-  (`expo` 57.0.30, `expo-asset`, `expo-constants`, `expo-dev-client`, `expo-linking`, `expo-notifications`,
-  `expo-router`, `expo-splash-screen`) that the lockfile on `main` predates. #27 installs them (21/21);
-  after it is merged, run `npm ci`, rebuild the dev client and re-run the simulator checks. The packages added here (`async-storage`, `netinfo`) match SDK 57.
+- **`expo-doctor` is 21/21** since #27 (2026-10-15), which installed Expo's patch releases of 8 packages (`expo`
+  57.0.30, `expo-asset`, `expo-constants`, `expo-dev-client`, `expo-linking`, `expo-notifications`, `expo-router`,
+  `expo-splash-screen`). On those versions: typecheck, unit tests, `check:contract`, lint and `smoke:fixtures` pass; the
+  iOS dev client **compiles** for the simulator (not installed or opened); and a Release build is installed on the owner's
+  iPhone, which they opened and found unchanged (informal, not the checklist). **Not re-run on these versions:** the
+  simulator checks above (player, fallback, stall recovery, screens). Before relying on them: `npm ci`, rebuild the dev
+  client (`APP_VARIANT=development npx expo run:ios`), and repeat those checks. The packages added in #20
+  (`async-storage`, `netinfo`) match SDK 57.
 
 **Android 16 emulator** (Pixel 6 AVD `wjrh-api36`, arm64, 4 GB RAM; Mac muted and the emulator started `-no-audio`).
 Taps work here (`adb shell input tap`), unlike on the iOS simulator:
@@ -153,7 +157,9 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 4. Design follow-ups (step 8 itself is done): the Archive screens in the design's style when step 7 is built; real
    artwork from the station (shows and tracks) in place of the collage; a brand kit if the station has one (the icon
    and splash are my layout); store screenshots and listing text.
-5. Hardening ideas still open: `eas init` and a first EAS build; an Android run on a real phone. (Done: ESLint, the
+5. Re-run the simulator checks on the Expo versions from #27 (see "What is verified"); only typecheck, tests and a
+   compile were done.
+6. Hardening ideas still open: `eas init` and a first EAS build; an Android run on a real phone. (Done: ESLint, the
    saved last good answers across restarts, the offline notice, and an emulator run; see "What is verified".)
 
 ## Run everything (macOS, Xcode 27)
