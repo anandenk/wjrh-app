@@ -45,8 +45,8 @@ Running the app on the simulator and the dev-only env vars: see `docs/mobile-app
 Plan steps 0 to 6 are done and merged (PRs #9–#16): the API runs against the real station; the app has the Now tab
 (live player with `expo-audio`, own fallback to the built-in stream URL, reconnects at the live edge on every play,
 lock-screen info), the Schedule tab (week list, show pages, local show reminders) and the Station tab (static pages,
-team gated on the API's `approved` flag, events). All of it is verified **on the iOS 27 simulator only**. Nothing has
-been run on a physical phone or on Android, and nothing is deployed.
+team gated on the API's `approved` flag, events). All of it is verified **on the iOS 27 simulator and the Android 16
+emulator only** (`status.md`). Nothing has been run on a physical phone, and nothing is deployed.
 
 **Next:** run the checks in `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
 plan step 7 (Archive tab, behind a flag until the station decides) and step 8 (design polish). Use

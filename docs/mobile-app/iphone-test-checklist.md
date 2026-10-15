@@ -126,10 +126,19 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 - [ ] H1. Dark mode and the largest text size: nothing unreadable or cut off (the design is not finished; just record).
 - [ ] H2. VoiceOver: buttons are announced with sensible names (Play live stream, day names, show rows).
 
-### I. Android (if a device or emulator is available; not run at all so far)
-- [ ] I1. Run B1 to B6 and D4, E1. Check the media notification appears and its controls work, and that audio survives
-      more than 3 minutes in the background (the documented `expo-audio` limit without lock-screen controls).
-      Emulator API address is `http://10.0.2.2:<port>`; a phone uses the LAN IP.
+### I. Android (an emulator run is done; this is what is left for a real Android phone)
+The Android 16 emulator run covered: tabs, live play, background play for 3.5+ minutes with a media notification,
+pause/resume from it, a dropped stream recovering, notification permission, a reminder arriving and opening its show,
+and real offline/online ([`status.md`](status.md), "What is verified"). Still needs a real phone:
+- [ ] I1. Run B1 to B6, D1 to D5 and E1 to E4. The media notification should show title and artist with no scrub bar
+      or skip buttons, and audio should survive 30+ minutes in the background with the screen off.
+- [ ] I2. Reminders on a phone that has been idle (screen off, on battery): note how late "<show> is starting" arrives.
+      On the emulator it was about 4 min 15 s late (inexact alarm); Doze may make it worse: ____ min late.
+- [ ] I3. Force-stop the app, then tap a delivered reminder: it should open that show's page (a warm start works).
+- [ ] I4. Battery optimisation set to "Optimized" or "Restricted" (Settings > Apps > WJRH): does playback and the
+      media notification still hold in the background?
+- [ ] I5. Watch for a crash right after launch or a tab switch (the emulator showed one intermittent native crash,
+      not reproduced). If it happens, capture `adb logcat -b crash`. Emulator API address is `http://10.0.2.2:<port>`; a phone uses the LAN IP.
 
 ## Results log
 

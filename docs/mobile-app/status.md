@@ -10,8 +10,8 @@ Last updated **2026-10-08** (after PR #19, plus the hardening PR: ESLint, saved 
 
 ## Where it stands
 
-All four planned screens exist and run on the **iOS 27 simulator** against the local API. **Nothing has been run
-on a physical phone or on Android yet**, and nothing is deployed (the API is local only, no store builds).
+All four planned screens exist and run on the **iOS 27 simulator** and the **Android 16 emulator** against the
+local API. **Nothing has been run on a physical phone**, and nothing is deployed (the API is local only, no store builds).
 
 | Plan step | What | State | PR |
 |---|---|---|---|
@@ -51,6 +51,42 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
   lockfile on `main` predates. Fix in its own PR with `npx expo install --check`, then rebuild the dev client and
   re-run the simulator checks. The packages added here (`async-storage`, `netinfo`) match SDK 57.
 
+**Android 16 emulator** (Pixel 6 AVD `wjrh-api36`, arm64, 4 GB RAM; Mac muted and the emulator started `-no-audio`).
+Taps work here (`adb shell input tap`), unlike on the iOS simulator:
+- The dev build compiles (about 10 min the first time) and runs. Now, Schedule, a show page and Station render; Archive is hidden.
+- The live player plays the API's stream URL and keeps playing **3.5+ minutes in the background**: a foreground
+  media service, an `AudioTrack` still `started`, and a media notification with title and artist, a Pause button and
+  **no scrub bar or skip buttons**. Pausing and resuming from that notification follow into the app, and resuming
+  reconnects (idle → connecting → playing). This is the resume path that was only exercised in code on iOS.
+- **A bug found and fixed here:** when the stream server closed the connection, Android reported playback as
+  *ended* (no error, not buffering), the hook read that as the listener pausing from outside, and went idle: the
+  listener had to press Play again. Now an ended live stream is a dropped connection (`isDropped` in
+  `src/audio/stall-watchdog.ts`): ended → "Reconnecting…" → built-in URL → playing, with no tap.
+- Notifications: on a fresh install (no audio played yet) the system permission prompt appears; Allow → "Reminder on"
+  and the alarms are scheduled. A reminder is delivered ("Giuseppe is starting", "with Cameron, Mats · WJRH 104.9 FM")
+  and tapping it with the app in the background opens that show's page (it takes a few seconds).
+- Real offline (airplane mode): "You're offline. Showing last known info from …" with the track dimmed. Turning it
+  off clears the notice and refreshes Now without a pull; the player kept retrying until the stream was reachable.
+- Plain-HTTP is allowed only in the development variant (checked in the resolved config for both, and in the dev APK's manifest).
+
+**Found on Android and NOT fixed** (decisions or risks, details in the PR):
+- **Reminders are inexact and arrive late.** Android has no exact-alarm permission in the app, so each reminder is an
+  alarm with a one-hour window (`dumpsys alarm` shows `window=+1h`). Measured twice on an awake emulator: delivered
+  about **4 min 15 s after** the show's start. On a real idle phone it can be up to an hour. iOS is on time. Options:
+  (a) `USE_EXACT_ALARM` (granted automatically, but Google Play only allows it for alarm, timer and calendar-style
+  apps, so the station must decide whether a show reminder qualifies); (b) `SCHEDULE_EXACT_ALARM` (the listener must
+  allow "Alarms & reminders" in Settings, so it needs a small prompt flow); (c) keep inexact and reword so a late one
+  is not wrong ("Giuseppe starts at 5:00 PM" rather than "is starting"). Recommendation: (c) now, decide (a) vs (b) with the station.
+- The reminder's small icon is a plain white circle (no monochrome notification icon configured): plan step 8.
+- **An intermittent native crash, seen once and not reproduced.** SIGSEGV on the JS thread (`mqt_v_js`) inside
+  `libreactnative.so`'s Fabric mounting/shadow-tree code, a few seconds after a fresh-data launch while tapping
+  between tabs (fault address decodes to text, so it looks like a use-after-free). Three repeats of the same steps
+  did not crash. React Native 0.86.3, Android 16 emulator. Watch for it on a real device; if it recurs, keep the
+  tombstone (`adb logcat -b crash`) and report it upstream.
+- Screens use a plain white native header instead of the design (plan step 8).
+- The player log showed a brief "connecting" (buffering) blip about once a minute in the background against the
+  local fake stream through the `adb` tunnel; it never reconnected or fell back. Not seen on iOS; recheck against the real stream.
+
 **Not re-run after the refactor:** the stall watchdog (stream dies mid-play with no error). Its pure logic is
 unit-tested and the code path is unchanged apart from where its clock starts, but re-check it on the simulator
 (kill the fake stream while playing, expect "Reconnecting…" after about 20 s) before relying on it.
@@ -60,7 +96,10 @@ how the lock screen looks and its controls; pausing/resuming from it (the resume
 edge but has only been exercised in code); call/Siri interruptions; headphones and Bluetooth; Wi-Fi to cellular;
 the silent switch; a 30+ minute background run; the notification permission prompt, a reminder arriving at a
 show's start, and tapping it; Mail/Phone/Safari opening from Station links.
-**Android has not been run at all.**
+**Not verified on Android** (needs a physical device or more time): a real phone; a 30+ minute background run;
+call and other-app audio-focus interruptions; headphones and Bluetooth; battery optimisation and Doze with an idle phone
+(reminders could be later still); a cold start from a tapped reminder (a warm start works); the real station stream for
+the long runs (the fallback to it was exercised, muted); dark mode; large text.
 
 ## Waiting on people (not engineering)
 
@@ -75,7 +114,8 @@ show's start, and tapping it; Mail/Phone/Safari opening from Station links.
 6. **Station copy to recheck before launch** (`apps/mobile/src/content/station.ts`): board-meeting time, GroupMe
    invite, donation link. Last verified against wjrh.org on 21 Sep 2026.
 7. **Reminder wording** ("<show> is starting", body "with <hosts> · WJRH 104.9 FM") is mine; the station may want
-   something else.
+   something else. **Android reminder timing** (inexact, about 4 min late here, up to an hour): pick exact alarms
+   (and whether Google Play allows `USE_EXACT_ALARM` for this) or reword. See "Found on Android and NOT fixed".
 8. Deploying the API (Decision 001, Cloudflare). The app's preview/production builds need `EXPO_PUBLIC_API_BASE`.
 
 ## Next steps, in order
@@ -88,8 +128,8 @@ show's start, and tapping it; Mail/Phone/Safari opening from Station links.
    live and archive audio are mutually exclusive: starting one stops the other).
 4. **Step 8, design polish** (WJRH Display = Barlow Condensed ExtraBold, logo and station photos from
    `frontend/assets/`, skip `recent-cover-*` which are placeholders, accessibility pass, icon/splash, store assets).
-5. Hardening ideas still open: an Android run; `eas init` and a first EAS build. (Done: ESLint, the saved last
-   good answers across restarts, and the offline notice; see "What is verified".)
+5. Hardening ideas still open: `eas init` and a first EAS build; an Android run on a real phone. (Done: ESLint, the
+   saved last good answers across restarts, the offline notice, and an emulator run; see "What is verified".)
 
 ## Run everything (macOS, Xcode 27)
 
@@ -117,6 +157,38 @@ APP_VARIANT=development npx expo start --dev-client --port 8081         # Metro.
 xcrun simctl openurl booted "exp+wjrh://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081&disableOnboarding=1"
 xcrun simctl io booted screenshot /path/shot.png
 ```
+
+### Android emulator (set up and run on 2026-10-13; the SDK is `~/Library/Android/sdk`)
+
+One-time setup (the Mac already had the emulator, platform-tools, platform 37 and build-tools; this added the rest):
+```bash
+export ANDROID_HOME=~/Library/Android/sdk JAVA_HOME=$(/usr/libexec/java_home -v 17)
+export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+# cmdline-tools: unzip Google's commandlinetools-mac-*_latest.zip into $ANDROID_HOME/cmdline-tools/latest
+sdkmanager "system-images;android-36;google_apis;arm64-v8a"   # needs the android-sdk-arm-dbt-license accepted (sdkmanager --licenses)
+avdmanager create avd -n wjrh-api36 -k "system-images;android-36;google_apis;arm64-v8a" -d pixel_6
+# Edit ~/.android/avd/wjrh-api36.avd/config.ini: hw.ramSize = 4096M (the 1536M default makes System UI time out)
+```
+Each run:
+```bash
+emulator -avd wjrh-api36 -no-audio -no-snapshot &       # -no-audio on top of muting the Mac
+backend/scripts/dev.sh                                  # API on the Mac's 127.0.0.1:8787
+cd apps/mobile
+APP_VARIANT=development npx expo run:android            # prebuild + Gradle + install (about 10 min the first time; android/ is gitignored)
+adb reverse tcp:8081 tcp:8081                           # Metro (expo run:android does this)
+adb reverse tcp:8801 tcp:8801                           # the fake stream: the API hands out http://127.0.0.1:8801/
+APP_VARIANT=development EXPO_PUBLIC_API_BASE=http://10.0.2.2:8787 npx expo start --dev-client --port 8081
+adb shell am start -a android.intent.action.VIEW -d 'exp+wjrh://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081\&disableOnboarding=1'
+adb exec-out screencap -p > shot.png                    # screenshot
+adb shell input tap X Y                                 # tap (Pixel 6 is 1080x2400; tab bar y is about 2232)
+adb shell cmd connectivity airplane-mode enable|disable # real offline
+```
+Player and notification checks: `adb shell dumpsys media_session` (PLAYING / PAUSED / STOPPED / ERROR), `dumpsys audio`
+(an `AudioTrack` for the app with `state:started`), `dumpsys activity services org.wjrh.app` (foreground service),
+`dumpsys alarm` (scheduled reminders), `dumpsys notification --noredact`, `adb logcat -b crash` (native crashes).
+To test a reminder without waiting for the show: `adb shell settings put global auto_time 0`, then
+`adb shell cmd alarm set-time <epoch-ms>` to just before the alarm (no root needed). Put the clock back afterwards:
+`settings put global auto_time 1` and `cmd alarm set-time` with the Mac's current time.
 
 ### Environment variables (all `EXPO_PUBLIC_*` are baked in at bundle time: restart Metro after changing)
 
@@ -178,6 +250,16 @@ unmutes it themselves. The real app plays at full volume.
 - **Backend parity test:** it compares the API on a frozen fixture calendar with
   `backend/mocks/fixtures/schedule-snapshot.json`. `tools/schedule-snapshot.json` tracks the *real* calendar and
   is only used by the drift check. Do not point the test at the latter (that broke `main` after #9).
+- **Android emulator gotchas.** (1) Give the AVD 4 GB of RAM; the 1.5 GB default thrashed (`kcompactd`) and System UI
+  stopped responding. (2) `adb root`, or killing the `adb` server, **drops every `adb reverse` rule**: Metro's log
+  stops and the stream at `127.0.0.1:8801` becomes "connection refused". Re-add the rules. (3) `lsof -ti :8801 | xargs kill`
+  also kills `adb` (it holds a connection to that port); kill the listener: `lsof -nP -iTCP:8801 -sTCP:LISTEN`.
+  (4) The first dev-client launch shows an onboarding sheet; add `&disableOnboarding=1` to the URL. (5) The emulator
+  reaches the Mac at `10.0.2.2`, but only `adb reverse` makes the *Mac's* fake stream reachable at the 127.0.0.1 address
+  the API returns. (6) Metro's `[live]` lines stop if the dev client loses Metro (airplane mode, lost `adb reverse`), so
+  do not trust a frozen log; use `dumpsys media_session` as ground truth. (7) A native crash shows up only in `logcat -b crash`.
+- **Android reports a closed live stream as "ended", not as an error** (`playbackState: 'ended'`, `didJustFinish`), so
+  it needs its own handling (`isDropped`). iOS never showed this.
 - **`json.tool` in Python 3.14 colorizes output** into files; write JSON with `json.dumps`.
 
 ## Working agreements

@@ -2,8 +2,8 @@
 
 The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router, TypeScript). Built so far: the
 **Now** tab (live player), the **Schedule** tab (with show pages and reminders) and the **Station** tab, plus the
-typed API layer. **Archive** is a hidden placeholder. Everything is verified on the **iOS 27 simulator only**; nothing
-has run on a physical phone or Android yet.
+typed API layer. **Archive** is a hidden placeholder. Everything is verified on the **iOS 27 simulator** and the **Android 16 emulator** only;
+nothing has run on a physical phone.
 
 - Where things stand, next steps, gotchas, decisions waiting on people: [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md)
 - Stack, screen-to-endpoint map, licensing rules, build order: [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md)
@@ -24,6 +24,21 @@ APP_VARIANT=development npx expo run:ios   # builds a development app, installs 
 - Adding a route file? Run Metro once so the typed-route types regenerate, or `tsc` rejects the new path.
 - A real phone needs more steps (LAN API, signing): [`iphone-test-checklist.md`](../../docs/mobile-app/iphone-test-checklist.md).
 - More simulator commands (boot, deep link into the dev build, screenshots): `status.md`, "Run everything".
+
+## Run it (Android emulator)
+
+Needs the Android SDK with an arm64 Android 16 system image and an AVD with 4 GB of RAM; the one-time setup and every
+command, with the pitfalls found (RAM, `adb reverse`, notification timing), are in `status.md`, "Android emulator".
+
+```bash
+emulator -avd wjrh-api36 -no-audio -no-snapshot &
+backend/scripts/dev.sh                         # in another terminal
+cd apps/mobile && adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8801 tcp:8801
+APP_VARIANT=development EXPO_PUBLIC_API_BASE=http://10.0.2.2:8787 npx expo run:android
+```
+
+Unlike the iOS simulator, an Android emulator can be tapped from automation (`adb shell input tap`) and taken offline
+(`adb shell cmd connectivity airplane-mode enable`).
 
 ## Scripts
 

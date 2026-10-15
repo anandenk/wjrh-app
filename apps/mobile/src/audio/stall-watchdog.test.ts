@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { isStalled, madeProgress, STALL_LIMITS_MS, stallLimitMs } from './stall-watchdog';
+import { isDropped, isStalled, madeProgress, STALL_LIMITS_MS, stallLimitMs } from './stall-watchdog';
 
 test('limits start above a normal start (~7 s), grow, and cap', () => {
   assert.ok(STALL_LIMITS_MS[0] > 7_000 * 2);
@@ -30,4 +30,12 @@ test('madeProgress: needs audible playback whose position moved', () => {
   assert.equal(madeProgress(4, { ...ok, playing: false }), false);
   assert.equal(madeProgress(4, { ...ok, isBuffering: true }), false);
   assert.equal(madeProgress(4, { ...ok, error: 'Could not connect' }), false);
+});
+
+test('isDropped: an error, or a stream that "ended" (Android closing a dead live connection), is a drop', () => {
+  assert.equal(isDropped({ error: null, playbackState: 'ready' }), false);
+  assert.equal(isDropped({ error: null, playbackState: 'buffering' }), false);
+  assert.equal(isDropped({ error: null, playbackState: 'idle' }), false); // before the first load
+  assert.equal(isDropped({ error: 'Could not connect', playbackState: 'idle' }), true);
+  assert.equal(isDropped({ error: null, playbackState: 'ended' }), true); // the case that stopped playback
 });

@@ -29,3 +29,13 @@ type Snapshot = { playing: boolean; isBuffering: boolean; error: string | null; 
 export function madeProgress(lastTime: number, s: Snapshot): boolean {
   return s.playing && !s.isBuffering && !s.error && s.currentTime !== lastTime;
 }
+
+/**
+ * Has the connection to the live stream been lost? Besides an error, Android's player reports a server that
+ * closes the connection (an encoder restart, a dropped link) as playback having *ended*: no error, not
+ * buffering, just paused. A live stream never finishes, so that is a drop to reconnect from, and must not be
+ * mistaken for the listener pausing from outside the app.
+ */
+export function isDropped(s: { error: string | null; playbackState: string }): boolean {
+  return !!s.error || s.playbackState === 'ended';
+}

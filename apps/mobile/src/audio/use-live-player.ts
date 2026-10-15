@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FALLBACK_STREAM_URL } from '@/config';
 
 import { configureAudioSession } from './audio-session';
-import { isStalled, madeProgress } from './stall-watchdog';
+import { isDropped, isStalled, madeProgress } from './stall-watchdog';
 
 /**
  * idle: not playing. connecting: waiting for audio. playing: audible.
@@ -32,6 +32,8 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   // No source at load time: we choose and (re)load the source ourselves in begin().
   const player = useAudioPlayer(null, { updateInterval: 1000, keepAudioSessionActive: true });
   const status = useAudioPlayerStatus(player);
+  // An error, or the stream "ending" (Android's report of a closed connection): reconnect either way.
+  const dropped = isDropped(status);
 
   const [wantPlaying, setWantPlaying] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
@@ -47,7 +49,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   const progressSince = useRef(0); // when audio last moved (or the attempt began); set by play() and begin()
   const lastTime = useRef(-1); // last playback position that counted as progress
   const stallAttempts = useRef(0); // consecutive watchdog reconnects without progress
-  const errorRef = useRef<string | null>(null);
+  const droppedRef = useRef(false);
   const streamUrlRef = useRef(streamUrl);
   const metadataRef = useRef(metadata);
   // Timers and callbacks read these refs, so they always see the latest values. This effect is
@@ -55,7 +57,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   useEffect(() => {
     streamUrlRef.current = streamUrl;
     metadataRef.current = metadata;
-    errorRef.current = status.error;
+    droppedRef.current = dropped;
   });
 
   const currentUri = () =>
@@ -126,7 +128,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
   useEffect(() => {
     if (!wantPlaying) return;
     const id = setInterval(() => {
-      if (errorRef.current) return;
+      if (droppedRef.current) return;
       if (isStalled(Date.now(), progressSince.current, stallAttempts.current)) {
         stallAttempts.current += 1;
         setStalled(true);
@@ -138,7 +140,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
 
   // Failed? Switch to the built-in stream URL first, then retry with growing delays.
   useEffect(() => {
-    if (!wantPlaying || !status.error) return;
+    if (!wantPlaying || !dropped) return;
     if (!fallbackRef.current && streamUrlRef.current && streamUrlRef.current !== FALLBACK_STREAM_URL) {
       fallbackRef.current = true;
       setUsingFallback(true);
@@ -152,7 +154,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
       setRetryTick((n) => n + 1); // re-run this effect even if the error text is unchanged
     }, delay);
     return () => clearTimeout(t);
-  }, [wantPlaying, status.error, retryTick, begin]);
+  }, [wantPlaying, dropped, retryTick, begin]);
 
   // Paused or resumed from the lock screen / Control Center / headphones.
   useEffect(() => {
@@ -161,7 +163,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
       startedRef.current &&
       !status.playing &&
       !status.isBuffering &&
-      !status.error &&
+      !dropped &&
       status.timeControlStatus === 'paused'
     ) {
       setWant(false); // paused from outside the app
@@ -171,7 +173,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
       attemptsRef.current = 0;
       begin();
     }
-  }, [status.playing, status.isBuffering, status.error, status.timeControlStatus, begin]);
+  }, [status.playing, status.isBuffering, dropped, status.timeControlStatus, begin]);
 
   // Keep the lock screen in step with the current track.
   const { title, artist, albumTitle } = metadata;
@@ -181,7 +183,7 @@ export function useLivePlayer({ streamUrl, metadata }: Options) {
 
   let state: LiveState = 'idle';
   if (wantPlaying) {
-    if (status.error || stalled) state = 'reconnecting';
+    if (dropped || stalled) state = 'reconnecting';
     else if (status.playing && !status.isBuffering) state = 'playing';
     else state = 'connecting';
   }
