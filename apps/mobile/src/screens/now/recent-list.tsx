@@ -3,13 +3,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
 
 import type { Recent } from '@/api/types';
+import { TrackCover } from '@/components/album-cover';
 import { Text } from '@/components/text';
+import { DEMO_ARCHIVES } from '@/config';
 import { IMAGES } from '@/content/images';
 import { colors, fonts, gradients } from '@/theme';
 import { formatStationTime } from '@/utils/format-time';
 
 // The design puts each track's cover behind a dark gradient. The API has no cover for recent tracks, so every
-// row shows a different slice of the station's own artwork instead (never another record's cover).
+// row shows a different slice of the station's own artwork instead (never another record's cover). In demo mode
+// (EXPO_PUBLIC_DEMO_ARCHIVES=1) each row shows the track's real cover (found online, see src/archive/track-art.ts),
+// over a generated placeholder picture that stays when there is none, so the list looks varied.
 const slicePosition = (i: number) => ({ left: `${(i * 37) % 100}%`, top: `${(i * 53) % 100}%` }) as const;
 
 export function RecentList({ items }: { items: Recent['items'] }) {
@@ -20,7 +24,11 @@ export function RecentList({ items }: { items: Recent['items'] }) {
     <View>
       {items.map((t, i) => (
         <View key={t.id} style={styles.row}>
-          <Image source={IMAGES.signal} contentFit="cover" contentPosition={slicePosition(i)} style={StyleSheet.absoluteFill} />
+          {DEMO_ARCHIVES ? (
+            <TrackCover title={t.title} artist={t.artist} />
+          ) : (
+            <Image source={IMAGES.signal} contentFit="cover" contentPosition={slicePosition(i)} style={StyleSheet.absoluteFill} />
+          )}
           <LinearGradient
             {...gradients.recentRow}
             start={{ x: 0, y: 0.5 }}

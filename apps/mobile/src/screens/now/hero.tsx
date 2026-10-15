@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { LiveState } from '@/audio/use-live-player';
 import { Logo } from '@/components/logo';
 import { DisplayText, Text } from '@/components/text';
+import { IMAGES } from '@/content/images';
 import { colors, fonts, gradients } from '@/theme';
 
 import type { StatePill, TrackLines } from './now-state';
@@ -49,7 +50,7 @@ export function NowHero(p: Props) {
 
   return (
     <View style={[styles.canvas, { height: Math.max(320, width) }]}>
-      <Image source={p.art} accessibilityLabel={p.artLabel} contentFit="cover" style={StyleSheet.absoluteFill} />
+      <Image source={p.art} placeholder={IMAGES.signal} transition={250} accessibilityLabel={p.artLabel} contentFit="cover" style={StyleSheet.absoluteFill} />
       <LinearGradient {...gradients.now} style={StyleSheet.absoluteFill} pointerEvents="none" />
       <View style={[styles.content, { paddingTop: 24 + insets.top }]}>
         <View style={styles.top}>

@@ -11,6 +11,12 @@ what passes, write down what does not, and commit the filled-in file. Status and
 signed in with your Apple ID (a free personal account works; apps expire after 7 days), and the phone and the Mac on
 the **same Wi-Fi**. Only run the LAN steps on a network you trust.
 
+**Shortcut for building:** `apps/mobile/scripts/build-phone.sh` does steps 2 and 3 below for you (prebuild, Release build,
+install) from a few settings; its header says which, and `archive-demo.md` has an example. It also drops the Push
+Notifications capability, which a free personal team cannot sign (the build fails with "Personal development teams ... do
+not support the Push Notifications capability") and which this app never uses. If you build by hand and hit that error,
+empty `ios/<app>/<app>.entitlements` (it is generated and git-ignored).
+
 **1. Start the API where the phone can reach it.** The real-station one shows live data and hands out the real
 HTTPS stream URL (safest for audio/lock-screen checks):
 ```bash

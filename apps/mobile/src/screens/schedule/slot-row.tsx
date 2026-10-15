@@ -1,6 +1,8 @@
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { demoShowInfo } from '@/archive/demo-show-info';
 import { DisplayText, Text } from '@/components/text';
+import { DEMO_ARCHIVES } from '@/config';
 import { WIDE_LAYOUT_MIN_WIDTH, colors, fonts } from '@/theme';
 
 import { formatRange24, type Slot } from './schedule-state';
@@ -9,7 +11,9 @@ import { formatRange24, type Slot } from './schedule-state';
 export function SlotRow({ slot, onAir, onPress }: { slot: Slot; onAir: boolean; onPress: () => void }) {
   const narrow = useWindowDimensions().width < WIDE_LAYOUT_MIN_WIDTH;
   const range = formatRange24(slot.startsAt, slot.endsAt);
-  const meta = slot.dj ? (slot.genre ? `${slot.dj} · ${slot.genre}` : slot.dj) : 'Host to be announced';
+  // Demo mode gives a show the calendar has no genre for a sample one, so the list reads as complete.
+  const genre = slot.genre || (DEMO_ARCHIVES ? demoShowInfo(slot.showId, slot.show).genres : '');
+  const meta = slot.dj ? (genre ? `${slot.dj} · ${genre}` : slot.dj) : 'Host to be announced';
   return (
     <Pressable
       accessibilityRole="button"

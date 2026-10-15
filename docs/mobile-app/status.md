@@ -11,7 +11,10 @@ Last updated **2026-10-14** (after PR #19, plus the hardening PR #20, the Androi
 ## Where it stands
 
 All four planned screens exist and run on the **iOS 27 simulator** and the **Android 16 emulator** against the
-local API. **Nothing has been run on a physical phone**, and nothing is deployed (the API is local only, no store builds).
+local API. **The app has run informally on one iPhone** (a demo build;
+[`iphone-test-checklist.md`](iphone-test-checklist.md) has not been worked through). The only deployment is a demo copy of the
+API on Cloudflare's free plan, on a personal account ([`deployed-demo.md`](../backend-proposal/deployed-demo.md)); there are no
+store builds.
 
 | Plan step | What | State | PR |
 |---|---|---|---|
@@ -22,7 +25,7 @@ local API. **Nothing has been run on a physical phone**, and nothing is deployed
 | 4 | **Now** tab: live player, now-playing, recent, health notices | Done on simulator; phone checks pending | #13 |
 | 5 | **Schedule** tab, show pages, local show reminders | Done on simulator; reminder permission and delivery need a phone | #14, #15 |
 | 6 | **Station** tab (static pages + team + events) | Done on simulator; links need a phone | #16 |
-| 7 | **Archive** tab | **Not started.** Hidden behind `FEATURES.archive = false` until the station decides (Decision 002); Mixcloud WebView first | |
+| 7 | **Archive** tab | **Real archives: not started** (waiting on the station, Decision 002; Mixcloud WebView first). **A demo version exists** with made-up recordings for the board pitch, off unless `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](archive-demo.md)) | |
 | 8 | Design polish: the app matches `frontend/index.html` (fonts, logo, photos, tab bar, player dock, icon/splash) | **Done on the iOS simulator** and checked on four screens on the Android emulator, light only; real phones and store assets still to do ([`design-polish.md`](design-polish.md)) | PR C |
 
 The throwaway audio-spike app was removed once the real app covered it; it is kept at the git tag `archive/audio-spike`
@@ -133,7 +136,9 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 7. **Reminder wording** ("<show> is starting", body "with <hosts> · WJRH 104.9 FM") is mine; the station may want
    something else. **Android reminder timing** (inexact, about 4 min late here, up to an hour): pick exact alarms
    (and whether Google Play allows `USE_EXACT_ALARM` for this) or reword. See "Found on Android and NOT fixed".
-8. Deploying the API (Decision 001, Cloudflare). The app's preview/production builds need `EXPO_PUBLIC_API_BASE`.
+8. Deploying the API for real (Decision 001, Cloudflare): a station-owned account and a station domain. A demo copy already
+   runs on a personal account ([`deployed-demo.md`](../backend-proposal/deployed-demo.md)). The app's preview/production builds
+   still need `EXPO_PUBLIC_API_BASE` set in `eas.json`.
 
 ## Next steps, in order
 

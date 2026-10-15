@@ -10,8 +10,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 import { QueryProvider } from '@/api/query-provider';
+import { ArchivePlayerProvider } from '@/archive/archive-player-provider';
 import { LivePlayerProvider } from '@/audio/live-player-provider';
+import { prefetchDemoCovers } from '@/components/album-cover';
 import { AppTabBar } from '@/components/tab-bar';
+import { DEMO_ARCHIVES } from '@/config';
 import { RemindersProvider } from '@/reminders/reminders-provider';
 import { colors } from '@/theme';
 
@@ -32,21 +35,27 @@ export default function TabLayout() {
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync();
   }, [ready]);
+  // Demo only: fetch the album covers once, so they are on the phone for a demo with no signal.
+  useEffect(() => {
+    if (DEMO_ARCHIVES) prefetchDemoCovers();
+  }, []);
   if (!ready) return null;
 
   return (
     <QueryProvider>
       <LivePlayerProvider>
-        <RemindersProvider>
-          <Tabs
-            tabBar={(props) => <AppTabBar {...props} />}
-            screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }}>
-            <Tabs.Screen name="(now)" />
-            <Tabs.Screen name="archive" />
-            <Tabs.Screen name="schedule" />
-            <Tabs.Screen name="station" />
-          </Tabs>
-        </RemindersProvider>
+        <ArchivePlayerProvider>
+          <RemindersProvider>
+            <Tabs
+              tabBar={(props) => <AppTabBar {...props} />}
+              screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }}>
+              <Tabs.Screen name="(now)" />
+              <Tabs.Screen name="archive" />
+              <Tabs.Screen name="schedule" />
+              <Tabs.Screen name="station" />
+            </Tabs>
+          </RemindersProvider>
+        </ArchivePlayerProvider>
       </LivePlayerProvider>
     </QueryProvider>
   );

@@ -4,6 +4,7 @@ import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { isFromEarlierRun } from '@/api/cache-rules';
 import { isShowingStale, useHealth, useNowPlaying, useRecent, useShows } from '@/api/queries';
+import { useAutomationCover, useDemoCover } from '@/archive/use-archive';
 import { useLivePlayerContext } from '@/audio/live-player-provider';
 import { useBottomChrome } from '@/components/dock-metrics';
 import { FocusedStatusBar } from '@/components/focused-status-bar';
@@ -54,11 +55,17 @@ export function NowScreen() {
   const refreshing = nowPlaying.isRefetching && recent.isRefetching;
   const chrome = useBottomChrome({ screen: 'now' });
 
-  // The picture is the show's own artwork when the station has supplied it, otherwise the station's collage.
+  // The picture is the show's own artwork when the station has supplied it. In demo mode: a real album cover, the show's
+  // own, or the radio-themed one while the station is on automation. Otherwise the station's collage.
   const showId = np?.show?.id ?? null;
   const artwork = showId ? shows.data?.shows.find((s) => s.id === showId)?.artwork : null;
-  const art = artwork ? { uri: artwork.url } : IMAGES.signal;
-  const artLabel = artwork?.alt ?? 'Abstract WJRH live broadcast collage artwork';
+  const showCover = useDemoCover(showId);
+  const automationCover = useAutomationCover();
+  const demoCover = showId ? showCover : automationCover;
+  const art = artwork ? { uri: artwork.url } : (demoCover ?? IMAGES.signal);
+  const artLabel =
+    artwork?.alt ??
+    (demoCover ? 'Placeholder album cover, not the show’s own artwork' : 'Abstract WJRH live broadcast collage artwork');
 
   const dimTrack = !track.known || !!np?.stale || !online || isShowingStale(nowPlaying);
 

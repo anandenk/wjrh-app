@@ -16,7 +16,7 @@ what is and is not verified, decisions waiting on people, how to run everything,
 | `apps/mobile/` | The Expo / React Native app (SDK 57, Expo Router). Now, Schedule (+ show pages, reminders) and Station tabs are built and match the design; Archive is a hidden placeholder. Its README has the layout and env vars |
 | `docs/mobile-app/design-polish.md` | How the app was matched to `frontend/index.html`, where it differs on purpose, and how to re-check (`tools/design-compare/`) |
 | `docs/mobile-app/audio-spike.md` | Why `expo-audio` was chosen (the spike app itself was removed; tag `archive/audio-spike`) |
-| `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, not deployed |
+| `backend/` | The `/v1` API (Cloudflare Worker + D1), recorder, JSON schemas, fake station and fake Mixcloud. Local only, except a demo copy of the API on Cloudflare's free plan ([`docs/backend-proposal/deployed-demo.md`](docs/backend-proposal/deployed-demo.md)) |
 | `backend/schemas/` | Source of truth for API response shapes; the app's types are generated from these |
 | `docs/backend-proposal/` | API contracts (`api.md`) and decisions: 001 Cloudflare hosting, 002 archives (Mixcloud) |
 | `frontend/` | The current visual design (`index.html`). Use it as the design reference, not older copies |
@@ -47,7 +47,9 @@ Plan steps 0 to 6 are done and merged (PRs #9–#16): the API runs against the r
 (live player with `expo-audio`, own fallback to the built-in stream URL, reconnects at the live edge on every play,
 lock-screen info), the Schedule tab (week list, show pages, local show reminders) and the Station tab (static pages,
 team gated on the API's `approved` flag, events). All of it is verified **on the iOS 27 simulator and the Android 16
-emulator only** (`status.md`). Nothing has been run on a physical phone, and nothing is deployed.
+emulator only** (`status.md`). The app has run informally on one iPhone (a demo build), but
+`docs/mobile-app/iphone-test-checklist.md` has not been worked through. The only deployment is a demo copy of the API on
+Cloudflare's free plan (personal account); there are no store builds.
 
 **Next:** run the checks in `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
 plan step 7 (Archive tab, behind a flag until the station decides). Design polish (step 8) is done on the simulator: see
@@ -69,7 +71,7 @@ plan step 7 (Archive tab, behind a flag until the station decides). Design polis
 - The recent-track cover images in `frontend/assets/` are placeholders, not real artwork (the app does not use them).
 - The look follows `frontend/index.html`; where the app must differ (licensing, real data, Archive not built) it is
   listed in `docs/mobile-app/design-polish.md`. Add to that list when you differ again.
-- The student roster has names and emails: it stays hidden while `/v1/station` says `approved: false`.
+- The student roster has names and emails: it stays hidden while `/v1/station` says `approved: false` (the app hides it, and the API sends `team: []`).
 
 ## Gotchas (details in `status.md`)
 

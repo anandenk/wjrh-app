@@ -62,13 +62,15 @@ Unlike the iOS simulator, an Android emulator can be tapped from automation (`ad
 | Variable | Effect |
 |---|---|
 | `APP_VARIANT=development` | Allows plain-HTTP to local addresses (iOS `NSAllowsLocalNetworking`, Android cleartext). Set by the `development` EAS profile; never for preview/production |
-| `EXPO_PUBLIC_API_BASE` | API address. Default in dev: `http://127.0.0.1:8787`. Android emulator `http://10.0.2.2:8787`; a phone needs the Mac's LAN IP. Preview/production builds must set it (the API is not deployed yet) |
+| `EXPO_PUBLIC_API_BASE` | API address. Default in dev: `http://127.0.0.1:8787`. Android emulator `http://10.0.2.2:8787`; a phone needs either the demo API on Cloudflare (`https://wjrh-api.anandenkhjin.workers.dev`, [`deployed-demo.md`](../../docs/backend-proposal/deployed-demo.md); no Mac needed) or the Mac's address on a network you trust (never campus Wi-Fi). Preview/production builds must set it; the station's own production API does not exist yet |
 | `EXPO_PUBLIC_USE_FIXTURES=1` | Serve `src/api/fixtures` instead of calling the API |
+| `EXPO_PUBLIC_DEMO_ARCHIVES=1` | **Demo only.** Shows the Archive tab with made-up recordings and placeholder covers for the real shows, to show the station board ([`archive-demo.md`](../../docs/mobile-app/archive-demo.md)). Also works in a Release build. Never set it in `eas.json` (a test checks) |
 | `WJRH_BUNDLE_ID` | Overrides the placeholder bundle id / package `org.wjrh.app` (for signing with a personal Apple ID) |
 | `EXPO_PUBLIC_AUTOPLAY=1` | **Dev only.** Press Play 4 s after launch |
 | `EXPO_PUBLIC_DEV_OFFLINE=1` | **Dev only.** Makes the Now tab show its offline notice (the simulator can't be taken offline without cutting the Mac's network) |
 | `EXPO_PUBLIC_DEV_ROUTE=/a,/b` | **Dev only.** Navigate to each route, 5 s apart, after launch (the simulator can't be tapped from automation, and a deep link from outside shows an iOS "Open in…?" dialog). `/a@600` also scrolls that screen 600 pt, and each settled screen logs `[dev-shot N]` for [`tools/design-compare`](../../tools/design-compare/README.md) |
 | `EXPO_PUBLIC_DEV_NOW=2026-10-14T19:10:00-04:00` | **Dev only.** The schedule's clock, so "ON AIR NOW" can be seen at any hour (the player and API ignore it) |
+| `EXPO_PUBLIC_DEV_ARCHIVE_PLAY=1` | **Dev only.** The first Archive page opened starts its newest sample episode by itself, so the playing state can be screenshotted |
 
 The dev-only hooks are inert in release builds (`__DEV__` is false).
 
@@ -88,7 +90,7 @@ The dev-only hooks are inert in release builds (`__DEV__` is false).
 | `src/config.ts` | `API_BASE`, built-in fallback stream URL, `FEATURES` flags (Archive off), dev hooks |
 | `src/theme.ts` | The design's tokens: colors, fonts, gradients, and the display-font nudge. One palette, light only |
 | `assets/` | Photos, the display font, icon, splash and notification icon; provenance in `assets/README.md` |
-| `scripts/` | `gen-types.mjs`, `check-contract.mjs`, `smoke-api.ts` and their own `tsconfig.json` (Node, not React Native) |
+| `scripts/` | `gen-types.mjs`, `check-contract.mjs`, `smoke-api.ts` and their own `tsconfig.json` (Node, not React Native); `build-phone.sh` builds a signed Release app and installs it on a connected iPhone (header lists its settings) |
 | `app.config.ts`, `eas.json` | App config (dev-only HTTP allowance, iOS 27 scene fix, bundle id) and EAS profiles `development` / `preview` / `production` |
 
 ## Now tab and live audio

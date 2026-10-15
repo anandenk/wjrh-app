@@ -10,9 +10,15 @@ export const API_BASE: string =
 // Live audio never depends on the API: if /v1/station is unreachable, play this directly.
 export const FALLBACK_STREAM_URL = 'https://internetstreamer.lafayette.edu/';
 
+// DEMO ONLY: show the Archive tab with made-up recordings and placeholder covers for the real shows, to pitch the
+// idea to the station board (EXPO_PUBLIC_DEMO_ARCHIVES=1, baked in at bundle time, so it also works in a Release
+// build). It must never be set for the preview or production profiles in eas.json (src/config.test.ts checks).
+export const DEMO_ARCHIVES = process.env.EXPO_PUBLIC_DEMO_ARCHIVES === '1';
+
 export const FEATURES = {
-  // Archives stay off until the station decides (docs/backend-proposal/decisions/002).
-  archive: false,
+  // Real archives stay off until the station decides (docs/backend-proposal/decisions/002). The Archive tab appears
+  // only in demo mode, with sample data from src/archive/.
+  archive: DEMO_ARCHIVES,
 };
 
 // Offline UI work: serve src/api/fixtures instead of calling the API (EXPO_PUBLIC_USE_FIXTURES=1).
@@ -39,3 +45,8 @@ export const DEV_ROUTE: string | undefined =
 // "ON AIR NOW" row can be seen at any hour. Only the schedule's clock; the live player and the API ignore it.
 export const DEV_NOW: string | undefined =
   typeof __DEV__ !== 'undefined' && __DEV__ ? process.env.EXPO_PUBLIC_DEV_NOW || undefined : undefined;
+
+// Dev-only test hook: the first Archive page opened starts its newest sample episode by itself
+// (EXPO_PUBLIC_DEV_ARCHIVE_PLAY=1), because the simulator can't be tapped from automation. Ignored in release builds.
+export const DEV_ARCHIVE_PLAY =
+  typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_DEV_ARCHIVE_PLAY === '1';

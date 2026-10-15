@@ -1,23 +1,28 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import { useRef } from 'react';
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { useShows, useWeeklySchedule } from '@/api/queries';
+import { demoShowInfo } from '@/archive/demo-show-info';
+import { useDemoCover } from '@/archive/use-archive';
+import { DetailHeader } from '@/components/detail-header';
 import { useBottomChrome } from '@/components/dock-metrics';
 import { FocusedStatusBar } from '@/components/focused-status-bar';
-import { ChevronLeft } from '@/components/icons';
 import { DisplayText, Text } from '@/components/text';
+import { DEMO_ARCHIVES, FEATURES } from '@/config';
 import { IMAGES } from '@/content/images';
 import { useDevScroll } from '@/dev/dev-scroll';
 import { colors, fonts, gradients } from '@/theme';
 
+import { PastBroadcasts } from '../archive/past-broadcasts';
 import { airTimes, slotsForShow } from '../schedule/schedule-state';
 import { ReminderButton } from './reminder-button';
 
-/** A show's page: the design's "archive detail" layout, without the archive (Archive is not built yet). */
+/**
+ * A show's page: the design's "archive detail" layout. "Past broadcasts" appears only in demo mode
+ * (FEATURES.archive), with sample recordings; real archives are not built yet.
+ */
 export function ShowScreen({ showId, backLabel }: { showId: string; backLabel: 'NOW' | 'SCHEDULE' }) {
   const shows = useShows();
   const weekly = useWeeklySchedule();
@@ -35,19 +40,27 @@ export function ShowScreen({ showId, backLabel }: { showId: string; backLabel: '
 
   const name = show?.name ?? first?.show ?? '';
   const hosts = show?.hostNames.length ? show.hostNames.join(', ') : first?.dj;
-  const genres = show?.genres.length ? show.genres.join(' · ') : first?.genre;
-  const description = show?.description ?? first?.blurb ?? null;
+  // Demo mode fills in what the station hasn't written (a sample genre line and description, labelled as such).
+  const demo = DEMO_ARCHIVES ? demoShowInfo(showId, name) : null;
+  const genres = (show?.genres.length ? show.genres.join(' · ') : first?.genre) || demo?.genres;
+  const realDescription = show?.description ?? first?.blurb ?? null;
+  const description = realDescription ?? demo?.description ?? null;
+  const descriptionIsSample = realDescription === null && demo !== null;
   const bio = show?.hostBio || first?.host.bio || null;
   const times = airTimes(entries);
-  const art = show?.artwork ? { uri: show.artwork.url } : IMAGES.signal;
-  const artLabel = show?.artwork?.alt ?? 'Abstract WJRH live broadcast collage artwork';
+  // The show's own artwork when the station has supplied it; in demo mode a placeholder cover; else the collage.
+  const demoCover = useDemoCover(showId);
+  const art = show?.artwork ? { uri: show.artwork.url } : (demoCover ?? IMAGES.signal);
+  const artLabel =
+    show?.artwork?.alt ??
+    (demoCover ? 'Placeholder album cover, not the show’s own artwork' : 'Abstract WJRH live broadcast collage artwork');
   // clamp(38px, 11vw, 52px)
   const nameSize = Math.min(52, Math.max(38, width * 0.11));
 
   return (
     <View style={styles.root}>
       <FocusedStatusBar style="light" />
-      <ShowHeader backLabel={backLabel} />
+      <DetailHeader backLabel={backLabel} title="SHOW" fallback={backLabel === 'NOW' ? '/' : '/schedule'} />
       <ScrollView ref={scroller} contentContainerStyle={{ paddingBottom: chrome.contentPadding }} contentInsetAdjustmentBehavior="never">
         {loading || missing ? (
           <Text style={styles.status}>
@@ -60,7 +73,7 @@ export function ShowScreen({ showId, backLabel }: { showId: string; backLabel: '
         ) : (
           <>
             <View style={[styles.hero, { height: width }]}>
-              <Image source={art} accessibilityLabel={artLabel} contentFit="cover" style={StyleSheet.absoluteFill} />
+              <Image source={art} placeholder={IMAGES.signal} transition={250} accessibilityLabel={artLabel} contentFit="cover" style={StyleSheet.absoluteFill} />
               <LinearGradient {...gradients.showShade} style={StyleSheet.absoluteFill} pointerEvents="none" />
             </View>
 
@@ -72,11 +85,13 @@ export function ShowScreen({ showId, backLabel }: { showId: string; backLabel: '
                 {name}
               </DisplayText>
               {hosts ? <Text style={styles.host}>with {hosts}</Text> : null}
-              <Text style={styles.note}>About the show</Text>
+              <Text style={styles.note}>{descriptionIsSample ? 'Sample description' : 'About the show'}</Text>
               <Text style={styles.description}>
                 {description ?? "The station hasn't added a description for this show yet."}
               </Text>
             </View>
+
+            {FEATURES.archive ? <PastBroadcasts showId={showId} linkToArchive /> : null}
 
             <View style={styles.section}>
               <DisplayText style={styles.heading} accessibilityRole="header">
@@ -113,52 +128,8 @@ export function ShowScreen({ showId, backLabel }: { showId: string; backLabel: '
   );
 }
 
-/** Back (with where it goes), the page's label in the display face, and the frequency. */
-function ShowHeader({ backLabel }: { backLabel: string }) {
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace(backLabel === 'NOW' ? '/' : '/schedule'));
-  return (
-    <View style={[styles.header, { paddingTop: 8 + insets.top }]}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Back to ${backLabel.charAt(0) + backLabel.slice(1).toLowerCase()}`}
-        onPress={goBack}
-        hitSlop={{ right: 12 }}
-        style={({ pressed }) => [styles.back, pressed && { opacity: 0.78 }]}>
-        <ChevronLeft size={16} color={colors.accentInk} />
-        <Text style={styles.backText}>{backLabel}</Text>
-      </Pressable>
-      <DisplayText style={styles.headerTitle}>SHOW</DisplayText>
-      <Text style={styles.frequency}>104.9 FM</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.scheduleBg },
-  header: {
-    minHeight: 60,
-    paddingBottom: 8,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.onImageFaint,
-    backgroundColor: colors.scheduleBg,
-  },
-  back: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 6, paddingRight: 8 },
-  backText: { fontFamily: fonts.bold, fontSize: 11, lineHeight: 11, letterSpacing: 0.77, color: colors.accentInk },
-  headerTitle: { fontFamily: fonts.display, fontSize: 24, lineHeight: 24, letterSpacing: 0.24, color: colors.accentInk },
-  frequency: {
-    flex: 1,
-    textAlign: 'right',
-    fontFamily: fonts.bold,
-    fontSize: 10,
-    lineHeight: 10,
-    letterSpacing: 0.6,
-    color: colors.onImageMuted,
-  },
   status: { padding: 20, fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.onImageMuted },
   hero: { width: '100%', overflow: 'hidden', backgroundColor: colors.surface2 },
   copy: {
