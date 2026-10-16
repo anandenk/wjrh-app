@@ -3,6 +3,7 @@
 The application layer that the new frontend design assumes. It runs entirely on your machine
 against a **fake station**, so you can build and test the backend before the board settles hosting,
 budget or archive licensing.
+The native app in [`../apps/mobile/`](../apps/mobile/) already consumes this API; the HTML design remains a demo.
 
 > **Status: local, plus a demo copy on Cloudflare's free plan** ([`deployed-demo.md`](../docs/backend-proposal/deployed-demo.md)); not the station's production. The architecture decisions are in
 > [`docs/backend-proposal/decisions/`](../docs/backend-proposal/decisions/):
@@ -68,7 +69,7 @@ npm run typecheck
 ```
 
 What the tests cover:
-- Every endpoint is validated against the JSON Schemas in [`schemas/`](schemas/).
+- Public response shapes are validated against the JSON Schemas in [`schemas/`](schemas/).
 - Calendar recurrence edge cases: EXDATE, RECURRENCE-ID moves and cancellations, UNTIL, COUNT,
   INTERVAL, and the end of daylight saving time.
 - `/v1/schedule/weekly` must reproduce the legacy snapshot format **byte for byte** (checked against
@@ -146,10 +147,12 @@ The jobs are:
 - The fake Mixcloud follows Mixcloud's documented API shapes as known here. Check them against the
   real API before relying on them.
 
-When you have network access, capture the real ones and rerun the tests:
+Real-upstream validation was completed in PR #9 ([`phase0-findings.md`](../docs/mobile-app/phase0-findings.md)).
+Keep the reconstructed calendar and its matching snapshot frozen for parity tests. To inspect a fresh capture
+without replacing those fixtures:
 
 ```bash
-curl -o backend/mocks/fixtures/calendar-snapshot.ics "<ICS URL from tools/check_station_services.py>"
+curl -o /tmp/wjrh-calendar-live.ics "<ICS URL from tools/check_station_services.py>"
 curl -sD - https://nowplaying.wjrh.org      # compare with mocks/fake_station.py
 ```
 
@@ -170,9 +173,10 @@ Staff review and publishing are identical for both.
 
 ## Connecting a frontend
 
-No frontend is wired to the API on this branch; the listener app is being rebuilt separately. The
-earlier wiring of the design prototype and PWA (`?api=`) is preserved at commit `37cf17c`. What each
-screen should read is mapped in [`docs/backend-proposal/api.md`](../docs/backend-proposal/api.md).
+The native listener app in [`../apps/mobile/`](../apps/mobile/) reads the API (PRs #12–#16); its README explains
+`EXPO_PUBLIC_API_BASE`, fixtures and smoke checks. The current HTML design is not connected. Earlier wiring of
+the design prototype and PWA (`?api=`) is preserved at tag `archive/api-wired-design` (commit `37cf17c`). What each
+screen reads is mapped in [`../docs/mobile-app/plan.md`](../docs/mobile-app/plan.md#screen--endpoint-map).
 Keep live audio direct from the stream URL in `/v1/station`, so the app still plays when the API is
 down.
 
@@ -182,6 +186,6 @@ down.
   See decision 001.
 - Alerting. `/v1/health` reports problems, but nobody is paged.
 - A real join provider (Mailman, a form service…) and push reminders (deferred, P3).
-- A listener app wired to the API.
+- Real Archive playback in the listener app (only the sample demo exists; the backend pipeline is implemented).
 - A real Mixcloud account and app registration (the free tier holds 10 shows; Pro is unlimited).
 - Artwork. `artwork` stays `null` until the station supplies rights-cleared images.

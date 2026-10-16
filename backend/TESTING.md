@@ -19,7 +19,7 @@ For how the pieces fit together, see [`README.md`](README.md).
 ```bash
 cd wjrh-app                       # your clone
 git fetch origin
-git checkout claude/hopeful-tesla-4pybev
+git switch -c codex/backend-walkthrough origin/main
 ```
 
 ## 2. Automated tests (about 1 minute; no servers needed)
@@ -27,7 +27,7 @@ git checkout claude/hopeful-tesla-4pybev
 ```bash
 cd backend/api
 npm ci                            # installs wrangler, vitest, the Workers runtime
-npm test                          # expect: Tests  50 passed (50)
+npm test                          # all tests must pass (51 passed in PR #26)
 npm run typecheck                 # expect: no errors
 cd ../..
 ```
@@ -72,7 +72,8 @@ python3 backend/scripts/e2e.py --quick    # ~1 min: 7 checks
 python3 backend/scripts/e2e.py            # ~7 min: also records two episodes (own storage, then Mixcloud)
 ```
 
-Expect `all 9 checks passed`. The script resets the fake station afterwards.
+Expect `all 7 checks passed` with `--quick`, or `all 9 checks passed` for the full run.
+The script resets the fake station afterwards.
 
 ## 5. Hands-on tour
 
@@ -88,10 +89,10 @@ Open these in a browser:
 
 ### 5b. Pointing a frontend at the API
 
-No frontend is wired up in this branch yet; the listener app is being rebuilt separately. Any client
-reads the API at `http://127.0.0.1:8787` (CORS is open in dev). What each screen of the design reads
-is mapped in [`../docs/backend-proposal/api.md`](../docs/backend-proposal/api.md). The earlier
-design and PWA wiring (`?api=` switches) is in git history at commit `37cf17c`.
+The native app already reads the API: follow [`../apps/mobile/README.md`](../apps/mobile/README.md) and set
+`EXPO_PUBLIC_API_BASE=http://127.0.0.1:8787` for the iOS simulator (`http://10.0.2.2:8787` for the Android emulator).
+CORS is open in dev. The HTML design remains on demo data; its earlier API wiring (`?api=` switches) is preserved
+at tag `archive/api-wired-design` (commit `37cf17c`).
 
 ### 5c. Break the station on purpose
 
@@ -106,7 +107,7 @@ curl 'http://127.0.0.1:8787/__scheduled?cron=*/15+*+*+*+*'    # schedule refresh
 
 | Simulate | Command | What you'll see |
 |---|---|---|
-| A DJ streaming from a laptop (feed says `Null`) | `curl -X POST 'http://127.0.0.1:8802/_scenario?name=Null'` | The app shows **LIVE FROM THE BOOTH / Track info not posted yet** within about 15 s. `/v1/now-playing` has `"track": null`. `/v1/recent` gains no junk entries |
+| A DJ streaming from a laptop (feed says `Null`) | `curl -X POST 'http://127.0.0.1:8802/_scenario?name=Null'` | The native app shows **Waiting for track information** after the next successful poll (about 15 s). `/v1/now-playing` has `"track": null`; the LIVE/AUTOMATED pill still follows the schedule. `/v1/recent` gains no junk entries |
 | Metadata feed down | `curl -X POST 'http://127.0.0.1:8802/_scenario?name=error'` | `/v1/now-playing` keeps the last track, with `"stale": true` |
 | Stream connected but silent | `curl -X POST 'http://127.0.0.1:8801/_scenario?name=silent'`, then the health job | `/v1/health`: stream `"down"`. The probe checks for real audio bytes, not just a 200 |
 | Schedule changes this week | `curl -X POST 'http://127.0.0.1:8803/_scenario?name=cancelled'`, then the schedule job | `/v1/schedule`: at their next occurrence, Monday's **The Rodeo** is gone, Friday's **Supercut** is `"cancelled": true`, and Wednesday's **Basement Jams** has moved to 8 PM. If today is one of those weekdays, the change is a week out, so widen the range with `?from=YYYY-MM-DD&to=YYYY-MM-DD` |
@@ -215,7 +216,7 @@ This needs a network that can reach WJRH's services, such as campus Wi-Fi.
 python3 tools/check_station_services.py   # real stream, feed and calendar (read-only)
 ```
 
-To replace the reconstructed calendar fixture with a real capture, see "About the fixtures" in
+To inspect a real capture while preserving the frozen parity fixtures, see "About the fixtures" in
 [`README.md`](README.md).
 
 To run the API itself against the real services (still read-only), use `backend/scripts/dev-real.sh` (port 8797).
@@ -234,5 +235,5 @@ to the real stream URL. Steps for testing the app on a phone:
 |---|---|
 | `port … is already in use` | An earlier run is still up: `lsof -i :<port>`, then stop that process |
 | `npm ci` errors, or wrangler says the workerd binary is missing | `rm -rf node_modules && npx npm@11 ci && npm rebuild` |
-| Something didn't start | Logs are in `backend/.dev-state/logs/` (`api.log`, `fake-station.log`, `s3.log`, `pwa.log`) |
-| The app still shows old data after switching `?api=` | Hard-reload. The API setting is remembered per tab, and `?api=off` clears it |
+| Something didn't start | Logs are in `backend/.dev-state/logs/` (`api.log`, `fake-station.log`, `s3.log`, `devtools.log`); `dev-real.sh` uses `backend/.dev-state/real/api.log` |
+| The native app still uses the old API address | Restart Metro after changing `EXPO_PUBLIC_API_BASE`; rebuild a Release app because its address is bundled. `?api=` only belongs to the archived browser prototype |

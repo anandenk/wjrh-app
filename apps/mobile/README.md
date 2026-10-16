@@ -4,8 +4,10 @@ The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router,
 **Now** tab (live player), the **Schedule** tab (with show pages and reminders) and the **Station** tab, plus the
 typed API layer, in the look of the HTML design ([`docs/mobile-app/design-polish.md`](../../docs/mobile-app/design-polish.md)). **Archive** exists only as a demo with
 made-up recordings, off unless `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](../../docs/mobile-app/archive-demo.md)).
-Everything is verified on the **iOS 27 simulator** and the **Android 16 emulator**; a demo build has run informally on
-one iPhone, but the [real-phone checklist](../../docs/mobile-app/iphone-test-checklist.md) has not been worked through.
+Earlier checks covered the **iOS 27 simulator** and selected **Android 16 emulator** behavior; the Archive demo was
+checked on iOS only. A demo build has run informally on one iPhone, but the
+[real-phone checklist](../../docs/mobile-app/iphone-test-checklist.md) has not been worked through. PR #27's Expo patches
+passed `expo-doctor` 21/21 and an iOS simulator compile only; runtime checks and phone rebuilds with those versions remain pending.
 
 - Where things stand, next steps, gotchas, decisions waiting on people: [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md)
 - Stack, screen-to-endpoint map, licensing rules, build order: [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md)
@@ -25,12 +27,12 @@ APP_VARIANT=development npx expo run:ios   # builds a development app, installs 
 - After adding a native module (anything with native code), rebuild with `expo run:ios`; JS changes just reload.
 - Adding a route file? Run Metro once so the typed-route types regenerate, or `tsc` rejects the new path.
 - A real phone needs more steps (LAN API, signing): [`iphone-test-checklist.md`](../../docs/mobile-app/iphone-test-checklist.md).
-- More simulator commands (boot, deep link into the dev build, screenshots): `status.md`, "Run everything".
+- More simulator commands (boot, deep link into the dev build, screenshots): [`status.md`, "Run everything"](../../docs/mobile-app/status.md#run-everything-macos-xcode-27).
 
 ## Run it (Android emulator)
 
 Needs the Android SDK with an arm64 Android 16 system image and an AVD with 4 GB of RAM; the one-time setup and every
-command, with the pitfalls found (RAM, `adb reverse`, notification timing), are in `status.md`, "Android emulator".
+command, with the pitfalls found (RAM, `adb reverse`, notification timing), are in [`status.md`, "Android emulator"](../../docs/mobile-app/status.md#android-emulator-set-up-and-run-on-2026-10-13-the-sdk-is-libraryandroidsdk).
 
 ```bash
 emulator -avd wjrh-api36 -no-audio -no-snapshot &
@@ -84,13 +86,13 @@ The dev-only hooks are inert in release builds (`__DEV__` is false).
 | `src/api/` | The API layer, below |
 | `src/audio/` | The live player: `use-live-player.ts`, `live-player-provider.tsx`, `stall-watchdog.ts`, `audio-session.ts` |
 | `src/archive/` | **Demo only:** the Archive demo's made-up data, sample descriptions, album-cover lookups and its pretend player ([`archive-demo.md`](../../docs/mobile-app/archive-demo.md)) |
-| `src/screens/` | Screen bodies the routes render: `now/`, `schedule/`, `show/`, `station/`, `archive/`. Each has its logic in a pure `*-state.ts` with a `*.test.ts` |
+| `src/screens/` | Screen bodies the routes render: `now/`, `schedule/`, `show/`, `station/`, `archive/`. Pure `*-state.ts` logic and tests live in Now, Schedule and Station; Show reuses Schedule logic, and Archive logic/tests live in `src/archive/` |
 | `src/reminders/` | Show reminders: `plan.ts` (pure), `notifications.ts` (expo-notifications), `use-reminder.ts`, `reminders-provider.tsx` |
 | `src/content/` | `station.ts`: the Station tab's static copy, page layout and links; `images.ts`: the bundled photos |
 | `src/components/` | Shared UI: `tab-bar.tsx` (the design's tab bar), `player-dock.tsx`, `dock-metrics.ts` (room the floating docks need), `icons.tsx`, `logo.tsx`, `text.tsx` (`Text`, `DisplayText`), `focused-status-bar.tsx`; screen-specific pieces live beside their screen |
 | `src/dev/` | Dev-only helpers (`dev-scroll.ts`); inert in release builds |
 | `src/hooks/`, `src/utils/` | `use-now.ts`, `use-online.ts` (is the phone connected); `format-time.ts` (station-time formatting) |
-| `src/config.ts` | `API_BASE`, built-in fallback stream URL, `FEATURES` flags (Archive off), dev hooks |
+| `src/config.ts` | `API_BASE`, built-in fallback stream URL, `DEMO_ARCHIVES` (`FEATURES.archive` mirrors it; real archives not built), dev hooks |
 | `src/theme.ts` | The design's tokens: colors, fonts, gradients, and the display-font nudge. One palette, light only |
 | `assets/` | Photos, the display font, icon, splash and notification icon; provenance in `assets/README.md` |
 | `scripts/` | `gen-types.mjs`, `check-contract.mjs`, `smoke-api.ts` and their own `tsconfig.json` (Node, not React Native); `build-phone.sh` builds a signed Release app and installs it on a connected iPhone (header lists its settings) |
@@ -129,7 +131,7 @@ reconnects at the live edge but has only been exercised in code), call interrupt
 | Path | What |
 |---|---|
 | `src/app/schedule/` | The Schedule tab is a stack: `index` (the week) and `[showId]` (a show page) |
-| `src/screens/schedule/` | Day picker + the day's shows, "ON AIR NOW" highlight. `schedule-state.ts` is the pure station-time logic |
+| `src/screens/schedule/` | One continuous week list with day bars and 24-hour times; opens at today, with an "ON AIR NOW" highlight. `schedule-state.ts` is the pure station-time logic |
 | `src/screens/show/` | Show page: hosts, genres, when it airs, about (honest empty states for missing text), reminder button |
 | `src/reminders/` | `plan.ts` (pure: which notifications to schedule), `notifications.ts` (expo-notifications), `reminders-provider.tsx` |
 
@@ -141,8 +143,8 @@ reconnects at the live edge but has only been exercised in code), call interrupt
   Tapping a reminder opens that show's page. Turning one on asks for notification permission first; if it was
   refused the button says how to turn it on in Settings.
 
-Verified on the simulator: the week's list with the right day marked today, a show page, and the schedule failing
-to load (clear notice, day picker still works). **Not verified, needs an iPhone:** the notification permission
+Verified before #27 on the simulator: the week's list, scrolling to today's bar, a show page, and the schedule failing
+to load (clear notice; pull down to retry). **Not verified, needs an iPhone:** the notification permission
 prompt being accepted, a reminder arriving at the show's start, and tapping it. On the simulator iOS refuses to
 schedule without permission and the prompt can't be tapped from automation, so only the planning logic
 (unit-tested) and the permission state (`undetermined`, so a prompt would appear) were checked.
@@ -157,7 +159,8 @@ schedule without permission and the prompt can't be tapped from automation, so o
 
 - **Team respects `approved`.** `/v1/station` keeps `approved: false` until the station confirms the roster each
   semester. The roster has students' names and emails, so while it is `false` the Team page shows "Team list
-  coming soon" and no names. (Easy to loosen: `teamView` in `station-state.ts`.) **Decision for the station to
+  coming soon" and no names; the API also withholds the roster (`team: []`, `backend/api/src/content.ts`). Changing
+  this policy requires updating both the API gate and `teamView` in `station-state.ts`. **Decision for the station to
   confirm:** whether events should also wait for approval; today they always show.
 - **Events** are split into Upcoming and Event archive by station-time date, with a link to wjrh.org/events.
 - **Static copy** was verified against wjrh.org on 21 Sep 2026 (`frontend/assets/station-content-sources.md`).
@@ -185,9 +188,9 @@ not approved (hidden) and approved (list with email links; the approved run used
 AsyncStorage (TanStack Query's persister), so a launch with no signal still has something to show. Station,
 schedule and shows are used for up to 7 days; now-playing for 1 hour, and only as "last known": an answer saved by an
 earlier run is hidden while a fresh one loads, so an old track is never shown as playing now
-(`usableNowPlaying` in `screens/now/now-state.ts`). Health, recent tracks and archives are never saved. Live audio
+(`usableNowPlaying` in `src/screens/now/now-state.ts`). Health, recent tracks and archives are never saved. Live audio
 does not read any of it. When the phone reports no connection, the Now tab says so
-(`useIsOnline` in `hooks/use-online.ts`, built on NetInfo); queries are *not* paused when offline, so the other
+(`useIsOnline` in `src/hooks/use-online.ts`, built on NetInfo); queries are *not* paused when offline, so the other
 screens keep showing their own "couldn't load" messages.
 
 Not done yet: a fixture with archives (the recorder was not running when the fixtures were captured, so `archives.json`
@@ -198,4 +201,4 @@ and `show-archives.json` are empty). If the API's schemas change, the app's type
 
 - Bundle ID / package `org.wjrh.app` (open question in the plan; fixed forever after the first store release).
 - Icon, splash and the Android notification icon are my layout (the logo on the station maroon): replace them if the
-  station has a brand kit. Show and track artwork falls back to the station's collage until the station supplies art.
+  station has a brand kit. Outside demo mode, show and track artwork falls back to the station's collage until the station supplies art.

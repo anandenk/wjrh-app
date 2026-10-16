@@ -16,7 +16,7 @@ account**, not the station's production setup (decision 001 still says: a statio
 
 The API is public: anyone with the address can read what the app reads (now playing, recent tracks, the schedule,
 show list, station pages). The student roster (names and emails) is **not** sent while `approved` is `false`
-(`publicStation` in `src/content.ts`). The first deployment sent it by mistake for about 12 hours; that was fixed the same
+(`publicStation` in `backend/api/src/content.ts`). The first deployment sent it by mistake for about 12 hours; that was fixed the same
 day. Do not put anything private in the content files without checking `publicStation`.
 
 ## How it was deployed
@@ -37,7 +37,7 @@ Worker is doing: the Cloudflare dashboard (Workers & Pages, `wjrh-api`, Metrics 
 connection when tried.
 
 To point the app at it, build with `EXPO_PUBLIC_API_BASE=https://wjrh-api.anandenkhjin.workers.dev`
-(see `apps/mobile/README.md`). `eas.json` does not set it yet for preview or production builds.
+(see [`../../apps/mobile/README.md`](../../apps/mobile/README.md)). `apps/mobile/eas.json` does not set it yet for preview or production builds.
 
 ## The free plan, and what to watch
 
@@ -51,8 +51,9 @@ written a day, 500 MB a database.
   is stopped, and the API keeps serving the last good snapshot and retries. If `health` shows the schedule stale
   (`status` not `ok`), look for "exceeded CPU" in the dashboard first. Fixes: do less work per run (compare the
   calendar's hash before parsing it) or move to the paid plan.
-- **Not enough for launch:** decision 001 estimated about 115,000 requests a day with real listeners, which is over the
-  free limit. The Workers Paid plan ($5 a month) covers that.
+- **Launch traffic needs a budget:** decision 001 estimates about 100,800 polling requests a day for ten continuously
+  foregrounded listeners, plus content/navigation requests, over the free limit used here. Actual usage depends on
+  foreground time; recheck limits/pricing before launch. The paid plan in decision 001 is the proposed next step.
 
 ## Before a real launch
 

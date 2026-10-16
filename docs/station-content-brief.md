@@ -2,8 +2,9 @@
 
 **For:** the station (music directors / station manager)
 **Why:** the listener app has places to show what each show *is* and who hosts it. Those
-places are currently empty, because the Google Calendar the schedule is built from has
-nowhere to put them. This sheet is that missing place.
+places need station-approved text. The calendar supplies some genre-like descriptions, but no structured bios;
+`backend/content/shows.json` is the editorial source for genres, blurbs and host bios. Fill this sheet, then copy the
+approved answers there. Demo mode uses labelled sample descriptions; those are not the station's answers.
 
 **What we need:** three short fields per show, for 27 shows. Nothing else changes — the
 calendar keeps owning the schedule itself.
@@ -17,8 +18,10 @@ A short comma-separated list. Shown on every schedule row and under the show nam
 
 - Good: `Folk and anti-folk` · `Indie, alternative, oldies` · `Hip-hop, soul, jazz`
 - Too long: `Eclectic, alternative, metal, jazz, soul, R and B, electronic, etc.` (67) —
-  this one currently gets cut to `Eclectic, alternative, metal, jazz, soul, R and B…`
-- **Over 48 characters is truncated with an ellipsis.** Three or four genres, not eight.
+  the HTML design shows this as `Eclectic, alternative, metal, jazz, soul, R and B…`.
+- **48 characters is the editorial target**, not a limit enforced by the native app. The calendar parsers shorten
+  fallback genre text at a word boundary around 58 characters; explicit profile genres are not truncated in code.
+  Keep to three or four genres so the row stays readable.
 - Avoid `etc.`, `ect.`, `everything` — they tell a listener nothing. If a show really is
   all over the place, `Eclectic` is the honest one-word version.
 
@@ -29,11 +32,11 @@ What the show actually is. Shown on the show's own page, under the title.
 - Present tense, no "Welcome to…", no times (the app already shows those).
 - Good: `Two hours of folk, anti-folk and whatever Josie found at the record store on
   College Hill this week. Requests welcome.`
-- **This must not repeat the genre list.** The app hides the blurb when it matches the
-  genre, so a duplicate means the show's page shows nothing.
+- **This should not repeat the genre list.** The native app displays a supplied blurb even when it repeats the genre;
+  use this space to tell a listener something more.
 
 ### 3. Host bio — max 140 characters, one sentence
-Who is behind the mic. Shown on the show's page beside the host's initials.
+Who is behind the mic. Shown under "About the host" on the native show's page when a bio is supplied.
 
 - **One bio per show, not per person.** Five shows are co-hosted; write those as a pair
   (`Sonia and Lawson are juniors who met in the booth and never left.`).
@@ -45,9 +48,9 @@ Who is behind the mic. Shown on the show's page beside the host's initials.
 
 ## Ground rules
 
-- **Plain text only.** No links, emoji, line breaks or formatting — they will not render.
-- **Leave a cell blank rather than writing a placeholder.** The app is built to hide an
-  empty field cleanly; it cannot hide `TBD` or `N/A`.
+- **Please submit plain text.** Keep links, emoji, line breaks and formatting out of this editorial sheet.
+- **Leave a cell blank rather than writing a placeholder.** The app is built to hide a
+  missing bio and show an explicit missing-description sentence; it would display `TBD` or `N/A` as real text.
 - **Do not edit the Slug column.** It is how the app matches your text to the right show.
   If a show is renamed or moves timeslot, keep the slug and tell us.
 - Accuracy over polish — we can copy-edit, we cannot invent.
@@ -56,14 +59,15 @@ Who is behind the mic. Shown on the show's page beside the host's initials.
 
 ## The sheet
 
-27 shows. The Genre column is pre-filled with whatever the calendar already contains —
-confirm it, replace it, or fill the blank.
+27 shows. Airtimes below follow the committed `tools/schedule-snapshot.json` (generated 2026-09-28, refreshed in #9);
+the calendar remains authoritative, so recheck them when collecting answers. The Genre column is pre-filled with
+calendar text: confirm it, replace it, or fill the blank.
 
 | Slug (do not change) | Show | Host(s) | Airs | Genre — existing | Genre (≤48) | Blurb (≤200) | Host bio (≤140) |
 |---|---|---|---|---|---|---|---|
 | `alternative-sound` | Alternative Sound | Jamya | Sat 2:00PM | — |  |  |  |
 | `amber-on-audio` | Amber on Audio | Amber | Wed 5:00PM | — |  |  |  |
-| `api-on-air` | API on Air | Cassie | Thu 5:00PM + Fri 5:00PM | — |  |  |  |
+| `api-on-air` | API on Air | Cassie | Thu 5:00PM | — |  |  |  |
 | `barthalomew-the-aquarium` | Barthalomew & The Aquarium | Ben | Mon 7:00PM | — |  |  |  |
 | `basement-jams` | Basement Jams | Darby | Wed 7:00PM | — |  |  |  |
 | `c-squared` | C SQUARED | Cora and Cassie | Thu 1:00PM | — |  |  |  |
@@ -93,10 +97,7 @@ confirm it, replace it, or fill the blank.
 
 ## Two more things to confirm
 
-1. **The automation name.** Between live shows the app currently says **"Hoggbot"**,
-   which is a placeholder we invented. It is the most-read word in the app — the station
-   is live 29 hours a week, so listeners see this name for the other 139. What should it
-   actually say?
-2. **A one-line description of the automation** to sit under that name. Current
-   placeholder: *"Rotation library, updated weekly by the music directors."* — is that
-   true?
+1. **The automation name.** The HTML design calls it **"Hoggbot"**, a prototype placeholder. The native app currently
+   says **"WJRH 104.9 FM"** with **"Automated programming"**. What should the station call it?
+2. **A one-line description of the automation** to sit under that name. Earlier prototype copy said
+   *"Rotation library, updated weekly by the music directors."* Is that accurate? It is not the current native copy.

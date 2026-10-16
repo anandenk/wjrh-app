@@ -4,10 +4,12 @@ A listener app for WJRH 104.9 FM (Lafayette College): the native iOS/Android app
 HTML design it follows. It is a proposal to the station: nothing here is the station's own service yet.
 
 **Where it stands (2026-10-15):** the app's Now (live player), Schedule (show pages, reminders) and Station tabs are
-built and match the design. They are verified on the iOS 27 simulator and the Android 16 emulator, and a demo build
+built and match the design. Earlier checks covered the iOS 27 simulator and selected Android 16 emulator behavior; a demo build
 has run on one iPhone. An Archive tab exists **as a demo only** (made-up recordings, off unless a flag is set). A demo
 copy of the API runs on Cloudflare's free plan, on a personal account. There are no store builds. Full state, what is
-and is not verified, and what to do next: [`docs/mobile-app/status.md`](docs/mobile-app/status.md).
+and is not verified, and what to do next: [`docs/mobile-app/status.md`](docs/mobile-app/status.md). PR #27's Expo patches
+passed `expo-doctor` 21/21 and an iOS simulator compile; simulator/emulator behavior and phone builds have not been
+rechecked with those versions.
 
 ## What's here
 
@@ -46,7 +48,7 @@ and is not verified, and what to do next: [`docs/mobile-app/status.md`](docs/mob
 Free: no Cloudflare or Mixcloud account needed. Needs Node 20+ and Python 3.10+.
 
 ```bash
-cd backend/api && npm ci && npm test      # unit and contract tests in Cloudflare's runtime; npm run typecheck
+(cd backend/api && npm ci && npm test)    # unit and contract tests in Cloudflare's runtime; npm run typecheck
 backend/scripts/dev.sh                    # fake station + fake Mixcloud + API on http://127.0.0.1:8787
 python3 backend/scripts/e2e.py --quick    # in another terminal: end-to-end check against dev.sh
 backend/scripts/dev-real.sh               # or: the API on :8797 against the REAL station (read-only)
@@ -94,6 +96,6 @@ Both are read-only against WJRH's services.
   Mixcloud's own player.
 - The student roster (names, emails) stays hidden until the station approves it: the API sends `team: []` while
   `/v1/station` says `approved: false`.
-- Demo content is labelled and off by default: the design's tracks, archives and covers, and the app's Archive demo
-  (`EXPO_PUBLIC_DEMO_ARCHIVES=1`). The demo shows real album covers loaded from Apple at run time: **private pitch
+- The HTML design always uses demo tracks, archives and covers. The app's labelled Archive demo is off by default
+  (`EXPO_PUBLIC_DEMO_ARCHIVES=1`). The app demo shows real album covers loaded from Apple at run time: **private pitch
   only**; remove them before any public release ([`archive-demo.md`](docs/mobile-app/archive-demo.md)).

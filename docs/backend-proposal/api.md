@@ -1,11 +1,15 @@
 # Proposed backend API contracts
 
-These contracts are a planning baseline, not an existing API. Confirm the host platform,
-owners and authentication model before implementation. The proposed platform is in
+These contracts began as a planning baseline; a working API now exists in [`../../backend/`](../../backend/) (#6),
+with response schemas in [`../../backend/schemas/`](../../backend/schemas/) as the source of truth. Examples below
+illustrate the shapes and omit some implemented fields. Production hosting, owners and access still need approval;
+the proposed platform is in
 [`decisions/001-hosting-on-cloudflare.md`](decisions/001-hosting-on-cloudflare.md).
 
 A working implementation of these contracts runs locally in [`../../backend/`](../../backend/),
-against a fake station. The notes marked **Learned from the prototype** below come from that work.
+against a fake station or the real upstreams (`backend/scripts/dev-real.sh`); a demo copy also runs on Cloudflare
+([`deployed-demo.md`](deployed-demo.md)). The native app consumes it; the HTML design still uses fixtures.
+The notes marked **Learned from the prototype** below come from that work.
 Archive episodes can also live on Mixcloud; see "Archives on Mixcloud" in
 [`../../backend/README.md`](../../backend/README.md).
 
@@ -18,7 +22,7 @@ Archive episodes can also live on Mixcloud; see "Archives on Mixcloud" in
 | **Now**: play button | Simulated | The existing stream, directly (URL from `/v1/station`) |
 | **Schedule** | Hard-coded copy of the calendar | `/v1/schedule/weekly` (or `/v1/schedule` for dated views) |
 | **Show page**: description, host | Generated placeholder copy | `/v1/shows` |
-| **Archive**: grid, past broadcasts, player | Placeholder dates, album covers, fake timer | `/v1/archives`, `/v1/shows/{showId}/archives`, and audio straight from storage |
+| **Archive**: grid, past broadcasts, player | Placeholder dates, album covers, fake timer | `/v1/archives`, `/v1/shows/{showId}/archives`; self-hosted audio direct from storage, Mixcloud through its own widget |
 | **Station**: Team, Events | Hard-coded lists | `/v1/station` |
 | Offline / "Signal Broadcast" state | Editor switch | `/v1/health` (`services.stream.status`) |
 
@@ -31,9 +35,10 @@ stream URL, and keep showing the last data it received.
 - JSON responses use `application/json; charset=utf-8`.
 - Times are ISO 8601 with offsets; schedule timezone is always named explicitly.
 - IDs are stable slugs/UUIDs, never array positions or display names.
-- Unknown values are `null`; do not send placeholder strings such as `TBD` or `Null`.
+- Nullable fields use `null`; do not send placeholder strings such as `TBD` or `Null`. The legacy weekly schedule
+  retains empty strings for missing genre/description/bio text; see its schema.
 - Public read endpoints permit the production web origin through CORS.
-- Responses include `generatedAt` or `asOf` so the client can identify stale data.
+- Responses use endpoint-specific timestamps (`checkedAt`, `generatedAt`, `asOf` or `updatedAt`); see the schemas.
 - Errors use one envelope:
 
 ```json
@@ -162,9 +167,10 @@ introduced.
 - **Add `GET /v1/schedule/weekly?week=YYYY-MM-DD`.**
   - It returns one real week in the exact `tools/schedule-snapshot.json` shape, plus `showId`, `occurrenceId` and
     `recurring` per slot and `weekOf` / `contentChangedAt` at the top level (all declared in
-    `schemas/schedule-weekly.schema.json`, which the mobile app's types are generated from).
-  - Existing frontends can switch source without a rewrite. Built from the current calendar, it
-    reproduced the committed `tools/schedule-snapshot.json` exactly.
+    `backend/schemas/schedule-weekly.schema.json`, which the mobile app's types are generated from).
+  - The legacy fields reproduce the frozen `backend/mocks/fixtures/schedule-snapshot.json` when using the matching
+    fixture calendar (parity test, corrected in #14; the e2e check was corrected in #26).
+    `tools/schedule-snapshot.json` tracks the real calendar and is separate.
   - Its `generatedAt` should mean "last confirmed current" (the last successful check), so a
     frontend can flag stale schedules honestly.
 - **Map show names to IDs with the same slug rule as `fetch_schedule.py`.** Keep an `aliases` list per
@@ -313,8 +319,9 @@ These are authenticated staff operations and should not be exposed to the public
 - `PATCH /v1/admin/archives/{episodeId}` — edit metadata or publish/unpublish.
 - `DELETE /v1/admin/archives/{episodeId}` — remove according to the retention policy.
 
-Authentication, roles and audit logging must be selected before implementing these
-operations. At minimum, record who changed publication state and when.
+These operations are implemented with bearer-token authentication and an audit log. Production still needs
+Cloudflare Access and a station-approved access policy (Decision 001). The actor comes from Access's email header,
+or `X-Actor`/`token` in local development; see `backend/api/src/index.ts`.
 
 **Learned from the prototype**
 - **Episode lifecycle:** `uploading → pending_review → published ⇄ unpublished`. Reject any other
