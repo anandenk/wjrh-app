@@ -43,7 +43,7 @@ Keep changing progress there so this overview and new sessions do not carry comp
 
 ## Run the backend locally
 
-Free: no Cloudflare or Mixcloud account needed. Needs Node 20+ and Python 3.10+.
+Free: no Cloudflare or Mixcloud account needed. Use Node 24 (also used in CI) and Python 3.10+.
 
 ```bash
 (cd backend/api && npm ci && npm test)    # unit and contract tests in Cloudflare's runtime; npm run typecheck

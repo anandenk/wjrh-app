@@ -35,7 +35,7 @@ The native app in [`../apps/mobile/`](../apps/mobile/) already consumes this API
 
 **Step-by-step walkthrough, including breaking things on purpose:** [`TESTING.md`](TESTING.md).
 
-You need Node 20+ and Python 3.10+. Docker is optional.
+Use Node 24 (also used in CI) and Python 3.10+. Docker is optional.
 
 ```bash
 backend/scripts/dev.sh                 # starts everything; Ctrl-C stops it

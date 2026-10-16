@@ -39,6 +39,7 @@ backend/scripts/dev-real.sh                    # real upstreams, read-only; API 
 API_HOST=0.0.0.0 backend/scripts/dev-real.sh     # trusted Wi-Fi only, never campus Wi-Fi
 python3 backend/scripts/e2e.py --quick          # requires the running dev.sh stack
 python3 tools/check_station_services.py        # read-only real-service check
+python3 tools/check_docs.py                    # local links/anchors/imports; no network
 (cd apps/mobile && npm ci && npm run typecheck && npm test && npm run check:contract && npm run lint)
 (cd apps/mobile && npm run smoke:api)           # requires the running dev.sh stack
 (cd apps/mobile && npm run smoke:fixtures)      # no server
