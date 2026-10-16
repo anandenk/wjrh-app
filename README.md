@@ -3,13 +3,11 @@
 A listener app for WJRH 104.9 FM (Lafayette College): the native iOS/Android app, the `/v1` API it reads, and the
 HTML design it follows. It is a proposal to the station: nothing here is the station's own service yet.
 
-**Where it stands (2026-10-15):** the app's Now (live player), Schedule (show pages, reminders) and Station tabs are
-built and match the design. Earlier checks covered the iOS 27 simulator and selected Android 16 emulator behavior; a demo build
-has run on one iPhone. An Archive tab exists **as a demo only** (made-up recordings, off unless a flag is set). A demo
-copy of the API runs on Cloudflare's free plan, on a personal account. There are no store builds. Full state, what is
-and is not verified, and what to do next: [`docs/mobile-app/status.md`](docs/mobile-app/status.md). PR #27's Expo patches
-passed `expo-doctor` 21/21 and an iOS simulator compile; simulator/emulator behavior and phone builds have not been
-rechecked with those versions.
+**Current state, verified behavior, pending checks and next steps:** [`docs/mobile-app/status.md`](docs/mobile-app/status.md).
+Keep changing progress there so this overview and new sessions do not carry competing versions of the handoff.
+
+**Working on the project:** start with [`AGENTS.md`](AGENTS.md), shared by Claude Code and Codex.
+[`docs/workflow.md`](docs/workflow.md) explains the task/PR workflow and which document owns each kind of information.
 
 ## What's here
 

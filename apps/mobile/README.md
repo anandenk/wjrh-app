@@ -1,13 +1,12 @@
 # WJRH mobile app (Expo)
 
-The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router, TypeScript). Built so far: the
-**Now** tab (live player), the **Schedule** tab (with show pages and reminders) and the **Station** tab, plus the
-typed API layer, in the look of the HTML design ([`docs/mobile-app/design-polish.md`](../../docs/mobile-app/design-polish.md)). **Archive** exists only as a demo with
-made-up recordings, off unless `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](../../docs/mobile-app/archive-demo.md)).
-Earlier checks covered the **iOS 27 simulator** and selected **Android 16 emulator** behavior; the Archive demo was
-checked on iOS only. A demo build has run informally on one iPhone, but the
-[real-phone checklist](../../docs/mobile-app/iphone-test-checklist.md) has not been worked through. PR #27's Expo patches
-passed `expo-doctor` 21/21 and an iOS simulator compile only; runtime checks and phone rebuilds with those versions remain pending.
+The native iOS and Android listener app (Expo SDK 57, React Native, Expo Router, TypeScript). This guide owns app
+setup, source layout, scripts and environment variables. Current feature completion, verification and pending
+device/dependency checks live in [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md); do not copy that
+handoff into this overview. The sample Archive's behavior and flag are documented in
+[`archive-demo.md`](../../docs/mobile-app/archive-demo.md).
+Verification paragraphs below describe earlier recorded checks; use the status doc to establish whether those
+results cover the current code and dependency versions.
 
 - Where things stand, next steps, gotchas, decisions waiting on people: [`docs/mobile-app/status.md`](../../docs/mobile-app/status.md)
 - Stack, screen-to-endpoint map, licensing rules, build order: [`docs/mobile-app/plan.md`](../../docs/mobile-app/plan.md)

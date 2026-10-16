@@ -2,11 +2,14 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last updated **2026-10-15**, through merged PR #28 (`9e98cc5`, after the history rewrite): hardening #20,
-Android #21, design polish #22, Archive demo #23, roster fix #24, repo checkup/e2e parity fix #26,
-Expo patches #27 and commit-reference fixes #28. #25 was review-only and closed without merging.
+Last reviewed **2026-10-15**, against merged `main` through PR #29 (`17bba77`, documentation reconciliation).
+Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
+repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite.
+#25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
 
-- Plan, stack and rules: [`plan.md`](plan.md). Project rules and commands: [`../../CLAUDE.md`](../../CLAUDE.md).
+- Plan and stack: [`plan.md`](plan.md). Shared rules: [`../../AGENTS.md`](../../AGENTS.md).
+- Repository map/commands: [`../../CLAUDE.md`](../../CLAUDE.md). Task/PR workflow and documentation ownership:
+  [`../workflow.md`](../workflow.md).
 - App code and its own guide: [`../../apps/mobile/README.md`](../../apps/mobile/README.md).
 - Real-phone testing, still to do: [`iphone-test-checklist.md`](iphone-test-checklist.md).
 
@@ -312,13 +315,10 @@ unmutes it themselves. The real app plays at full volume.
 
 ## Working agreements
 
-- Work on a branch and open a PR. Never merge or push to `main` yourself; leave merging to the owner.
-- Commit as `anandenk <321060286+anandenk@users.noreply.github.com>`; no co-author, generated-by, Codex or Claude lines
-  in commits or PRs.
-- Explain things plainly and briefly; the owner is learning. Check before assuming on judgment calls, and flag them
-  in the PR (the roster gating is an example).
-- Say plainly what was and was not verified, in the PR and in the final message.
-- **Run the backend tests before merging anything that touches `backend/`, `tools/` or the schemas.** PR #9 was
-  merged without re-running them and left `main` with one failing test until #14 fixed it.
-- Finish the authorized scope through verification, docs and a PR; state any checks that were not run. A broad
-  go-ahead does not authorize merging or pushing to `main`.
+The authoritative shared rules, including author identity, no audio and merge authorization, live in
+[`../../AGENTS.md`](../../AGENTS.md). Follow [`../workflow.md`](../workflow.md) for task startup, checks,
+documentation in the same PR and handoff. Keep current progress and verification here; do not duplicate the rules.
+
+Why the verification rule matters: PR #9 was merged without re-running backend tests and left one failing parity
+test until #14 fixed it. Respect task-specific restrictions, and record unperformed checks as pending rather than
+silently treating an earlier result as current.

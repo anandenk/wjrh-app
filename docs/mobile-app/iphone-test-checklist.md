@@ -176,6 +176,6 @@ and real offline/online ([`status.md`](status.md), "What is verified"). Still ne
 |---|---|---|---|---|
 | | | | | |
 
-After a run: fix or file what failed, update the "Not verified" lists in [`status.md`](status.md),
-[`audio-spike.md`](audio-spike.md) and [`../../apps/mobile/README.md`](../../apps/mobile/README.md), and tick the
-matching sections of `CLAUDE.md`'s "Where we are".
+After a run: record the device/build/date and results here, fix or file what failed, and update the current
+verification/next steps in [`status.md`](status.md). Preserve the dated [`audio-spike.md`](audio-spike.md) findings.
+Update app setup instructions only if the procedure changed; do not duplicate the results in other overviews.

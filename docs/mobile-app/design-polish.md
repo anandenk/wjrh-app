@@ -45,7 +45,7 @@ iPhone (#23), but these design checks have not been completed there. All simulat
    demo mode the app uses the show's own artwork when supplied, otherwise the station's collage; recent-track rows
    use slices of that collage. Demo mode uses Apple album-cover lookups and bundled fallback covers (#23);
    these must be removed or replaced before public release.
-4. **Album line on Now.** The design shows title and artist only. The licensing rule in `CLAUDE.md` says title, artist
+4. **Album line on Now.** The design shows title and artist only. The licensing rule in [`AGENTS.md`](../../AGENTS.md) says title, artist
    *and* album, so the album sits under the artist when the feed has one.
 5. **"Up next" line removed from Now** (the design has none; the Schedule tab shows what is next). Show-start dividers
    in the recent list ("Amber on Audio started") are not drawn: the API gives only tracks.
