@@ -1,9 +1,7 @@
 # Mobile app plan (Expo / React Native)
 
-- **Status:** Steps 0–6 and design polish (step 8) are built. Earlier checks covered the iOS simulator and selected Android
-  emulator behavior. The real Archive (step 7) and full phone checks remain; a sample Archive demo exists (#23).
-  PR #27 passed `expo-doctor` 21/21 and an iOS simulator compile, but runtime checks with those patches remain pending.
-  See [`status.md`](status.md) for verification limits and follow-ups.
+- **Current progress and verification:** [`status.md`](status.md) owns completion, evidence and next steps. This file
+  owns architecture and build order; it is not a second progress tracker.
 - **Date:** 2026-09-28 (updated 2026-10-15)
 - **Builds on:** the `/v1` API in [`backend/`](../../backend/), [Decision 001](../backend-proposal/decisions/001-hosting-on-cloudflare.md)
   (Cloudflare) and [Decision 002](../backend-proposal/decisions/002-archive-and-licensing.md) (Mixcloud archives).
@@ -132,27 +130,22 @@ which case the web origin must be added to `CORS_ORIGINS`.
 
 ## Build order
 
-Status as of 2026-10-15 (details, PR numbers and what is verified: [`status.md`](status.md)).
+This is the dependency order, not a completion checklist. See [`status.md`](status.md) for each step's current state,
+PRs and verification limits; [`iphone-test-checklist.md`](iphone-test-checklist.md) owns physical-device results.
 
-0. **Run the API against the real stream, feed and calendar.** Done ([`phase0-findings.md`](phase0-findings.md)).
-1. **Audio spike:** pick the live-audio library. `expo-audio` chosen; iOS simulator and Android emulator checks done
-   before #27, full physical-device checks remain ([`iphone-test-checklist.md`](iphone-test-checklist.md)).
-2. **Scaffold:** `create-expo-app` in `apps/mobile`, Expo Router tabs, EAS profiles, env config. Done.
+0. **Validate the real upstreams:** stream, feed and calendar. Original findings: [`phase0-findings.md`](phase0-findings.md).
+1. **Choose the live-audio library:** `expo-audio`, with `react-native-track-player` as the fallback if device checks fail.
+2. **Scaffold:** Expo Router tabs, native config, EAS profiles and environment settings in `apps/mobile`.
 3. **Contract layer:** generated types, a typed `fetch` client with the error envelope, query hooks,
-   and fixtures from the fake station for offline UI work. Done in `apps/mobile/src/api` (see [`the app README`](../../apps/mobile/README.md#api-layer-srcapi)).
-4. **Now tab:** live player, now-playing, recent, health banner. This is the first real milestone.
-   Built and verified on the simulator; iPhone checks remain.
-5. **Schedule and show pages**, plus local reminder notifications. Built and verified on the simulator;
-   reminder permission and delivery need an iPhone.
-6. **Station tab.** Built and verified on the simulator. Team is hidden until the API's `approved` flag is true.
-7. **Real Archive tab:** not built; waits for the board's decision, with Mixcloud WebView planned first.
-   **Real archives not started.** A demo with made-up recordings exists for the board pitch, off unless
-   `EXPO_PUBLIC_DEMO_ARCHIVES=1` ([`archive-demo.md`](archive-demo.md)).
-8. Design polish from `frontend/`: the WJRH Display font (Barlow Condensed ExtraBold), the logo and
-   station photos in `frontend/assets/`, the tab bar and player dock, icon and splash. The normal app skips the
-   `recent-cover-*` images (placeholder album art); #23 bundles five for the demo only. **Done on the iOS simulator**; what
-   differs from the design and why: [`design-polish.md`](design-polish.md). Four screens were also checked on the Android
-   emulator before #27. Store assets and runtime checks after #27 are still to do.
+   and fixtures for offline UI work. Guide: [`the app README`](../../apps/mobile/README.md#api-layer-srcapi).
+4. **Now tab:** live player, now-playing, recent and health notices.
+5. **Schedule and show pages**, plus local reminder notifications.
+6. **Station tab:** content, links, events and the approved-roster gate.
+7. **Real Archive integration:** station-approved provider/data, Mixcloud WebView first. The labelled sample Archive
+   is a separate demo, not evidence that this step is complete ([`archive-demo.md`](archive-demo.md)).
+8. **Design polish:** typography, logo, station photos, tab bar/player dock, icon and splash from `frontend/`.
+   Deliberate differences belong in [`design-polish.md`](design-polish.md). Demo artwork stays separate from approved
+   release artwork; store assets and device appearance need their own verification.
 
 ## Decisions made while building
 
