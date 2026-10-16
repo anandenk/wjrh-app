@@ -1,5 +1,8 @@
 # App assets
 
+Asset paths below are relative to `apps/mobile/assets/`; `src/` paths are relative to `apps/mobile/`, and
+`frontend/` paths are relative to the repository root.
+
 | Path | What | Where it came from |
 |---|---|---|
 | `images/*.jpg`, `images/contact.png` | Station photos used by the Now, Show and Station screens | `frontend/assets/`, resized to 1200 px wide at most (about 3x the widest slot). Credits: `frontend/assets/station-content-sources.md`. Not copied on purpose: `recent-cover-*` (placeholders, not real artwork), except as the demo covers below |

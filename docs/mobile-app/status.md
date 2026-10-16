@@ -2,8 +2,9 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last updated **2026-10-15** (everything through PR #24 is merged: hardening #20, the Android run #21, design polish #22,
-the Archive demo #23 and the API's roster fix #24).
+Last updated **2026-10-15**, through merged PR #28 (`9e98cc5`, after the history rewrite): hardening #20,
+Android #21, design polish #22, Archive demo #23, roster fix #24, repo checkup/e2e parity fix #26,
+Expo patches #27 and commit-reference fixes #28. #25 was review-only and closed without merging.
 
 - Plan, stack and rules: [`plan.md`](plan.md). Project rules and commands: [`../../CLAUDE.md`](../../CLAUDE.md).
 - App code and its own guide: [`../../apps/mobile/README.md`](../../apps/mobile/README.md).
@@ -11,8 +12,9 @@ the Archive demo #23 and the API's roster fix #24).
 
 ## Where it stands
 
-All four planned screens exist and run on the **iOS 27 simulator** and the **Android 16 emulator** against the
-local API. **The app has run informally on one iPhone** (a demo build;
+Now, Schedule and Station ran on the **iOS 27 simulator** and the **Android 16 emulator** against the
+local API; the Archive demo was checked on iOS only. These runtime checks predate #27's Expo patches and have not
+been repeated with those versions. **The app has run informally on one iPhone** (a demo build;
 [`iphone-test-checklist.md`](iphone-test-checklist.md) has not been worked through). The only deployment is a demo copy of the
 API on Cloudflare's free plan, on a personal account ([`deployed-demo.md`](../backend-proposal/deployed-demo.md)); there are no
 store builds.
@@ -34,7 +36,9 @@ The throwaway audio-spike app was removed once the real app covered it; it is ke
 
 ## What is verified, and what is not
 
-Verified (simulator, Mac muted, so by player state, logs and screenshots, never by ear):
+Paths beginning `src/` or `assets/` below are relative to `apps/mobile/`.
+
+Verified before #27 (simulator, Mac muted, so by player state, logs and screenshots, never by ear):
 - Live stream plays, keeps playing in the background, and registers lock-screen/Control Center info.
 - A dead API stream URL switches to the built-in stream URL by itself; the whole API being down still plays.
 - Now, Schedule (list, show page, load-failed notice), Station (hub, events, contact, team both approved and not).
@@ -57,10 +61,12 @@ Verified (simulator, Mac muted, so by player state, logs and screenshots, never 
   and the Station hub agree; a real 390/393 pt phone was not used (the iPhone 17e simulator could not be driven, see
   Gotchas). Done with fixture data; the live API was not behind these shots.
 - ESLint is clean (`npm run lint`). Unit tests, typecheck, `check:contract`, `smoke:api` against `dev.sh`.
-- **`expo-doctor` is 20/21, not 21/21** (rechecked 2026-10-15): Expo has since published patch releases of 8 packages
+- **`expo-doctor` passed 21/21 in merged PR #27** (`c5349f6`, 2026-10-15), which installed patch releases of 8 packages
   (`expo` 57.0.30, `expo-asset`, `expo-constants`, `expo-dev-client`, `expo-linking`, `expo-notifications`,
-  `expo-router`, `expo-splash-screen`) that the lockfile on `main` predates. #27 installs them (21/21);
-  after it is merged, run `npm ci`, rebuild the dev client and re-run the simulator checks. The packages added here (`async-storage`, `netinfo`) match SDK 57.
+  `expo-router`, `expo-splash-screen`). Typecheck, 89 unit tests, `check:contract`, lint and `smoke:fixtures` passed;
+  an iOS simulator Debug build compiled, but the app was **not launched**. **Still pending after #27:** `npm ci`,
+  dev-client rebuild and simulator/emulator runtime checks, plus rebuilding the phone demo with
+  `apps/mobile/scripts/build-phone.sh --prebuild`. No new device verification is implied by that compile.
 
 **Android 16 emulator** (Pixel 6 AVD `wjrh-api36`, arm64, 4 GB RAM; Mac muted and the emulator started `-no-audio`).
 Taps work here (`adb shell input tap`), unlike on the iOS simulator:
@@ -83,7 +89,8 @@ Taps work here (`adb shell input tap`), unlike on the iOS simulator:
 **Found on Android and NOT fixed** (decisions or risks, details in the PR):
 - **Reminders are inexact and arrive late.** Android has no exact-alarm permission in the app, so each reminder is an
   alarm with a one-hour window (`dumpsys alarm` shows `window=+1h`). Measured twice on an awake emulator: delivered
-  about **4 min 15 s after** the show's start. On a real idle phone it can be up to an hour. iOS is on time. Options:
+  about **4 min 15 s after** the show's start. Real idle-phone timing, including Doze, is unverified;
+  the alarm's one-hour window is not a measured delivery guarantee. iOS delivery timing is also unverified. Options:
   (a) `USE_EXACT_ALARM` (granted automatically, but Google Play only allows it for alarm, timer and calendar-style
   apps, so the station must decide whether a show reminder qualifies); (b) `SCHEDULE_EXACT_ALARM` (the listener must
   allow "Alarms & reminders" in Settings, so it needs a small prompt flow); (c) keep inexact and reword so a late one
@@ -128,7 +135,7 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
    Team page hides all names/emails, and since #24 the API itself sends `team: []` (the demo API sent the roster for
    about 12 hours before that; [`deployed-demo.md`](../backend-proposal/deployed-demo.md)). Should it? Should events also wait? (`teamView`, `src/screens/station/station-state.ts`.)
 2. **Archives** (Decision 002): whether to ship them, and how (Mixcloud). Also confirm Mixcloud's widget terms
-   allow embedding in a station app. The Archive tab stays off until then.
+   allow embedding in a station app. Real archives stay off until then; the sample Archive tab can be enabled for a demo.
 3. **Bundle ID / package name:** `org.wjrh.app` is a placeholder in `apps/mobile/app.config.ts`. It cannot change
    after the first store release.
 4. **Apple Developer ($99/yr) and Google Play ($25) accounts:** who owns them. They should belong to the station.
@@ -136,7 +143,7 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 6. **Station copy to recheck before launch** (`apps/mobile/src/content/station.ts`): board-meeting time, GroupMe
    invite, donation link. Last verified against wjrh.org on 21 Sep 2026.
 7. **Reminder wording** ("<show> is starting", body "with <hosts> · WJRH 104.9 FM") is mine; the station may want
-   something else. **Android reminder timing** (inexact, about 4 min late here, up to an hour): pick exact alarms
+   something else. **Android reminder timing** (inexact one-hour window, about 4 min late on the emulator; idle-phone timing unverified): pick exact alarms
    (and whether Google Play allows `USE_EXACT_ALARM` for this) or reword. See "Found on Android and NOT fixed".
 8. Deploying the API for real (Decision 001, Cloudflare): a station-owned account and a station domain. A demo copy already
    runs on a personal account ([`deployed-demo.md`](../backend-proposal/deployed-demo.md)). The app's preview/production builds
@@ -144,13 +151,14 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 
 ## Next steps, in order
 
-1. **Run the iPhone checks** ([`iphone-test-checklist.md`](iphone-test-checklist.md)) and record results there. Four
+1. **Complete the #27 follow-ups** above (install dependencies, rebuild, re-run simulator/emulator checks and rebuild
+   the phone demo). Then **run the iPhone checks** ([`iphone-test-checklist.md`](iphone-test-checklist.md)) and record results there. Four
    screens of unverified device behavior is the biggest risk. If lock-screen/background/interruption fails with
    `expo-audio`, try `react-native-track-player` (the plan's fallback) before building more.
 2. Settle the decisions above that block work (roster gating and bundle ID are the cheap ones).
 3. **Step 7, Archive tab** behind the flag (Mixcloud widget in a WebView; audio must stay inside Mixcloud's player;
    live and archive audio are mutually exclusive: starting one stops the other).
-4. Design follow-ups (step 8 itself is done): the Archive screens in the design's style when step 7 is built; real
+4. Design follow-ups (step 8 itself is done): connect the existing demo Archive screens to real data and playback when step 7 is built; real
    artwork from the station (shows and tracks) in place of the collage; a brand kit if the station has one (the icon
    and splash are my layout); store screenshots and listing text.
 5. Hardening ideas still open: `eas init` and a first EAS build; an Android run on a real phone. (Done: ESLint, the
@@ -163,10 +171,11 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 backend/scripts/dev.sh                  # fake station + API on http://127.0.0.1:8787   (Ctrl-C stops it)
 backend/scripts/dev-real.sh             # API against the REAL station, :8797, read-only
 API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi (never campus Wi-Fi: use a hotspot or the demo API)
-cd backend/api && npm ci && npm test    # run this whenever you touch backend/, schemas, tools/
+(cd backend/api && npm ci && npm test)  # run this whenever you touch backend/, schemas, tools/
 python3 tools/check_station_services.py # read-only check of the real stream, feed, calendar
 
 # App checks (apps/mobile)
+cd apps/mobile
 npm ci
 npm run typecheck && npm test && npm run check:contract && npm run lint   # all must pass
 npm run smoke:api                       # real client vs the running dev.sh stack
@@ -303,12 +312,13 @@ unmutes it themselves. The real app plays at full volume.
 
 ## Working agreements
 
-- Branch, PR, **squash-merge** into `main` (as #1 to #24). **No Claude attribution** in commits or PRs: no
-  `Co-Authored-By` or "Generated with" lines.
+- Work on a branch and open a PR. Never merge or push to `main` yourself; leave merging to the owner.
+- Commit as `anandenk <321060286+anandenk@users.noreply.github.com>`; no co-author, generated-by, Codex or Claude lines
+  in commits or PRs.
 - Explain things plainly and briefly; the owner is learning. Check before assuming on judgment calls, and flag them
   in the PR (the roster gating is an example).
 - Say plainly what was and was not verified, in the PR and in the final message.
 - **Run the backend tests before merging anything that touches `backend/`, `tools/` or the schemas.** PR #9 was
   merged without re-running them and left `main` with one failing test until #14 fixed it.
-- The owner has been giving broad go-aheads ("go for it", "whatever is best"): finish a step end to end (build,
-  verify, docs, PR, merge) before asking what is next, but never merge unverified work without saying so.
+- Finish the authorized scope through verification, docs and a PR; state any checks that were not run. A broad
+  go-ahead does not authorize merging or pushing to `main`.

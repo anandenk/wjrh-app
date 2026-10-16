@@ -56,7 +56,7 @@ Constraints:
 
 | Option | For | Against |
 |---|---|---|
-| **Cloudflare (proposed)** | No servers to patch; cheap at this scale; R2 has no download fees; the design preview is already on Cloudflare Pages; `wrangler dev` runs the real runtime locally | The existing Python schedule parser must be ported to TypeScript; the recorder still needs its own machine; D1 and Cron are Cloudflare-specific |
+| **Cloudflare (proposed)** | No servers to patch; cheap at this scale; R2 has no download fees; the design preview is already on Cloudflare Pages; `wrangler dev` runs the real runtime locally | The Python parser has been ported (`backend/api/src/ics.ts`, #6); maintain parity. The recorder still needs its own machine; D1 and Cron are Cloudflare-specific |
 | One Python server (FastAPI + SQLite + recorder) | Reuses `fetch_schedule.py` directly; one machine | Someone must patch and watch it; one failure takes down both the API and archiving; a VPS costs about $5/month |
 | AWS, next to the existing now-playing bucket | May share the account that already publishes metadata | That account's owner is unknown; audio download fees cost real money |
 
@@ -67,8 +67,10 @@ interchangeable.
 
 These use Cloudflare's published pricing. Re-check it before the board vote.
 
-**Traffic.** An open app that polls every 15 s makes roughly 480 requests an hour. Ten listeners on
-average is about 115,000 requests a day, which is over the Workers free allowance of 100,000 a day.
+**Traffic.** The native app's foreground polling (`apps/mobile/src/api/queries.ts`) makes roughly 420 requests an hour:
+now-playing every 15 s (240), recent every 30 s (120), health every 60 s (60), plus content/navigation requests.
+Ten continuously foregrounded listeners would make about 100,800 polling requests a day, already over the
+Workers free allowance used in this estimate (100,000 a day). Actual traffic depends on foreground listening time.
 
 **Archive audio.** At 128 kbps, audio is 57.6 MB an hour. The schedule has about 29 live hours a week,
 so that's about 1.7 GB of new audio a week.
@@ -96,6 +98,7 @@ includes:
 - the API;
 - a mock station, including a fake Mixcloud;
 - the recorder, which archives to our own storage or to Mixcloud;
-- 50 automated tests and an end-to-end check.
+- automated unit/contract tests (51 passed in #26) and an end-to-end check.
 
-It runs entirely on a laptop with `wrangler dev`, so none of it costs anything until it is deployed.
+The local stack runs free with `wrangler dev`. A demo copy of the API also runs on Cloudflare's free plan
+([`../deployed-demo.md`](../deployed-demo.md)); the station's production deployment and recorder remain pending.

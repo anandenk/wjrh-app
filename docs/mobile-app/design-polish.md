@@ -2,6 +2,7 @@
 
 The app now looks like the design in `frontend/index.html`: same colors, fonts, spacing, photos, tab bar and player
 dock. This file says what was matched, where the app **deliberately differs** and why, and how to re-check it.
+Paths beginning `src/` or `assets/` below are relative to `apps/mobile/`.
 
 Checked on the **iOS 27 simulator** (iPhone 17, 402 pt wide) by taking a screenshot of every screen in the app and of
 the same screen in the design, then comparing them side by side and by pixel position. The narrow-phone layouts (under
@@ -10,7 +11,9 @@ at 402, which exercises the same styles. The **Android 16 emulator** (Pixel 6, 4
 against the design at its size, for Now, Schedule, a show page and the Station hub (the other Station pages were not
 looked at on Android): layout, fonts, tab bar, gesture-bar spacing and status-bar icon colors agree; the dock has no
 blur there (see below). Still unchecked: a real iPhone or Android phone, a real 390/393 pt iPhone, and large text sizes
-(see [`iphone-test-checklist.md`](iphone-test-checklist.md), section J).
+(see [`iphone-test-checklist.md`](iphone-test-checklist.md), section J). A demo build has since run informally on one
+iPhone (#23), but these design checks have not been completed there. All simulator/emulator checks below predate
+#27; its Expo patch versions compiled for the iOS simulator but were not launched.
 
 ## What was built
 
@@ -30,15 +33,18 @@ blur there (see below). Still unchecked: a real iPhone or Android phone, a real 
 
 ## Where the app differs from the design, on purpose
 
-1. **No Archive tab yet.** It is plan step 7 and waits for the station's decision (Decision 002). While
-   `FEATURES.archive` is off the tab bar shows three tabs; with it on it shows four, as in the design.
+1. **Real archives are not built.** Plan step 7 waits for the station's decision (Decision 002). Normally the tab bar
+   shows three tabs; `EXPO_PUBLIC_DEMO_ARCHIVES=1` enables a fourth with generated sample recordings and a silent timer
+   player (#23), not real archives ([`archive-demo.md`](archive-demo.md)).
 2. **Show page.** Same layout, but: the header says SHOW (the design says ARCHIVE); the small heading above the name
    is the show's genre (the design says SHOW ARCHIVE); the design's "Generated prototype description" label is not
-   shown, because the descriptions are real now; there is no "Past broadcasts" list (no archive), so the page has
-   "On air" times, the reminder button and "About the host" there instead.
-3. **No album covers.** The design's covers (Now canvas, recent tracks, archive tiles) are real album art copied as
-   stand-ins, marked "must be replaced before any public release". The app uses the show's own artwork when the API
-   has it, otherwise the station's collage; each recent-track row shows a different slice of that collage.
+   shown. The normal app uses supplied text or an explicit missing-description sentence; demo text says "Sample
+   description". "Past broadcasts" appears only in demo mode. "On air" times and reminders are present, and
+   "About the host" appears only when a real bio exists.
+3. **Album covers are demo-only.** The design's covers are other people's album art used as stand-ins. Outside
+   demo mode the app uses the show's own artwork when supplied, otherwise the station's collage; recent-track rows
+   use slices of that collage. Demo mode uses Apple album-cover lookups and bundled fallback covers (#23);
+   these must be removed or replaced before public release.
 4. **Album line on Now.** The design shows title and artist only. The licensing rule in `CLAUDE.md` says title, artist
    *and* album, so the album sits under the artist when the feed has one.
 5. **"Up next" line removed from Now** (the design has none; the Schedule tab shows what is next). Show-start dividers
@@ -66,6 +72,6 @@ blur there (see below). Still unchecked: a real iPhone or Android phone, a real 
 ## How to check it again
 
 `tools/design-compare/` takes a screenshot of every screen of the design and of the app and puts them side by side;
-its README has the steps. The app has three dev-only helpers for it (ignored in release builds): `EXPO_PUBLIC_DEV_ROUTE`
-accepts `/route@600` to scroll a screen, each settled screen logs `[dev-shot N]`, and `EXPO_PUBLIC_DEV_NOW` fixes the
-schedule's clock so "ON AIR NOW" can be seen at any hour.
+its README has the steps. The dev-only `EXPO_PUBLIC_DEV_ROUTE` helper accepts `/route@600` to scroll a screen and logs
+`[dev-shot N]` once each screen settles. `EXPO_PUBLIC_DEV_NOW` fixes the schedule's clock so "ON AIR NOW" can be seen
+at any hour. Both are ignored in release builds.

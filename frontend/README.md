@@ -8,7 +8,7 @@ its demo data. This folder is also exactly what gets deployed to Cloudflare Page
 |---|---|
 | `index.html` | The design |
 | `support.js`, `react-*.js` | The runtime it needs |
-| `assets/` | Images, with credits in `station-content-sources.md` and `recent-cover-sources.md` |
+| `assets/` | Images, with credits in [`assets/station-content-sources.md`](assets/station-content-sources.md) and [`assets/recent-cover-sources.md`](assets/recent-cover-sources.md) |
 | `fonts/` | Barlow Condensed display face and its licence (`OFL.txt`) |
 | `_headers` | Cloudflare Pages headers: no search indexing, basic security headers |
 

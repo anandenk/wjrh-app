@@ -28,16 +28,16 @@ The old `~/Downloads/design_handoff_wjrh_app` folder is superseded; everything i
 ## Commands
 
 ```bash
-cd backend/api && npm ci && npm test   # unit + contract tests in Cloudflare's runtime; npm run typecheck
+(cd backend/api && npm ci && npm test) # unit + contract tests in Cloudflare's runtime; npm run typecheck
 backend/scripts/dev.sh                 # fake station + fake Mixcloud + API on http://127.0.0.1:8787
 backend/scripts/dev-real.sh            # API on http://127.0.0.1:8797 against the REAL station (read-only)
 API_HOST=0.0.0.0 backend/scripts/dev-real.sh   # same, reachable from a phone on the same Wi-Fi (never on campus Wi-Fi)
 python3 backend/scripts/e2e.py --quick # end-to-end check against the running stack
 python3 tools/check_station_services.py  # read-only check of the real stream, feed and calendar
-cd apps/mobile && npm ci && npm run typecheck && npm test && npm run check:contract && npm run lint   # must all pass
-cd apps/mobile && npm run smoke:api    # real API client vs the running dev.sh stack (smoke:fixtures: offline)
-cd apps/mobile && npm run gen:types    # regenerate src/api/types.ts after backend/schemas changes
-cd apps/mobile && npx expo-doctor      # must be 21/21
+(cd apps/mobile && npm ci && npm run typecheck && npm test && npm run check:contract && npm run lint) # must all pass
+(cd apps/mobile && npm run smoke:api)  # real API client vs the running dev.sh stack (smoke:fixtures: offline)
+(cd apps/mobile && npm run gen:types)  # regenerate src/api/types.ts and src/api/schema-version.ts after backend/schemas changes
+(cd apps/mobile && npx expo-doctor)    # must be 21/21
 ```
 
 Running the app on the simulator and the dev-only env vars: see `docs/mobile-app/status.md`.
@@ -47,20 +47,24 @@ Running the app on the simulator and the dev-only env vars: see `docs/mobile-app
 Plan steps 0 to 6 and 8 are done and merged (PRs #9–#24): the API runs against the real station; the app has the Now tab
 (live player with `expo-audio`, own fallback to the built-in stream URL, reconnects at the live edge on every play,
 lock-screen info), the Schedule tab (week list, show pages, local show reminders) and the Station tab (static pages,
-team gated on the API's `approved` flag, events). All of it is verified **on the iOS 27 simulator and the Android 16
-emulator only** (`status.md`). The app has run informally on one iPhone (a demo build), but
+team gated on the API's `approved` flag, events). Verification covers the **iOS 27 simulator and selected Android 16
+emulator checks** (`docs/mobile-app/status.md`); Archive demo checks were on iOS only. These runs predate #27's
+Expo patch updates and have not been repeated with those versions. The app has run informally on one iPhone (a demo build), but
 `docs/mobile-app/iphone-test-checklist.md` has not been worked through. The only deployment is a demo copy of the API on
 Cloudflare's free plan (personal account; `docs/backend-proposal/deployed-demo.md`); there are no store builds. Since #16:
 handoff docs (#17), cleanup (#18), the stall watchdog (#19), hardening and saved answers (#20), an Android emulator
 run and player fix (#21), design polish (#22), the Archive demo behind a flag (#23), and the API withholding the roster
-until approved (#24).
+until approved (#24). The repo checkup and e2e parity fix (#26), Expo patches (#27), and rewritten commit references
+(#28) are also merged; #25 was a review-only PR and was closed without merging.
 
-**Next:** run the checks in `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
+**Next:** complete the #27 rebuild/runtime follow-ups below, then run `docs/mobile-app/iphone-test-checklist.md` on a real iPhone (needs the owner's phone), then
 plan step 7 (the real Archive tab, behind a flag until the station decides; only the demo exists). Design polish (step 8)
-is done on the simulator: see `docs/mobile-app/design-polish.md`. `npx expo-doctor` is 20/21 on `main` until #27
-(the Expo patch releases) is merged. Use
+is done on the simulator: see `docs/mobile-app/design-polish.md`. `npx expo-doctor` passed **21/21 in merged PR #27**
+(`c5349f6`); its iOS simulator build compiled but was not launched. After pulling, run `npm ci` in `apps/mobile`,
+rebuild the dev client and phone demo (`apps/mobile/scripts/build-phone.sh --prebuild`), and re-run simulator/emulator
+checks; those follow-ups are still pending. Use
 `react-native-track-player` only if the iPhone audio checks fail with `expo-audio`. Open decisions for the station
-(roster gating, archives, bundle ID, store accounts) are listed in `status.md`.
+(roster gating, archives, bundle ID, store accounts) are listed in `docs/mobile-app/status.md`.
 
 ## Rules
 
@@ -78,19 +82,20 @@ is done on the simulator: see `docs/mobile-app/design-polish.md`. `npx expo-doct
   listed in `docs/mobile-app/design-polish.md`. Add to that list when you differ again.
 - The student roster has names and emails: it stays hidden while `/v1/station` says `approved: false` (the app hides it, and the API sends `team: []`).
 
-## Gotchas (details in `status.md`)
+## Gotchas (details in `docs/mobile-app/status.md`)
 
 - Xcode 27 has **no Simulator.app**: open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app`.
 - iOS 27 needs the UIScene setting already in `app.config.ts`; Metro must **not** run with `CI=1`.
-- The simulator cannot be tapped from automation, so dev-only env hooks (`EXPO_PUBLIC_AUTOPLAY`, `_DEV_ROUTE`, which
-  also scrolls with `/route@600`, and `_DEV_NOW`) drive it. Audio tests are run with the Mac **muted** (the owner is often in class).
+- The simulator could not be tapped in the recorded automation sessions, so dev-only env hooks (`EXPO_PUBLIC_AUTOPLAY`,
+  `EXPO_PUBLIC_DEV_ROUTE`, which also scrolls with `/route@600`, and `EXPO_PUBLIC_DEV_NOW`) drive it.
+  Audio tests are run with the Mac **muted** (the owner is often in class).
 - `tools/schedule-snapshot.json` tracks the real calendar; the backend parity test uses
   `backend/mocks/fixtures/schedule-snapshot.json`. Don't mix them up.
 
 ## Git
 
-- Work on a branch, open a PR, and squash-merge into `main` (as with #1–#24).
+- Work on a branch and open a PR. Never merge or push to `main` yourself; leave merging to the owner.
+- Commit as `anandenk <321060286+anandenk@users.noreply.github.com>`.
 - **Run the backend tests before merging anything that touches `backend/`, `tools/` or the schemas.**
-- **No Claude attribution** in commits or PRs: no `Co-Authored-By: Claude` or "Generated with
-  Claude Code" lines.
+- No assistant attribution in commits or PRs: no co-author, generated-by, Codex or Claude lines.
 - Say plainly in each PR what was and was not verified.

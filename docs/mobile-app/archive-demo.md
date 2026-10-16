@@ -2,6 +2,7 @@
 
 The Archive tab, built on made-up data and real album covers, so the idea can be shown before the station decides
 anything about real archives (Decision 002). It is **demo only**: it plays no audio, and none of its recordings exist.
+Paths beginning `src/` or `assets/` below are relative to `apps/mobile/`.
 
 ## What is real and what is made up
 
@@ -31,8 +32,8 @@ would be statements about real students.
 ## Covers
 
 All the covers are **other people's artwork**. That is fine for a private pitch and **not licensed for a release**.
-None of the pictures is in the repo: the app loads them from Apple's public image service when it runs and keeps them
-on the phone, so a demo with no signal still has them once it has run online.
+The 36 album links and automation cover load from Apple's public image service and are cached on the phone;
+five fallback covers are bundled in `apps/mobile/assets/images/`. Offline cache behavior still needs phone checks.
 
 - **Shows (Archive grid, archive page, past broadcasts, show page, Now when a show is on air):** each active show gets
   its own album from `src/archive/demo-albums.ts` (36 albums, in an order where bright and dark covers alternate, so
@@ -53,7 +54,8 @@ on the phone, so a demo with no signal still has them once it has run online.
 
 ## Turning it on
 
-It is off unless you set `EXPO_PUBLIC_DEMO_ARCHIVES=1` when the app is bundled (also works in a Release build):
+It is off unless you set `EXPO_PUBLIC_DEMO_ARCHIVES=1` when the app is bundled (also works in a Release build).
+Run these commands from `apps/mobile/`:
 
 ```bash
 EXPO_PUBLIC_DEMO_ARCHIVES=1 npx expo start            # simulator / dev build
@@ -70,14 +72,14 @@ remove `assets/images/demo-cover-*.jpg` before a public release.**
 `apps/mobile/scripts/build-phone.sh` builds a signed Release app with your own Apple team and installs it on a connected
 iPhone. A Release build carries its JavaScript, so the phone needs no Metro server and no Mac nearby. It needs Xcode
 signed in with an Apple ID (a free account works, and the app then stops working after 7 days), an iPhone with
-Developer Mode on, plugged in and unlocked, and these settings:
+Developer Mode on, plugged in and unlocked, and these settings (run this example from the repository root):
 
 ```bash
 DEVELOPMENT_TEAM=<your team id> \
 WJRH_BUNDLE_ID=com.yourname.wjrh \
 EXPO_PUBLIC_API_BASE=https://wjrh-api.anandenkhjin.workers.dev \
 EXPO_PUBLIC_DEMO_ARCHIVES=1 \
-apps/mobile/scripts/build-phone.sh --prebuild      # --prebuild the first time only; later runs leave it off (about 4 min)
+apps/mobile/scripts/build-phone.sh --prebuild      # first time, after native settings/dependencies change, or after #27
 ```
 
 - **`DEVELOPMENT_TEAM`:** your team's id. Open the generated project once in Xcode and pick your team under Signing &
@@ -93,6 +95,9 @@ apps/mobile/scripts/build-phone.sh --prebuild      # --prebuild the first time o
 - **First launch:** Settings > General > VPN & Device Management > your Apple ID > Trust. The demo then fetches its album
   covers (a few MB), so give it a few seconds with a connection once.
 - **After 7 days** a free account's app stops opening: run the script again (without `--prebuild`).
+- **Build verification (#23):** build, install and launch succeeded on the owner's iPhone. The full phone checklist,
+  another machine/paid team, and a clean-checkout `--prebuild` run were not verified. #27's Expo patches still need a
+  phone rebuild with `--prebuild` and fresh runtime checks.
 
 ## How it behaves
 
@@ -141,7 +146,8 @@ descriptions; and Recently played with real covers found from the live feed,
 against the real API running on the Mac. Every album in the list was looked at on a contact sheet to confirm it is the
 right cover.
 
-**Not checked:** a real iPhone, Android, the Archive screens against the live API (they are built from `/v1/shows` and
+Those simulator checks predate #27; its patch versions were compiled for the simulator but not launched.
+**Not checked:** the full real-iPhone checklist (a demo build was installed and launched, #23), Android, the Archive screens against the live API (they are built from `/v1/shows` and
 `/v1/schedule/weekly`, which did not change), the Now hero with a show on air, how the covers load with no signal on a
 phone that has never loaded them, how Apple's lookup behaves under its rate limit with a long list, and dragging the
 progress bar (only tapping it).

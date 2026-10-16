@@ -1,6 +1,8 @@
 # Recent-track placeholder artwork
 
-These public-domain images are used as decorative placeholders only. They are not presented as the actual cover art for the fictional demo tracks in the WJRH prototype.
+These images are decorative placeholders, not the actual cover art for the fictional demo tracks in the WJRH prototype.
+The source links below do not establish release rights; remove or replace these covers before public release, as
+required by the app's [demo guide](../../docs/mobile-app/archive-demo.md#covers).
 
 1. `recent-cover-01.jpg` — [Album 1977 - US cover](https://commons.wikimedia.org/wiki/File:Album_1977_-_US_cover.jpg)
 2. `recent-cover-02.jpg` — [The Trumpet Sounds of Carole Reinhart Record Cover Front](https://commons.wikimedia.org/wiki/File:The_Trumpet_Sounds_of_Carole_Reinhart_Record_Cover_Front.jpg)

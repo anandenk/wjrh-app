@@ -1,5 +1,15 @@
 # Backend integration plan
 
+## Implementation progress (2026-10-15)
+
+This is the production rollout plan, not a list of wholly unbuilt features. The Worker, schema tests, schedule
+refresh, metadata normalization, health probes, show JSON, D1 history collector and archive review/recording pipeline
+are implemented (#6); real-upstream validation is done (#9). The native listener app uses the API (#12–#16), has local
+reminders (#15) and saves last-good answers (#20). A demo API runs on a personal Cloudflare account (#24).
+Station ownership, approvals, alert delivery, a real join provider and real Archive playback/production remain open.
+See [`../mobile-app/status.md`](../mobile-app/status.md) for verification limits, including runtime checks still pending
+after #27's Expo patches. The phases below describe the intended production behavior and gates.
+
 ## Recommended approach
 
 Do not replace the working stream, metadata publisher, or Google Calendar at the start.
@@ -138,7 +148,8 @@ This phase is the safest first implementation work because it does not require A
 ### Frontend rollout
 
 - Replace the device-only recent list with server history when healthy.
-- Clearly fall back to local observations if the service is unavailable.
+- In the current native app, show an unavailable state when recent history cannot load; recent tracks are not saved
+  across restarts. Any future local-observation fallback must label its source clearly.
 - Enable previous-show playlists only after occurrence attribution is tested.
 - Replace generated show copy only when approved content exists.
 
@@ -247,8 +258,8 @@ Do not introduce accounts unless another approved requirement genuinely needs th
 2. Assign owners for the three existing sources.
 3. Decide where the small application layer and scheduled jobs can run.
 4. Choose the Phase 1 milestone: automated schedule plus health checks.
-5. Create the backend repository and environment conventions.
-6. Convert the API examples into machine-validated schemas/tests.
-7. Create staging endpoints and wire the frontend behind a feature flag.
+5. Review the existing `backend/` code and its dev/real/production environment configuration.
+6. Review the existing response schemas and contract tests against the approved production scope.
+7. Move beyond the personal demo API to station-owned staging/production and point the native app at it.
 8. Schedule the archive licensing/operations decision separately from engineering.
 

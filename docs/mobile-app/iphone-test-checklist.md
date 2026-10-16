@@ -1,6 +1,8 @@
 # Real-phone test checklist
 
-Everything here is **untested on a real device**; the simulator cannot do it. Run it on a physical iPhone, tick
+This checklist has **not been worked through on a real device**. A demo build was installed and launched on one
+iPhone (#23); that informal run does not complete these checks. #27's Expo patches still need a phone rebuild and
+fresh runtime checks. Run the checklist on a physical iPhone, tick
 what passes, write down what does not, and commit the filled-in file. Status and context:
 [`status.md`](status.md). If the audio items in sections B to D fail with `expo-audio`, try
 `react-native-track-player` (the plan's fallback) before building more screens.
@@ -8,8 +10,9 @@ what passes, write down what does not, and commit the filled-in file. Status and
 ## Set up
 
 **You need:** an iPhone with Developer Mode on (Settings > Privacy & Security > Developer Mode), a cable, Xcode
-signed in with your Apple ID (a free personal account works; apps expire after 7 days), and the phone and the Mac on
-the **same Wi-Fi**. Only run the LAN steps on a network you trust.
+signed in with your Apple ID (a free personal account works; apps expire after 7 days). For the local API/dev build
+below, put the phone and Mac on the **same trusted Wi-Fi**; never expose the API on campus Wi-Fi. A Release build pointed
+at the demo HTTPS API needs no Mac or shared Wi-Fi after installation ([`archive-demo.md`](archive-demo.md)).
 
 **Shortcut for building:** `apps/mobile/scripts/build-phone.sh` does steps 2 and 3 below for you (prebuild, Release build,
 install) from a few settings; its header says which, and `archive-demo.md` has an example. It also drops the Push
@@ -95,7 +98,8 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 ### E. Network
 - [ ] E1. Airplane mode while playing: button says "Reconnecting…". Turn it off: audio comes back within about 20 s
       **without tapping anything**. *(The stall watchdog should reconnect on its own: expect "Reconnecting…" after about 20 s without
-      audio, then sound again. Verified on the simulator only; record how long it took here: ____ s.)*
+      audio, then sound again. The iOS silent-stall run passed in #19, but was not repeated after #20's refactor or #27's
+      dependency updates; Android's ended-stream recovery passed in #21. Record how long it took here: ____ s.)*
 - [ ] E2. Turn Wi-Fi off mid-play (cellular on): audio recovers.
 - [ ] E3. Launch with no network: Now shows "You're offline…" (with "Showing last known info from …" if the app ran
       before); Play says "Reconnecting…"; once online the notice goes away by itself and it plays.
@@ -131,7 +135,7 @@ Tick `[x]` for pass, write `FAIL: what happened` otherwise.
 
 ### H. General
 - [ ] H1. The largest text size: nothing unreadable or cut off (text stops growing at 130% on purpose). Dark mode: the app stays light.
-- [ ] H2. VoiceOver: buttons are announced with sensible names (Play live stream, day names, show rows).
+- [ ] H2. VoiceOver: buttons and show rows are announced with sensible names; day bars are announced as headings.
 
 ### J. Looks (design polish; the simulator cannot judge these)
 - [ ] J1. Fonts: headlines are the tall condensed face (not a system font) and body text is Inter on every screen, also
