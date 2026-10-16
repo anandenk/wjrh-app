@@ -2,9 +2,10 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last reviewed **2026-10-15**, against merged `main` through PR #29 (`17bba77`, documentation reconciliation).
+Last reviewed **2026-10-15**, against merged `main` through PR #30 (`7e21253`, shared agent workflow).
 Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
-repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite.
+repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite,
+#29 reconciled the docs, and #30 established shared instructions/documentation ownership.
 #25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
 
 - Plan and stack: [`plan.md`](plan.md). Shared rules: [`../../AGENTS.md`](../../AGENTS.md).
@@ -154,10 +155,15 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 
 ## Next steps, in order
 
-1. **Complete the #27 follow-ups** above (install dependencies, rebuild, re-run simulator/emulator checks and rebuild
-   the phone demo). Then **run the iPhone checks** ([`iphone-test-checklist.md`](iphone-test-checklist.md)) and record results there. Four
-   screens of unverified device behavior is the biggest risk. If lock-screen/background/interruption fails with
-   `expo-audio`, try `react-native-track-player` (the plan's fallback) before building more.
+1. **Complete verification after #27 before substantial feature expansion** (agent, with the owner's explicit
+   authorization for app/audio-state runs): install dependencies, rebuild the native dev clients, and repeat the
+   affected iOS simulator/Android emulator checks with the current dependency versions. Specifically re-run the iOS
+   silent-stall watchdog scenario not repeated after #20: kill the fake stream mid-play, expect recovery after about
+   20 s. Keep the Mac muted and the Android emulator at `-no-audio`; record code/PR, device and actual outcomes here.
+   Rebuild the phone demo with `apps/mobile/scripts/build-phone.sh --prebuild`. Then the **owner with an iPhone** runs
+   [`iphone-test-checklist.md`](iphone-test-checklist.md), records build/device/date/results there and updates this
+   doc's verification summary. These runs remain **pending**; the automated PR checks do not perform them. If
+   lock-screen/background/interruption fails with `expo-audio`, evaluate `react-native-track-player` before building more.
 2. Settle the decisions above that block work (roster gating and bundle ID are the cheap ones).
 3. **Step 7, Archive tab** behind the flag (Mixcloud widget in a WebView; audio must stay inside Mixcloud's player;
    live and archive audio are mutually exclusive: starting one stops the other).
@@ -166,6 +172,16 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
    and splash are my layout); store screenshots and listing text.
 5. Hardening ideas still open: `eas init` and a first EAS build; an Android run on a real phone. (Done: ESLint, the
    saved last good answers across restarts, the offline notice, and an emulator run; see "What is verified".)
+
+### Repository housekeeping (separate from app verification)
+
+- **Review and retire the old `repo-checkup` worktree** (owner/agent, after confirming no session is using it).
+  On 2026-10-15 it was clean at `9da860d`, on branch `docs-expo-status`, under the repo-relative path
+  `.claude/worktrees/repo-checkup`. Its one branch-only commit updates the doctor/pending-runtime wording in
+  `CLAUDE.md` and this status doc. Compare it with the current docs and preserve any unique work before removing
+  the worktree or deleting a branch; commit ancestry alone does not establish whether squash-merged work is covered.
+  The #29 reconciliation already records the same doctor result/runtime gap, but review the actual diff first.
+  Cleanup is **pending**, and nothing was removed as part of the automated-check work.
 
 ## Run everything (macOS, Xcode 27)
 
@@ -274,8 +290,9 @@ unmutes it themselves. The real app plays at full volume.
   path, so test failure handling with an unreachable host, not a wrong path (`audio-spike.md`, earlier run).
 - **Resuming a paused live stream would play from an old buffer** (a rewind, which the licensing rules forbid), so
   every Play and every resume from outside the app reconnects at the live edge.
-- **Typed routes:** after adding a route file, run Metro once so `.expo/types` regenerates, or `tsc` reports the new
-  path as not assignable. (`.expo/` is gitignored.)
+- **Typed routes:** stale `.expo/types` can make `tsc` reject a valid route. `npm run typecheck` now refreshes the
+  ignored types with `npm run gen:routes` before checking; generation uses Expo's headless `customize tsconfig.json`
+  command in CI mode, with no Metro server. Do not commit `.expo/` or `expo-env.d.ts`.
 - **`npx expo install` can fail with ERESOLVE** unless `react-dom` is pinned to the same version as `react`.
   It also puts `eslint-config-expo` in `dependencies` whatever flags you pass; move it to `devDependencies` by hand.
 - **Saved answers are keyed on the schemas.** `npm run gen:types` writes `src/api/schema-version.ts`, a hash of

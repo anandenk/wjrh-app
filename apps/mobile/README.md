@@ -24,7 +24,8 @@ APP_VARIANT=development npx expo run:ios   # builds a development app, installs 
 - Xcode 27 has no Simulator app: open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app` to get a window.
 - Do **not** run Metro with `CI=1`: it stops watching files and serves a stale bundle.
 - After adding a native module (anything with native code), rebuild with `expo run:ios`; JS changes just reload.
-- Adding a route file? Run Metro once so the typed-route types regenerate, or `tsc` rejects the new path.
+- Adding a route file? `npm run typecheck` refreshes the ignored Expo Router types without Metro; use
+  `npm run gen:routes` for generation alone. Otherwise a stale local file can make `tsc` reject a valid new route.
 - A real phone needs more steps (LAN API, signing): [`iphone-test-checklist.md`](../../docs/mobile-app/iphone-test-checklist.md).
 - More simulator commands (boot, deep link into the dev build, screenshots): [`status.md`, "Run everything"](../../docs/mobile-app/status.md#run-everything-macos-xcode-27).
 
@@ -47,7 +48,8 @@ Unlike the iOS simulator, an Android emulator can be tapped from automation (`ad
 
 | Command | What |
 |---|---|
-| `npm run typecheck` | App code **and** `scripts/` (two tsconfigs). Must pass |
+| `npm run typecheck` | Generate ignored Expo Router types, then check app code **and** `scripts/` (two tsconfigs). Must pass |
+| `npm run gen:routes` | Generate `.expo/types` and Expo TypeScript environment files without Metro (`expo customize tsconfig.json` in CI mode); do not commit these generated files |
 | `npm test` | Unit tests (Node's test runner via `tsx`) for the pure logic: Now, Schedule/station time, reminder planner, Station |
 | `npm run check:contract` | Offline fixtures still validate against `backend/schemas` |
 | `npm run smoke:api` | Real API client vs the running `backend/scripts/dev.sh` stack; validates every response, the error envelope and the admin guard |

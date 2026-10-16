@@ -90,7 +90,37 @@ A reusable starting prompt for either tool:
 
 ## Review gate
 
-The PR template makes documentation impact and verification visible during review; it does not run checks or
-guarantee factual freshness. There is no new CI job or hook in this workflow. Each agent must perform the relevant
-review before calling its work ready. If repeated mechanical mistakes remain, add a focused automated link/path
-check in a separate task; such a check cannot prove a runtime or station-owned claim.
+The PR template makes documentation impact and verification visible during review. The automated checks below
+catch mechanical failures; reviewers still need to compare current factual claims and verification evidence with
+code/history. Keep unfinished simulator, device and station-owned work explicit.
+
+## Automated PR checks
+
+[`../.github/workflows/checks.yml`](../.github/workflows/checks.yml) runs on every PR, pushes to `main`, and manual
+dispatch. It uses standard Ubuntu runners, Node 24 for JavaScript checks, Python 3.12 for docs, locked npm installs,
+read-only repository permission and pinned action commits. New commits cancel obsolete runs of the same PR.
+
+| GitHub check | What runs |
+|---|---|
+| Docs links | Regression tests for the checker, then local links/anchors/reference targets in all tracked Markdown and standalone `CLAUDE.md` imports; patch whitespace |
+| Mobile checks | Generated API types must match committed files; headless Expo Router type generation, typecheck, lint, unit tests, fixture/schema contracts and fixture-mode client smoke checks |
+| Backend checks | Typecheck and the existing unit/contract suite in Cloudflare's local test runtime with mocked upstreams |
+
+All three checks run for every PR so deletions, moved docs and shared schemas are covered. These checks do not build
+or launch the native app, play audio, contact station services, deploy or replace simulator/phone verification.
+Dependencies/actions need downloads on a cold runner; the test data and docs checks are local.
+
+Run docs checks from the repo root with no extra Python packages:
+
+```bash
+python3 -m unittest discover -s tools -p test_check_docs.py
+python3 tools/check_docs.py
+```
+
+The checker validates inline links/images, reference definitions/explicit reference uses, common GitHub heading
+anchors, HTML `id`/`name` anchors and standalone instruction imports. It ignores fenced/inline code, comments and
+external URLs. Backticked prose paths, external terms/prices and factual freshness still need review; keep historical,
+generated and example paths qualified. A passing check is not evidence that the app ran.
+
+Inspect the check results on the PR before merging. The workflow reports failures; it does not configure repository
+branch protection or merge restrictions. Use the owner-authorized merge rule in `AGENTS.md` regardless of CI results.

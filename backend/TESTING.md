@@ -8,8 +8,9 @@ For how the pieces fit together, see [`README.md`](README.md).
 
 ## 0. What you need (once)
 
-- **Node 20+** and **Python 3.10+**. Check with `node -v` and `python3 --version`.
-  - On a Mac, `brew install node python` if either is missing.
+- **Node 24** (also used in CI) and **Python 3.10+**. Check with `node -v` and `python3 --version`.
+  - On a Mac, install missing tools with `brew install node@24` and `brew install python`; follow Homebrew's
+    PATH instructions so `node -v` selects Node 24.
 - **git**.
 - Docker is **not** needed.
 - The first run downloads npm packages and a small Python S3 emulator, so you need internet once.

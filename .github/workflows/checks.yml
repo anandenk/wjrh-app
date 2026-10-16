@@ -1,0 +1,86 @@
+name: PR checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  EXPO_NO_TELEMETRY: '1'
+  WRANGLER_SEND_METRICS: 'false'
+
+jobs:
+  docs:
+    name: Docs links
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Check the docs checker
+        run: python3 -m unittest discover -s tools -p test_check_docs.py
+      - name: Check tracked Markdown links and instruction imports
+        run: python3 tools/check_docs.py
+      - name: Check patch whitespace
+        run: git diff --check HEAD^ HEAD
+
+  mobile:
+    name: Mobile checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci
+      - name: Check generated API types are committed
+        run: |
+          npm run gen:types
+          git diff --exit-code -- src/api/types.ts src/api/schema-version.ts
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run check:contract
+      - run: npm run smoke:fixtures
+
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend/api
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: backend/api/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
