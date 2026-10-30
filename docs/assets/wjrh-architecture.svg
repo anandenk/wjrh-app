@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="810" viewBox="0 0 1240 810" role="img" aria-labelledby="title desc">
+  <title id="title">WJRH prototype architecture</title>
+  <desc id="desc">The native iOS and Android listener app receives live audio directly from the public station stream. It requests metadata and schedules from a Cloudflare Worker API, which reads the public now-playing feed and Google Calendar and stores recent history and cached snapshots in D1. The backend archive workflow is implemented, but the mobile Archive is a demo and real archive playback is planned. This is an independent, unofficial prototype.</desc>
+  <defs>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#334155;font-size:18px}
+      .title{font-size:28px;font-weight:700;fill:#152238}
+      .subtitle{font-size:17px;fill:#627087}
+      .group{fill:#f8fafc;stroke:#d1dbe8;stroke-width:1.25}
+      .group-label{font-size:18px;font-weight:700;fill:#526078}
+      .node{stroke-width:1.5}
+      .node-title{font-size:23px;font-weight:700}
+      .small{font-size:16px;fill:#5d6d85}
+      .edge{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+    </style>
+  </defs>
+  <rect width="1240" height="810" rx="16" fill="#fff" />
+  <text x="32" y="54" class="title" font-family="Arial,Helvetica,sans-serif" font-size="28" fill="#152238" font-weight="700">WJRH prototype architecture</text>
+  <text x="32" y="84" class="subtitle" font-family="Arial,Helvetica,sans-serif" font-size="17" fill="#627087">Independent, unofficial prototype · core application flow</text>
+  <rect x="24" y="170" width="340" height="462" rx="17" class="group" />
+  <rect x="450" y="170" width="340" height="462" rx="17" class="group" />
+  <rect x="876" y="170" width="340" height="462" rx="17" class="group" />
+  <text x="48" y="205" class="group-label" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#526078" font-weight="700">Listener's phone</text>
+  <text x="474" y="205" class="group-label" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#526078" font-weight="700">Application backend</text>
+  <text x="900" y="205" class="group-label" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#526078" font-weight="700">Public station services</text>
+  <path d="M900 266 H858 Q844 266 844 252 V146 Q844 132 830 132 H208 Q194 132 194 146 V270" class="edge" stroke="#2563eb" />
+  <rect x="382" y="97" width="276" height="27" rx="3" fill="#fff" />
+  <text x="520" y="118" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#1d4ed8" font-weight="500" text-anchor="middle">Live audio · direct to phone</text>
+  <rect x="48" y="270" width="292" height="256" rx="13" class="node" fill="#eff6ff" stroke="#3973ff" />
+  <text x="72" y="307" class="node-title" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="#1e4093" font-weight="700">Native listener app</text>
+  <text x="72" y="342" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Expo · React Native</text>
+  <text x="72" y="371" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">iOS + Android</text>
+  <text x="72" y="415" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Now · Schedule · Station</text>
+  <text x="72" y="445" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Offline cache · reminders</text>
+  <text x="72" y="491" class="small" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#5d6d85">Live player + stream fallback</text>
+  <text x="48" y="566" class="small" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#5d6d85">Audio bypasses the API.</text>
+  <text x="48" y="591" class="small" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#5d6d85">Reminders are local to the device.</text>
+  <rect x="474" y="270" width="292" height="182" rx="13" class="node" fill="#eefbf5" stroke="#00866a" />
+  <text x="498" y="307" class="node-title" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="#075c47" font-weight="700">Station-data API</text>
+  <text x="498" y="342" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Cloudflare Worker · /v1</text>
+  <text x="498" y="376" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Now playing · schedule</text>
+  <text x="498" y="405" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Recent tracks · health</text>
+  <text x="498" y="432" class="small" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#5d6d85">Background refresh jobs</text>
+  <path d="M340 372 H474" class="edge" stroke="#08795b" />
+  <rect x="363" y="335" width="88" height="25" rx="3" fill="#fff" />
+  <text x="407" y="354" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#08795b" font-weight="500" text-anchor="middle">JSON API</text>
+  <text x="407" y="399" class="small" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#5d6d85">HTTPS</text>
+  <rect x="474" y="510" width="292" height="96" rx="13" class="node" fill="#f6f0ff" stroke="#8856d7" />
+  <text x="498" y="546" class="node-title" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="#6334a3" font-weight="700">Cloudflare D1</text>
+  <text x="498" y="579" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">History · cached snapshots</text>
+  <path d="M620 452 V510" class="edge" stroke="#7c3aed" />
+  <text x="640" y="487" class="small" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#6d28d9">Read / write</text>
+  <rect x="900" y="218" width="292" height="98" rx="13" class="node" fill="#eff6ff" stroke="#3973ff" />
+  <text x="924" y="255" class="node-title" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="#1e4093" font-weight="700">Live stream</text>
+  <text x="924" y="289" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Public station audio</text>
+  <rect x="900" y="354" width="292" height="96" rx="13" class="node" fill="#fff7ef" stroke="#d67043" />
+  <text x="924" y="391" class="node-title" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="#923b1a" font-weight="700">Now-playing feed</text>
+  <text x="924" y="424" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Track + artist metadata</text>
+  <path d="M900 402 H766" class="edge" stroke="#c04a15" />
+  <rect x="790" y="367" width="86" height="26" rx="3" fill="#fff" />
+  <text x="833" y="386" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#a54218" font-weight="500" text-anchor="middle">Track data</text>
+  <rect x="900" y="488" width="292" height="96" rx="13" class="node" fill="#fff7ef" stroke="#d67043" />
+  <text x="924" y="525" class="node-title" font-family="Arial,Helvetica,sans-serif" font-size="23" fill="#923b1a" font-weight="700">Google Calendar</text>
+  <text x="924" y="558" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Public schedule · iCalendar</text>
+  <path d="M900 536 H842 Q828 536 828 522 V446 Q828 432 814 432 H766" class="edge" stroke="#c04a15" />
+  <rect x="790" y="459" width="86" height="26" rx="3" fill="#fff" />
+  <text x="833" y="478" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#a54218" font-weight="500" text-anchor="middle">Schedule</text>
+  <rect x="24" y="664" width="1192" height="118" rx="13" fill="#fafbfc" stroke="#cbd5e1" stroke-width="1.25" stroke-dasharray="6 5" />
+  <text x="48" y="696" class="group-label" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#526078" font-weight="700">Archive extension · separate from the core flow above</text>
+  <text x="48" y="728" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#334155">Python recorder + storage / Mixcloud adapters: backend implemented.</text>
+  <text x="48" y="756" class="subtitle" font-family="Arial,Helvetica,sans-serif" font-size="17" fill="#627087">App Archive is opt-in demo-only; real archive playback is planned.</text>
+  <g aria-hidden="true">
+    <polygon points="194,270 188,258 200,258" fill="#2563eb" />
+    <polygon points="340,372 352,366 352,378" fill="#08795b" />
+    <polygon points="474,372 462,366 462,378" fill="#08795b" />
+    <polygon points="620,452 614,464 626,464" fill="#7c3aed" />
+    <polygon points="620,510 614,498 626,498" fill="#7c3aed" />
+    <polygon points="766,402 778,396 778,408" fill="#c04a15" />
+    <polygon points="766,432 778,426 778,438" fill="#c04a15" />
+  </g>
+</svg>
