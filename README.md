@@ -5,6 +5,11 @@
 A listener app for WJRH 104.9 FM (Lafayette College): the native iOS/Android app, the `/v1` API it reads, and the
 HTML design it follows. It is a proposal to the station: nothing here is the station's own service yet.
 
+![WJRH architecture: the native app streams audio directly and reads metadata and schedules from a Cloudflare Worker backed by D1.](docs/assets/wjrh-architecture.svg)
+
+Live audio connects directly to the phone; the Worker handles metadata and schedules with D1.
+The separate archive backend is implemented, while real archive playback in the app remains planned.
+
 **Current state, verified behavior, pending checks and next steps:** [`docs/mobile-app/status.md`](docs/mobile-app/status.md).
 Keep changing progress there so this overview and new sessions do not carry competing versions of the handoff.
 

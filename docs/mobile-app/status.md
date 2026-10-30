@@ -2,7 +2,7 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last reviewed **2026-10-30**, for Phase 5 private release staging (application checks on `5a74f1b`;
+Last reviewed **2026-10-30**, for public-source release approval (application checks on `5a74f1b`;
 selected history includes `17fd878` #30 and `3798cf9` #31).
 Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
 repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite,
@@ -10,9 +10,19 @@ repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references af
 #25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
 
 > [!IMPORTANT]
-> **Phase 5 private release staging (2026-10-30): verified; both repositories remain private.**
+> **Public-source release (2026-10-30): approved by the owner.**
+> The release repository is `anandenk/wjrh-app`; the original repository and full private history
+> remain private at `anandenk/wjrh-app-private`. The README includes the architecture diagram and
+> the independent, unofficial prototype notice. This is source publication, not an official station
+> launch or a production-readiness certification. Application code, dependencies, schemas and binary
+> assets remain unchanged from the Phase 4 tested source; the later changes are documentation only.
+> Native/device/audio, real archive playback and deployed-provider verification limits remain open
+> as recorded below. The dated private-staging entry describes the earlier prepublication state.
+
+> [!IMPORTANT]
+> **Phase 5 private release staging (2026-10-30, before publication): verified; both repositories were private at this stage.**
 > The original repository and its full private history are preserved at `anandenk/wjrh-app-private`.
-> A fresh unrelated private `anandenk/wjrh-app` contains only the five sanitized branches and two
+> At this stage, a fresh unrelated private `anandenk/wjrh-app` contained only the five sanitized branches and two
 > archive tags. The original checkout's origin was retargeted to the private archive; its source,
 > refs and other configuration remain unchanged. GitHub Actions are disabled on the staged repository.
 >
@@ -23,7 +33,7 @@ repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references af
 > line was corrected and status documentation updated. Application code, binary assets, schemas,
 > dependencies and tests remain identical to the Phase 4 verified source. The later changes are prose only.
 >
-> No public visibility change or deployment occurred. Final publication remains the owner's decision.
+> No public visibility change or deployment occurred during private staging; publication required the owner's later approval.
 > Native/UI/audio, live station and deployed-provider verification limits recorded below remain unchanged.
 
 > [!IMPORTANT]
