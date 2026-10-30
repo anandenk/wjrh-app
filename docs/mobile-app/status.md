@@ -2,11 +2,19 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last reviewed **2026-10-15**, against merged `main` through PR #30 (`7e21253`, shared agent workflow).
+Last reviewed **2026-10-30**, against Phase 3 candidate baseline (`17fd878` #30, `3798cf9` #31).
 Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
 repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite,
 #29 reconciled the docs, and #30 established shared instructions/documentation ownership.
 #25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
+
+> [!IMPORTANT]
+> **Phase 3 Remediation Status (2026-10-30):**
+> Candidate history rewritten under owner authorization for Phase 3:
+> - **Targeted privacy cleanup across all history:** unapproved leadership roster/contact records omitted from station content, fixtures, preview HTML, and API documentation; individual student email action links repointed to the general station contact route (`wjrh@lafayette.edu`); local home path in design prompts neutralized.
+> - **Original demo artwork:** all 15 restricted demo cover blob variants across 20 historical aliases replaced with original abstract geometric placeholder artwork (cream/maroon/radio/vinyl aesthetic) matching exact dimensions and JPEG MIME types.
+> - **Truthful prototype framing:** prominent independent prototype disclaimers added to README; cover provenance and runtime/security caveats documented.
+> - **Verification Status:** Independent Phase 4 verification remains **pending** (external history tree comparison, secret scanner rerun, and unit/contract/lint/typecheck execution in an isolated runner). No test runs or runtime/build verifications were performed during Phase 3.
 
 - Plan and stack: [`plan.md`](plan.md). Shared rules: [`../../AGENTS.md`](../../AGENTS.md).
 - Repository map/commands: [`../../CLAUDE.md`](../../CLAUDE.md). Task/PR workflow and documentation ownership:
@@ -65,7 +73,7 @@ Verified before #27 (simulator, Mac muted, so by player state, logs and screensh
   and the Station hub agree; a real 390/393 pt phone was not used (the iPhone 17e simulator could not be driven, see
   Gotchas). Done with fixture data; the live API was not behind these shots.
 - ESLint is clean (`npm run lint`). Unit tests, typecheck, `check:contract`, `smoke:api` against `dev.sh`.
-- **`expo-doctor` passed 21/21 in merged PR #27** (`c5349f6`, 2026-10-15), which installed patch releases of 8 packages
+- **`expo-doctor` passed 21/21 in merged PR #27** (`e950ff1`, 2026-10-15), which installed patch releases of 8 packages
   (`expo` 57.0.30, `expo-asset`, `expo-constants`, `expo-dev-client`, `expo-linking`, `expo-notifications`,
   `expo-router`, `expo-splash-screen`). Typecheck, 89 unit tests, `check:contract`, lint and `smoke:fixtures` passed;
   an iOS simulator Debug build compiled, but the app was **not launched**. **Still pending after #27:** `npm ci`,
@@ -155,6 +163,7 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 
 ## Next steps, in order
 
+0. **Phase 4 verification gate:** Codex independently inspects candidate history trees, confirms 0 restricted blobs and unapproved student records, reruns credential scanner in clean sandbox with development-default adjudication, and executes unit/typecheck/contract checks in an appropriately bounded test environment before any Phase 5 clean export or publication authorization.
 1. **Complete verification after #27 before substantial feature expansion** (agent, with the owner's explicit
    authorization for app/audio-state runs): install dependencies, rebuild the native dev clients, and repeat the
    affected iOS simulator/Android emulator checks with the current dependency versions. Specifically re-run the iOS
@@ -176,7 +185,7 @@ the long runs (the fallback to it was exercised, muted); dark mode; large text.
 ### Repository housekeeping (separate from app verification)
 
 - **Review and retire the old `repo-checkup` worktree** (owner/agent, after confirming no session is using it).
-  On 2026-10-15 it was clean at `9da860d`, on branch `docs-expo-status`, under the repo-relative path
+  On 2026-10-15 it was clean at `2813947`, on branch `docs-expo-status`, under the repo-relative path
   `.claude/worktrees/repo-checkup`. Its one branch-only commit updates the doctor/pending-runtime wording in
   `CLAUDE.md` and this status doc. Compare it with the current docs and preserve any unique work before removing
   the worktree or deleting a branch; commit ancestry alone does not establish whether squash-merged work is covered.

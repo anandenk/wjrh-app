@@ -31,16 +31,16 @@ would be statements about real students.
 
 ## Covers
 
-All the covers are **other people's artwork**. That is fine for a private pitch and **not licensed for a release**.
-The 36 album links and automation cover load from Apple's public image service and are cached on the phone;
-five fallback covers are bundled in `apps/mobile/assets/images/`. Offline cache behavior still needs phone checks.
+The bundled placeholder covers (`assets/images/demo-cover-*.jpg`) and frontend recent covers are **original abstract geometric artwork** created specifically for this prototype (cream/maroon/vinyl/radio aesthetic), replacing earlier commercial placeholders with original procedural geometry.
+
+In demo mode (`EXPO_PUBLIC_DEMO_ARCHIVES=1`), the app can also optionally query Apple's public iTunes Search API at runtime to fetch sample album art for real shows (`src/archive/demo-albums.ts`) and recently played tracks (`src/archive/use-track-art.ts`). These external runtime network lookups are opt-in demo integrations, distinct from the local original assets bundled in the source tree:
 
 - **Shows (Archive grid, archive page, past broadcasts, show page, Now when a show is on air):** each active show gets
   its own album from `src/archive/demo-albums.ts` (36 albums, in an order where bright and dark covers alternate, so
   neighbours differ). The list holds links found with the iTunes Search API and checked by eye; show N gets album N.
-  All of them are fetched when the app starts in demo mode. If one cannot be had, one of five bundled covers
-  (`assets/images/demo-cover-*.jpg`, from the design) shows instead.
-- **Now, while the station is on automation:** one real cover, `AUTOMATION_ALBUM` in the same file (a dark one, so the
+  All of them are fetched when the app starts in demo mode. If one cannot be reached or demo mode is off, one of five bundled original covers
+  (`assets/images/demo-cover-*.jpg`) displays instead.
+- **Now, while the station is on automation:** one real cover link, `AUTOMATION_ALBUM` in the same file (a dark one, so the
   text over it stays readable).
 - **Recently played:** each track's real cover is looked up with Apple's iTunes Search API when the row first
   appears (`src/archive/use-track-art.ts`). The title is cleaned first ("(Radio Edit)", "(Clean Version)", "(ft. X)", and an
@@ -51,6 +51,13 @@ five fallback covers are bundled in `apps/mobile/assets/images/`. Offline cache 
   have), the row keeps its **generated placeholder**: ten styles (sunburst, rings, stripes, halftone dots, waves, Bauhaus
   shapes, hills, patchwork, equalizer bars, rainbow arcs) in twelve colour palettes, drawn in code from the title and
   artist, the same every time. It is also what shows while the real cover loads.
+
+## Runtime, security, and operator caveats
+
+- **Local defaults are never deployment secrets:** dev tokens and credentials in test configurations are local test defaults only; production deployments require station-owned credentials.
+- **Join log mode:** the join endpoint currently uses a dev `log` adapter that stores submitted email addresses in local logs; a real station mailing list or form provider must be configured for production.
+- **Archive storage links:** direct self-hosted archive storage URLs can remain reachable if links or bucket objects persist after database unpublishing or delisting. Operators should configure bucket ACLs, signed URL expirations, and retention rules.
+- **Recorder dependencies and rights:** the archive recorder duration estimator optionally imports `mutagen` when available, falling back to byte estimates; broadcast recording and distribution require station authorization and music rights clearance.
 
 ## Turning it on
 
@@ -64,8 +71,7 @@ EXPO_PUBLIC_DEMO_ARCHIVES=1 npx expo run:ios --configuration Release --device "<
 
 Then: the Archive tab appears (four tabs), a show's page gets a **Past broadcasts** list, every show has a cover, and
 Recently played shows real covers. `eas.json` must never set it for `preview` or `production`; `src/config.test.ts`
-fails if any profile does. The five bundled covers are inside every build (they are app assets), so **replace or
-remove `assets/images/demo-cover-*.jpg` before a public release.**
+fails if any profile does. The five bundled covers are inside every build (they are app assets); they are original geometric placeholders.
 
 ## Building the demo onto a phone
 

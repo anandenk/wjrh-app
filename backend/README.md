@@ -175,10 +175,17 @@ Staff review and publishing are identical for both.
 
 The native listener app in [`../apps/mobile/`](../apps/mobile/) reads the API (PRs #12–#16); its README explains
 `EXPO_PUBLIC_API_BASE`, fixtures and smoke checks. The current HTML design is not connected. Earlier wiring of
-the design prototype and PWA (`?api=`) is preserved at tag `archive/api-wired-design` (commit `37cf17c`). What each
+the design prototype and PWA (`?api=`) is preserved at tag `archive/api-wired-design` (commit `0a3653d`). What each
 screen reads is mapped in [`../docs/mobile-app/plan.md`](../docs/mobile-app/plan.md#screen--endpoint-map).
 Keep live audio direct from the stream URL in `/v1/station`, so the app still plays when the API is
 down.
+
+## Security, defaults, and runtime notes
+
+- **Local defaults are never deployment secrets:** bearer tokens such as `test-token` in examples and test fixtures are mock defaults for local test harnesses only. Deployed environments require station-managed secrets.
+- **Join log mode:** the local dev `log` adapter records submitted email addresses directly into local logs for development verification. A real, station-approved mailing-list or form provider is needed for production.
+- **Archive storage links:** direct self-hosted archive audio URLs (`--archive-to storage`) can remain accessible if links or bucket objects outlive database delisting. Operators must enforce bucket-level ACLs, presigned URL expirations, and retention policies.
+- **Recorder dependencies and rights:** `recorder.py` relies solely on standard library by default, with optional `mutagen` for audio duration estimation. Real-world broadcast capture and archive distribution require operator configuration, station authorization, and applicable music rights clearance.
 
 ## Not done yet
 

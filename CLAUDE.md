@@ -24,7 +24,7 @@ current implementation, verification and next steps live in
 | [`docs/mobile-app/audio-spike.md`](docs/mobile-app/audio-spike.md), [`docs/mobile-app/phase0-findings.md`](docs/mobile-app/phase0-findings.md) | Dated findings; preserve the original results and versions |
 
 The old `~/Downloads/design_handoff_wjrh_app` folder is superseded. The initial workspace is preserved in git
-(`a953a95`); tags `archive/api-wired-design` and `archive/audio-spike` preserve the removed experiments.
+(`6f00888`); tags `archive/api-wired-design` and `archive/audio-spike` preserve the removed experiments.
 
 ## Common commands
 

@@ -1,5 +1,7 @@
 # WJRH listener app
 
+> **Independent design and engineering prototype. Not officially approved, commissioned, or endorsed by WJRH or Lafayette College.**
+
 A listener app for WJRH 104.9 FM (Lafayette College): the native iOS/Android app, the `/v1` API it reads, and the
 HTML design it follows. It is a proposal to the station: nothing here is the station's own service yet.
 

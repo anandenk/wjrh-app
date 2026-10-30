@@ -93,7 +93,7 @@ Open these in a browser:
 The native app already reads the API: follow [`../apps/mobile/README.md`](../apps/mobile/README.md) and set
 `EXPO_PUBLIC_API_BASE=http://127.0.0.1:8787` for the iOS simulator (`http://10.0.2.2:8787` for the Android emulator).
 CORS is open in dev. The HTML design remains on demo data; its earlier API wiring (`?api=` switches) is preserved
-at tag `archive/api-wired-design` (commit `37cf17c`).
+at tag `archive/api-wired-design` (commit `0a3653d`).
 
 ### 5c. Break the station on purpose
 
@@ -149,7 +149,7 @@ other mocks.
    bench, **Load archive → Load → Play** plays it and shows "Range probe: HTTP 206 (seekable)". That
    confirms the storage supports seeking, as R2 will.
 5. In the test bench choose **Mark unpublished**. The episode disappears from the public list.
-   The full history (who registered, reviewed, published and unpublished it) is kept:
+   The full history (who registered, reviewed, published and unpublished it) is kept (note: `dev-admin-token` is a local-only development default, never a deployment secret):
    ```bash
    curl -H 'Authorization: Bearer dev-admin-token' 'http://127.0.0.1:8787/v1/admin/audit'
    ```
