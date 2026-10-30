@@ -2,11 +2,33 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last reviewed **2026-10-30**, against Phase 3 candidate baseline (`17fd878` #30, `3798cf9` #31).
+Last reviewed **2026-10-30**, for Phase 4 publication verification (tested source `5a74f1b`;
+selected history includes `17fd878` #30 and `3798cf9` #31).
 Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
 repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite,
 #29 reconciled the docs, and #30 established shared instructions/documentation ownership.
 #25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
+
+> [!IMPORTANT]
+> **Phase 4 publication verification (2026-10-30): complete within the stated scope.**
+> Independently compared all 42 mapped original commits, parent relationships, commit/tag metadata,
+> tree paths and modes; confirmed targeted roster/contact cleanup and replacement of 15 restricted
+> cover variants across 20 historical aliases. Credential scans found no unexplained hits; known
+> local development examples remain. Backend runtime source, schemas, dependencies and locks are unchanged.
+>
+> Offline disposable-copy checks against `5a74f1b` passed: 89 mobile unit tests, 51 backend tests,
+> nine fixture/schema contracts, fixture smoke checks, mobile lint, both typechecks, and 12 docs-checker
+> tests plus local link checks. Installed dependencies were reused read-only; no install or live service calls.
+> The owner accepted no OS hard memory cap and a shared loopback namespace; the runner restricted
+> writes, external network, fixture ports, CPU, processes, wall time, file size and scratch disk size.
+>
+> All five current replacement artwork files were visually inspected. App screens were not rendered
+> in this pass: the HTML preview requires external CDN runtime libraries, and no native app build or
+> device run was performed. Existing phone/audio/runtime checks below remain outstanding where stated.
+> Join-email storage, direct archive URLs and demo artwork fetching documentation were corrected;
+> the follow-up to the tested source updates this status only.
+> Phase 5 clean-export and release-readiness checks remain pending. No publication, deployment,
+> remote update or visibility change occurred; the original private repository is preserved.
 
 > [!IMPORTANT]
 > **Phase 3 Remediation Status (2026-10-30):**
@@ -14,7 +36,7 @@ repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references af
 > - **Targeted privacy cleanup across all history:** unapproved leadership roster/contact records omitted from station content, fixtures, preview HTML, and API documentation; individual student email action links repointed to the general station contact route (`wjrh@lafayette.edu`); local home path in design prompts neutralized.
 > - **Original demo artwork:** all 15 restricted demo cover blob variants across 20 historical aliases replaced with original abstract geometric placeholder artwork (cream/maroon/radio/vinyl aesthetic) matching exact dimensions and JPEG MIME types.
 > - **Truthful prototype framing:** prominent independent prototype disclaimers added to README; cover provenance and runtime/security caveats documented.
-> - **Verification Status:** Independent Phase 4 verification remains **pending** (external history tree comparison, secret scanner rerun, and unit/contract/lint/typecheck execution in an isolated runner). No test runs or runtime/build verifications were performed during Phase 3.
+> - **Verification Status at Phase 3 completion:** independent Phase 4 verification was pending. No test runs or runtime/build verifications were performed during Phase 3. The Phase 4 entry above supersedes this dated verification state.
 
 - Plan and stack: [`plan.md`](plan.md). Shared rules: [`../../AGENTS.md`](../../AGENTS.md).
 - Repository map/commands: [`../../CLAUDE.md`](../../CLAUDE.md). Task/PR workflow and documentation ownership:
