@@ -2,7 +2,7 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last reviewed **2026-10-30**, for Phase 5 local release preparation (application checks on `5a74f1b`;
+Last reviewed **2026-10-30**, for Phase 5 private release staging (application checks on `5a74f1b`;
 selected history includes `17fd878` #30 and `3798cf9` #31).
 Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
 repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite,
@@ -10,18 +10,21 @@ repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references af
 #25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
 
 > [!IMPORTANT]
-> **Phase 5 local release candidate (2026-10-30): verified; private GitHub staging awaits an owner decision.**
-> A fresh repository was built from only the five sanitized branches and two archive tags, with no
-> extra stored objects, private audit files, remotes, hooks, alternate stores or reflogs. A self-contained
-> Git bundle was restored into a separate repository and checked against the exact ref/object manifest.
-> Antigravity independently reviewed the initial export at `e61ef95`; a stale asset README provenance
-> line was corrected, and this status was updated. Application code, assets, schemas, dependencies and
-> tests remain identical to the Phase 4 verified source. Documentation changes received scoped review.
+> **Phase 5 private release staging (2026-10-30): verified; both repositories remain private.**
+> The original repository and its full private history are preserved at `anandenk/wjrh-app-private`.
+> A fresh unrelated private `anandenk/wjrh-app` contains only the five sanitized branches and two
+> archive tags. The original checkout's origin was retargeted to the private archive; its source,
+> refs and other configuration remain unchanged. GitHub Actions are disabled on the staged repository.
 >
-> The original checkout, private backup and earlier candidates remain preserved; the original GitHub
-> repository remains private. No repository rename, creation, push, deployment or visibility change
-> occurred. Remote destination/naming and final publication remain owner decisions. Native/UI/audio,
-> live station and deployed-provider verification limits recorded below remain unchanged.
+> A clean ref-only export and self-contained Git bundle were checked against the exact object/ref
+> manifest, including independent restoration and fresh private-remote readback. No extra stored
+> objects, private audit files, hooks, alternate stores or reflogs are in the clean local export.
+> Antigravity independently reviewed the initial export at `e61ef95`; the stale asset README provenance
+> line was corrected and status documentation updated. Application code, binary assets, schemas,
+> dependencies and tests remain identical to the Phase 4 verified source. The later changes are prose only.
+>
+> No public visibility change or deployment occurred. Final publication remains the owner's decision.
+> Native/UI/audio, live station and deployed-provider verification limits recorded below remain unchanged.
 
 > [!IMPORTANT]
 > **Phase 4 publication verification (2026-10-30): complete within the stated scope.**
