@@ -183,8 +183,8 @@ down.
 ## Security, defaults, and runtime notes
 
 - **Local defaults are never deployment secrets:** bearer tokens such as `test-token` in examples and test fixtures are mock defaults for local test harnesses only. Deployed environments require station-managed secrets.
-- **Join log mode:** the local dev `log` adapter records submitted email addresses directly into local logs for development verification. A real, station-approved mailing-list or form provider is needed for production.
-- **Archive storage links:** direct self-hosted archive audio URLs (`--archive-to storage`) can remain accessible if links or bucket objects outlive database delisting. Operators must enforce bucket-level ACLs, presigned URL expirations, and retention policies.
+- **Join log mode:** sign-up is disabled unless configured (`JOIN_PROVIDER` defaults to disabled in production vars; `dev` and `real` use `log`). When log mode is selected, submitted email addresses (along with source and timestamp) are stored in the configured D1 `join_outbox` table (the purge job deletes entries older than 30 days when it runs); no real mailing-list provider is implemented. A real, station-approved mailing-list or form provider is needed for production.
+- **Archive storage links:** the API exposes direct `MEDIA_BASE_URL` audio URLs for self-hosted archives (`--archive-to storage`). Unpublishing an episode only hides it from public listings; expiring signed GET URLs are not implemented (presigning is for uploads only). Bucket object deletion, retention jobs, or storage-level delivery and access controls are required to revoke or restrict access to actual audio bytes.
 - **Recorder dependencies and rights:** `recorder.py` relies solely on standard library by default, with optional `mutagen` for audio duration estimation. Real-world broadcast capture and archive distribution require operator configuration, station authorization, and applicable music rights clearance.
 
 ## Not done yet

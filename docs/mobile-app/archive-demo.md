@@ -33,13 +33,13 @@ would be statements about real students.
 
 The bundled placeholder covers (`assets/images/demo-cover-*.jpg`) and frontend recent covers are **original abstract geometric artwork** created specifically for this prototype (cream/maroon/vinyl/radio aesthetic), replacing earlier commercial placeholders with original procedural geometry.
 
-In demo mode (`EXPO_PUBLIC_DEMO_ARCHIVES=1`), the app can also optionally query Apple's public iTunes Search API at runtime to fetch sample album art for real shows (`src/archive/demo-albums.ts`) and recently played tracks (`src/archive/use-track-art.ts`). These external runtime network lookups are opt-in demo integrations, distinct from the local original assets bundled in the source tree:
+In demo mode (`EXPO_PUBLIC_DEMO_ARCHIVES=1`), the app can also optionally display sample album art from external Apple sources: show and automation art use predefined Apple image CDN URL strings (`src/archive/demo-albums.ts`), while recently played tracks query Apple's public iTunes Search API at runtime (`src/archive/use-track-art.ts`). These external artwork fetches are opt-in demo integrations, distinct from the local original assets bundled in the source tree:
 
 - **Shows (Archive grid, archive page, past broadcasts, show page, Now when a show is on air):** each active show gets
   its own album from `src/archive/demo-albums.ts` (36 albums, in an order where bright and dark covers alternate, so
-  neighbours differ). The list holds links found with the iTunes Search API and checked by eye; show N gets album N.
-  All of them are fetched when the app starts in demo mode. If one cannot be reached or demo mode is off, one of five bundled original covers
-  (`assets/images/demo-cover-*.jpg`) displays instead.
+  neighbours differ). The list holds predefined Apple CDN image links originally found with the iTunes Search API and checked by eye; show N gets album N.
+  All of them are fetched when the app starts in demo mode. If one cannot be reached, one of five bundled original covers
+  (`assets/images/demo-cover-*.jpg`) displays instead (when opt-in demo mode is disabled, demo covers and the sample archive catalog are disabled entirely, rather than falling back to bundled covers in normal builds).
 - **Now, while the station is on automation:** one real cover link, `AUTOMATION_ALBUM` in the same file (a dark one, so the
   text over it stays readable).
 - **Recently played:** each track's real cover is looked up with Apple's iTunes Search API when the row first
@@ -55,8 +55,8 @@ In demo mode (`EXPO_PUBLIC_DEMO_ARCHIVES=1`), the app can also optionally query 
 ## Runtime, security, and operator caveats
 
 - **Local defaults are never deployment secrets:** dev tokens and credentials in test configurations are local test defaults only; production deployments require station-owned credentials.
-- **Join log mode:** the join endpoint currently uses a dev `log` adapter that stores submitted email addresses in local logs; a real station mailing list or form provider must be configured for production.
-- **Archive storage links:** direct self-hosted archive storage URLs can remain reachable if links or bucket objects persist after database unpublishing or delisting. Operators should configure bucket ACLs, signed URL expirations, and retention rules.
+- **Join log mode:** sign-up is disabled unless configured (`JOIN_PROVIDER` defaults to disabled in production vars; `dev` and `real` use `log`). When log mode is selected, submitted email addresses are stored in the configured D1 `join_outbox` table (the purge job deletes entries older than 30 days when it runs); no real mailing-list provider is implemented. A real station mailing list or form provider must be configured for production.
+- **Archive storage links:** the API exposes direct `MEDIA_BASE_URL` URLs for self-hosted archive audio. Unpublishing an episode only hides it from public listings; expiring signed GET URLs are not implemented (presigning is for uploads only). Bucket deletion, retention jobs, or storage-level delivery and access controls are required to revoke access to actual audio bytes.
 - **Recorder dependencies and rights:** the archive recorder duration estimator optionally imports `mutagen` when available, falling back to byte estimates; broadcast recording and distribution require station authorization and music rights clearance.
 
 ## Turning it on
