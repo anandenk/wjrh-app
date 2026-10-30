@@ -2,12 +2,26 @@
 
 Read this first when picking the work up. It is the single place that says where the app stands, what
 has and has not been verified, what is waiting on people, how to run everything, and what to do next.
-Last reviewed **2026-10-30**, for Phase 4 publication verification (tested source `5a74f1b`;
+Last reviewed **2026-10-30**, for Phase 5 local release preparation (application checks on `5a74f1b`;
 selected history includes `17fd878` #30 and `3798cf9` #31).
 Implementation includes hardening #20, Android #21, design polish #22, Archive demo #23, roster fix #24,
 repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references after the history rewrite,
 #29 reconciled the docs, and #30 established shared instructions/documentation ownership.
 #25 was review-only and closed without merging. A documentation-only follow-up does not establish new runtime evidence.
+
+> [!IMPORTANT]
+> **Phase 5 local release candidate (2026-10-30): verified; private GitHub staging awaits an owner decision.**
+> A fresh repository was built from only the five sanitized branches and two archive tags, with no
+> extra stored objects, private audit files, remotes, hooks, alternate stores or reflogs. A self-contained
+> Git bundle was restored into a separate repository and checked against the exact ref/object manifest.
+> Antigravity independently reviewed the initial export at `e61ef95`; a stale asset README provenance
+> line was corrected, and this status was updated. Application code, assets, schemas, dependencies and
+> tests remain identical to the Phase 4 verified source. Documentation changes received scoped review.
+>
+> The original checkout, private backup and earlier candidates remain preserved; the original GitHub
+> repository remains private. No repository rename, creation, push, deployment or visibility change
+> occurred. Remote destination/naming and final publication remain owner decisions. Native/UI/audio,
+> live station and deployed-provider verification limits recorded below remain unchanged.
 
 > [!IMPORTANT]
 > **Phase 4 publication verification (2026-10-30): complete within the stated scope.**
@@ -27,7 +41,7 @@ repo checkup/e2e parity fix #26 and Expo patches #27; #28 repaired references af
 > device run was performed. Existing phone/audio/runtime checks below remain outstanding where stated.
 > Join-email storage, direct archive URLs and demo artwork fetching documentation were corrected;
 > the follow-up to the tested source updates this status only.
-> Phase 5 clean-export and release-readiness checks remain pending. No publication, deployment,
+> At Phase 4 completion, Phase 5 clean-export and release-readiness checks were pending. No publication, deployment,
 > remote update or visibility change occurred; the original private repository is preserved.
 
 > [!IMPORTANT]
